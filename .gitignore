@@ -1,0 +1,12 @@
+build
+dist
+*.egg-info
+secrets.yml
+.*
+.vscode
+*.pyc
+*.sqlite
+**/celerybeat-schedule
+**/venv*
+**/.cache
+
