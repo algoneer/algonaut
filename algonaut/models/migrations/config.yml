@@ -1,0 +1,3 @@
+version_table:
+  name: algonaut_version
+  version_column: version
