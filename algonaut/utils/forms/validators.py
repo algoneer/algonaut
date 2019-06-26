@@ -1,8 +1,6 @@
 import re
 import uuid
 import json
-from google.oauth2 import id_token
-from google.auth.transport import requests
 from algonaut.settings import settings as settings
 
 class ToLower:
