@@ -38,6 +38,7 @@ CREATE TABLE model (
     datasetversion_id bigint NOT NULL,
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    deleted_at timestamp without time zone,
     data json
 );
 
@@ -62,6 +63,7 @@ CREATE TABLE dataset (
     ext_id uuid NOT NULL,
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    deleted_at timestamp without time zone,
     data json
 );
 
@@ -86,6 +88,7 @@ CREATE TABLE datapoint (
     ext_id uuid NOT NULL,
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    deleted_at timestamp without time zone,
     data json
 );
 
@@ -111,6 +114,7 @@ CREATE TABLE datasetversion (
     dataset_id bigint NOT NULL,
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    deleted_at timestamp without time zone,
     data json
 );
 
@@ -141,6 +145,7 @@ CREATE TABLE dataschema (
     ext_id uuid NOT NULL,
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    deleted_at timestamp without time zone,
     data json
 );
 
@@ -165,6 +170,7 @@ CREATE TABLE algorithm (
     ext_id uuid NOT NULL,
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    deleted_at timestamp without time zone,
     data json
 );
 
@@ -190,6 +196,7 @@ CREATE TABLE algorithmversion (
     algorithm_id bigint NOT NULL,
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    deleted_at timestamp without time zone,
     data json
 );
 
@@ -220,6 +227,7 @@ CREATE TABLE algorithmschema (
     ext_id uuid NOT NULL,
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    deleted_at timestamp without time zone,
     -- contains the actual algorithm schema
     data json
 );
@@ -245,6 +253,7 @@ CREATE TABLE result (
     ext_id uuid NOT NULL,
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    deleted_at timestamp without time zone,
     -- contains the actual result data (can be deeply nested)
     data json
 );
@@ -274,6 +283,7 @@ CREATE TABLE algorithmversion_result (
     ext_id uuid NOT NULL,
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    deleted_at timestamp without time zone,
     data json,
     algorithmversion_id bigint NOT NULL,
     result_id bigint NOT NULL
@@ -309,6 +319,7 @@ CREATE TABLE datasetversion_result (
     ext_id uuid NOT NULL,
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    deleted_at timestamp without time zone,
     data json,
     datasetversion_id bigint NOT NULL,
     result_id bigint NOT NULL
@@ -344,6 +355,7 @@ CREATE TABLE model_result (
     ext_id uuid NOT NULL,
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    deleted_at timestamp without time zone,
     data json,
     model_id bigint NOT NULL,
     result_id bigint NOT NULL
@@ -379,6 +391,7 @@ CREATE TABLE datasetversion_dataschema (
     ext_id uuid NOT NULL,
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    deleted_at timestamp without time zone,
     data json,
     datasetversion_id bigint NOT NULL,
     dataschema_id bigint NOT NULL
@@ -414,6 +427,7 @@ CREATE TABLE algorithmversion_algorithmschema (
     ext_id uuid NOT NULL,
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    deleted_at timestamp without time zone,
     data json,
     algorithmversion_id bigint NOT NULL,
     algorithmschema_id bigint NOT NULL
@@ -449,6 +463,7 @@ CREATE TABLE datasetversion_datapoint (
     ext_id uuid NOT NULL,
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    deleted_at timestamp without time zone,
     data json,
     datasetversion_id bigint NOT NULL,
     datapoint_id bigint NOT NULL

@@ -26,6 +26,7 @@ class Base(DeclarativeBase):
     updated_at = Column(DateTime,
                         server_onupdate=func.current_timestamp(),
                         server_default=func.now())
+    deleted_at = Column(DateTime)
     data = Column(JSONType, index=False, nullable=True)
 
     def set_data(self, key, value):
