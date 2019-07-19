@@ -64,6 +64,9 @@ CREATE TABLE dataset (
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     deleted_at timestamp without time zone,
+    name CHARACTER VARYING NOT NULL,
+    description CHARACTER VARYING NOT NULL,
+    tags CHARACTER VARYING[],
     data json
 );
 
@@ -171,6 +174,9 @@ CREATE TABLE algorithm (
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     deleted_at timestamp without time zone,
+    name CHARACTER VARYING NOT NULL,
+    description CHARACTER VARYING NOT NULL,
+    tags CHARACTER VARYING[],
     data json
 );
 
