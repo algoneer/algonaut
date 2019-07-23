@@ -1,0 +1,1 @@
+export ALGONAUT_SETTINGS_D=`readlink -f settings`

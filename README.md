@@ -30,6 +30,12 @@ the Algonaut repository:
 
     export ALGONAUT_SETTINGS_D=settings
 
+Alternatively you can source the `.dev-setup` file into your environment:
+
+    source .dev-setup
+
+This will set all required environment variables.
+
 ## Migrations
 
 Algonaut runs on Postgres (but can support SQLite too). The database schema is
