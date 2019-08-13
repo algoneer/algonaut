@@ -200,7 +200,7 @@ class Settings(object):
 
         for filename in config.get("yaml_settings", []):
             with open(filename) as yaml_file:
-                settings_yaml = yaml.load(yaml_file.read())
+                settings_yaml = yaml.load(yaml_file.read(), Loader=yaml.FullLoader)
                 update(self._d, settings_yaml, overwrite=False)
 
     def load_plugins(self):
@@ -275,7 +275,7 @@ def load_settings(filenames):
     settings_dict = {}
     for filename in filenames:
         with open(filename, "r") as yaml_file:
-            settings_yaml = yaml.load(yaml_file.read())
+            settings_yaml = yaml.load(yaml_file.read(), Loader=yaml.FullLoader)
             if settings_yaml is None:
                 continue
             c = {"cwd": os.path.dirname(os.path.abspath(filename))}
