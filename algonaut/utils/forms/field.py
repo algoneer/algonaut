@@ -1,8 +1,15 @@
 import datetime
 
+from typing import List, Callable, Any, Optional, Tuple, Dict
+
+from .form import Form
+
+
 class Field:
 
-    default_validators = []
+    default_validators: List[
+        Callable[[str, Any, Form], Optional[Tuple[Dict[str, Any], Any, bool]]]
+    ] = []
 
     @property
     def validators(self):
@@ -12,7 +19,7 @@ class Field:
         if validators is None:
             validators = []
         self._validators = validators
-    
+
     def validate(self, name, value, form):
         for validator in self.validators:
             result = validator(name, value, form)

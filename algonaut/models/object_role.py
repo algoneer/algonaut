@@ -2,9 +2,10 @@ from .base import Base, PkType, ExtPkType
 
 from sqlalchemy import Column, DateTime, Unicode, BigInteger, Integer
 
+
 class ObjectRole(Base):
 
-    __tablename__ = 'object_role'
+    __tablename__ = "object_role"
 
     """
     Describes a model.

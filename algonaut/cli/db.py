@@ -9,12 +9,14 @@ import os
 
 logger = logging.getLogger(__name__)
 
+
 @click.group("db")
 def db():
     """
     Database-related functionality.
     """
     pass
+
 
 @db.command("migrate")
 @click.option("--plugin", default=None)
@@ -23,13 +25,13 @@ def db():
 def migrate(plugin, version, down=False):
     _migrate_db(plugin, version, down)
 
-def _migrate_db(plugin, version, down=False):
 
+def _migrate_db(plugin, version, down=False):
     def migrate_plugin(plugin):
         _migrate_plugin(plugin, version=version)
 
     def migrate_plugins():
-        for plugin_name, plugin_params in settings.get('plugins').items():
+        for plugin_name, plugin_params in settings.get("plugins").items():
             migrate_plugin(plugin_name)
 
     def migrate_core():
@@ -49,16 +51,19 @@ def _migrate_db(plugin, version, down=False):
             migrate_core()
             migrate_plugins()
 
+
 def _migrate_core(version):
     path = os.path.dirname(algonaut.__file__)
     _migrate_path(path, version)
+
 
 def _migrate_plugin(plugin_name, version):
     path = settings.get_plugin_path(plugin_name)
     _migrate_path(path, version)
 
+
 def _migrate_path(path, version):
-    full_path = os.path.join(path, 'models/migrations')
+    full_path = os.path.join(path, "models/migrations")
     if not os.path.exists(full_path):
         return
     logger.info("Loading migrations from {}".format(full_path))
@@ -69,21 +74,23 @@ def _migrate_path(path, version):
         manager = MigrationManager(full_path, connection)
         manager.migrate(version=version)
 
+
 @db.command("clean")
 @click.option("--plugin", default=None)
 def clean_db_cmd(plugin):
     _clean_db(settings, plugin=plugin)
 
+
 def _clean_db(settings, plugin):
-        with settings.session() as session:
-            if plugin is None:
-                plugins = list(settings.get('plugins', {}).keys())+["core"]
-            else:
-                plugins = [plugin]
-            for plugin in plugins:
-                if plugin == "core":
-                    clean_db(session)
-                    continue
-                config = settings.load_plugin_config(plugin)
-                if 'clean_db' in config:
-                    config['clean_db'](session)
+    with settings.session() as session:
+        if plugin is None:
+            plugins = list(settings.get("plugins", {}).keys()) + ["core"]
+        else:
+            plugins = [plugin]
+        for plugin in plugins:
+            if plugin == "core":
+                clean_db(session)
+                continue
+            config = settings.load_plugin_config(plugin)
+            if "clean_db" in config:
+                config["clean_db"](session)

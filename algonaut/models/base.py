@@ -6,8 +6,8 @@ from sqlalchemy.dialects import sqlite, postgresql
 from sqlalchemy.orm.attributes import flag_modified
 
 BigIntegerType = BigInteger()
-BigIntegerType = BigIntegerType.with_variant(postgresql.BIGINT(), 'postgresql')
-BigIntegerType = BigIntegerType.with_variant(sqlite.INTEGER(), 'sqlite')
+BigIntegerType = BigIntegerType.with_variant(postgresql.BIGINT(), "postgresql")
+BigIntegerType = BigIntegerType.with_variant(sqlite.INTEGER(), "sqlite")
 
 DeclarativeBase = declarative_base()
 PkType = BigIntegerType
@@ -15,17 +15,19 @@ ExtPkType = UUIDType(binary=False)
 
 import uuid
 
-class Base(DeclarativeBase):
+
+class Base(DeclarativeBase):  # type: ignore
 
     __abstract__ = True
 
     id = Column(PkType, primary_key=True)
-    ext_id = Column(ExtPkType, default=lambda : uuid.uuid4(), nullable=False, unique=True)
-    created_at = Column(DateTime,
-                        server_default=func.now())
-    updated_at = Column(DateTime,
-                        server_onupdate=func.current_timestamp(),
-                        server_default=func.now())
+    ext_id = Column(
+        ExtPkType, default=lambda: uuid.uuid4(), nullable=False, unique=True
+    )
+    created_at = Column(DateTime, server_default=func.now())
+    updated_at = Column(
+        DateTime, server_onupdate=func.current_timestamp(), server_default=func.now()
+    )
     deleted_at = Column(DateTime)
     data = Column(JSONType, index=False, nullable=True)
 
@@ -33,7 +35,7 @@ class Base(DeclarativeBase):
         if self.data is None:
             self.data = {}
         self.data[key] = value
-        flag_modified(self, 'data')
+        flag_modified(self, "data")
 
     def get_data(self, key):
         if self.data is None:

@@ -14,17 +14,15 @@ def worker():
     """
     pass
 
+
 @worker.command("run")
 def run_worker():
     """
     Run the celery worker.
     """
-    argv = [
-        'worker',
-        '--loglevel=INFO',
-        '-B',
-    ]
+    argv = ["worker", "--loglevel=INFO", "-B"]
     settings.celery.worker_main(argv)
+
 
 @worker.command("initialize-rabbitmq")
 def initialize_rabbitmq():
@@ -50,8 +48,10 @@ def initialize_rabbitmq():
     rabbitmqctl set_permissions -p {vhost} {user} ".*" ".*" ".*"
     echo "Done"
 """
-    broker_url = settings.get('worker.config.broker_url', '')
-    match = re.match(r"^amqp://([\w\d\-]+):([\w\d\-]+)@([\w\d\.\-]+):(\d+)/([\w\d\-]+)$", broker_url)
+    broker_url = settings.get("worker.config.broker_url", "")
+    match = re.match(
+        r"^amqp://([\w\d\-]+):([\w\d\-]+)@([\w\d\.\-]+):(\d+)/([\w\d\-]+)$", broker_url
+    )
     if not match:
         print("Invalid Broker URL!")
         exit(-1)
@@ -59,8 +59,10 @@ def initialize_rabbitmq():
     if hostname not in ("localhost", "127.0.0.1"):
         print("This script only works for a locally installed RabbitMQ instance")
         exit(0)
-    file, filename = tempfile.mkstemp(suffix='.sh')
-    os.write(file, script.format(vhost=vhost, user=user, password=password).encode("utf-8"))
+    file, filename = tempfile.mkstemp(suffix=".sh")
+    os.write(
+        file, script.format(vhost=vhost, user=user, password=password).encode("utf-8")
+    )
     os.close(file)
     os.chmod(filename, 700)
     p = subprocess.Popen([filename])

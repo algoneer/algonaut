@@ -6,6 +6,6 @@ from urllib.parse import urlparse
 
 import flask
 
-settings.setup_logging(settings.get('loglevel', 4))
+settings.setup_logging(settings.get("loglevel", 4))
 settings.initialize()
 app = get_app(settings)

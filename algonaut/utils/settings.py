@@ -15,9 +15,9 @@ from .celery import make_celery
 
 logger = logging.getLogger(__name__)
 
-class Settings(object):
 
-    def __init__(self,d):
+class Settings(object):
+    def __init__(self, d):
         self._d = d
         self.providers = defaultdict(list)
         self.hooks = defaultdict(list)
@@ -32,17 +32,17 @@ class Settings(object):
         for handler in logging.root.handlers[:]:
             logging.root.removeHandler(handler)
         levels = [logging.ERROR, logging.WARNING, logging.INFO, logging.DEBUG]
-        level = levels[min(level,len(levels)-1)]
-        logging.basicConfig(level=level, format='%(message)s')
+        level = levels[min(level, len(levels) - 1)]
+        logging.basicConfig(level=level, format="%(message)s")
 
     def encrypt(self, data):
-        key = self.get('encryption.key')
+        key = self.get("encryption.key")
         f = Fernet(key)
         data_bytes = json.dumps(data).encode("utf-8")
         return f.encrypt(data_bytes)
 
     def decrypt(self, data, ttl=None):
-        key = self.get('encryption.key')
+        key = self.get("encryption.key")
         f = Fernet(key)
         data_bytes = f.decrypt(data, ttl=ttl)
         return json.loads(data_bytes.decode("utf-8"))
@@ -51,9 +51,9 @@ class Settings(object):
         """
         Returns a SQLAlchemy database engine.
         """
-        params = self.get('db').copy()
-        db_url = self.get('db.url').format(**params)
-        engine = create_engine(db_url, echo=self.get('db.echo'))
+        params = self.get("db").copy()
+        db_url = self.get("db.url").format(**params)
+        engine = create_engine(db_url, echo=self.get("db.echo"))
         return engine
 
     @contextmanager
@@ -76,7 +76,9 @@ class Settings(object):
             engine = self.get_db_engine()
             if self.sessionmaker is not None:
                 self.dispose_all_sessions()
-            self.sessionmaker = scoped_session(sessionmaker(bind=engine, expire_on_commit=False))
+            self.sessionmaker = scoped_session(
+                sessionmaker(bind=engine, expire_on_commit=False)
+            )
         return self.sessionmaker()
 
     def dispose_all_sessions(self):
@@ -90,7 +92,7 @@ class Settings(object):
         self.sessionmaker = None
 
     def initialize_tasks(self):
-        tasks = self.get('worker.tasks', [])
+        tasks = self.get("worker.tasks", [])
         for task in tasks:
             if callable(task):
                 self.celery.task(task)
@@ -108,13 +110,13 @@ class Settings(object):
         if isinstance(func_or_name, str):
             task_name = func_or_name
         elif callable(func_or_name):
-            task_name = func_or_name.__module__+'.'+func_or_name.__name__
+            task_name = func_or_name.__module__ + "." + func_or_name.__name__
         else:
             raise TypeError("Unknown func_or_name argument!")
-        if self.get('test'):
+        if self.get("test"):
             if not callable(func_or_name):
                 func_or_name = get_func_by_name(func_or_name)
-            #todo: we should wrap this is an AsyncResult-like object
+            # todo: we should wrap this is an AsyncResult-like object
             return func_or_name(**kwargs)
         else:
             return self.celery.send_task(task_name, kwargs=kwargs)
@@ -149,11 +151,11 @@ class Settings(object):
             cd[components[-1]] = value
 
     def load_plugin_module(self, name):
-        plugin_data = self.get('plugins.{}'.format(name))
+        plugin_data = self.get("plugins.{}".format(name))
         if plugin_data is None:
             raise ValueError("Unknown plugin: {}".format(name))
 
-        setup_module_name = '{}.setup'.format(plugin_data['module'])
+        setup_module_name = "{}.setup".format(plugin_data["module"])
         setup_module = importlib.import_module(setup_module_name)
         return setup_module
 
@@ -162,7 +164,7 @@ class Settings(object):
             setup_module = self.load_plugin_module(name)
         return setup_module.config
 
-    def get_plugin_path(self ,name):
+    def get_plugin_path(self, name):
         setup_module = self.load_plugin_module(name)
         return os.path.dirname(setup_module.__file__)
 
@@ -171,32 +173,32 @@ class Settings(object):
         :param name: name of the plugin to load
         """
 
-        plugin_data = self.get('plugins.{}'.format(name))
+        plugin_data = self.get("plugins.{}".format(name))
         if plugin_data is None:
             raise ValueError("Unknown plugin: {}".format(name))
 
         logger.info("Loading plugin: {}".format(name))
         config = self.load_plugin_config(name)
 
-        #register providers
-        for name, params in config.get('providers',{}).items():
+        # register providers
+        for name, params in config.get("providers", {}).items():
             self.providers[name].append(params)
 
         # register hooks
-        for name, params in config.get('hooks',{}).items():
+        for name, params in config.get("hooks", {}).items():
             self.hooks[name].append(params)
 
         # register task schedule
-        schedule = self.get('worker.schedule', {})
-        schedule.update(config.get('schedule', {}))
-        self.set('worker.schedule', schedule)
+        schedule = self.get("worker.schedule", {})
+        schedule.update(config.get("schedule", {}))
+        self.set("worker.schedule", schedule)
 
         # register tasks
-        tasks = self.get('worker.tasks', [])
-        tasks.extend(config.get('tasks', []))
-        self.set('worker.tasks', tasks)
+        tasks = self.get("worker.tasks", [])
+        tasks.extend(config.get("tasks", []))
+        self.set("worker.tasks", tasks)
 
-        for filename in config.get('yaml_settings', []):
+        for filename in config.get("yaml_settings", []):
             with open(filename) as yaml_file:
                 settings_yaml = yaml.load(yaml_file.read())
                 update(self._d, settings_yaml, overwrite=False)
@@ -204,7 +206,7 @@ class Settings(object):
     def load_plugins(self):
         """ Loads all plugins specified in settings if they have not yet been loaded.
         """
-        plugins = self.get('plugins') or {}
+        plugins = self.get("plugins") or {}
         for plugin in plugins:
             self.load_plugin(plugin)
 
@@ -213,9 +215,9 @@ class Settings(object):
         :return: API dictionary with version, routes and module name
         """
         apis = {}
-        for plugin_name in self.get('plugins',{}):
+        for plugin_name in self.get("plugins", {}):
             config = self.load_plugin_config(plugin_name)
-            endpoint_config = config.get('api')
+            endpoint_config = config.get("api")
             if endpoint_config:
                 apis[plugin_name] = endpoint_config
         return apis
@@ -226,9 +228,9 @@ class Settings(object):
         :return: combined export map for the given resource
         """
         exports = tuple()
-        for plugin_name in self.get('plugins',{}):
+        for plugin_name in self.get("plugins", {}):
             config = self.load_plugin_config(plugin_name)
-            exports += config.get('exports', {}).get(resource_name, ())
+            exports += config.get("exports", {}).get(resource_name, ())
         return list(exports)
 
     def get_plugin_includes(self, resource_name):
@@ -244,53 +246,55 @@ class Settings(object):
 
         """
         includes = set()
-        for plugin_name in self.get('plugins',{}):
+        for plugin_name in self.get("plugins", {}):
             config = self.load_plugin_config(plugin_name)
-            includes_config = config.get('includes')
+            includes_config = config.get("includes")
             if includes_config:
-                    includes |= set(includes_config.get(resource_name, ()))
+                includes |= set(includes_config.get(resource_name, ()))
         return list(includes)
 
     @property
     def translations(self):
-        return self.get('translations', {})
+        return self.get("translations", {})
 
     def translate(self, language, key, *args, **kwargs):
-        translation = self.get('translations.{}.{}'.format(key, language))
+        translation = self.get("translations.{}.{}".format(key, language))
         if not translation:
             return "[no translation for language {} and key {}]".format(language, key)
         return translation.format(*args, **kwargs)
 
+
 def get_func_by_name(name):
-    components = name.split('.')
-    module_name, func_name = '.'.join(components[:-1]), components[-1]
+    components = name.split(".")
+    module_name, func_name = ".".join(components[:-1]), components[-1]
     module = importlib.import_module(module_name)
     return getattr(module, func_name)
+
 
 def load_settings(filenames):
     settings_dict = {}
     for filename in filenames:
-        with open(filename, 'r') as yaml_file:
+        with open(filename, "r") as yaml_file:
             settings_yaml = yaml.load(yaml_file.read())
             if settings_yaml is None:
                 continue
-            c = {
-                'cwd' : os.path.dirname(os.path.abspath(filename))
-            }
+            c = {"cwd": os.path.dirname(os.path.abspath(filename))}
             interpolate(settings_yaml, c)
             update(settings_dict, settings_yaml)
     return settings_dict
+
 
 def update(d, ud, overwrite=True):
     for key, value in ud.items():
         if key not in d:
             d[key] = value
-        elif isinstance(value,dict):
+        elif isinstance(value, dict):
             update(d[key], value, overwrite=overwrite)
         else:
             if key in d and not overwrite:
                 continue
             d[key] = value
+
 
 def interpolate(d, context):
     def format(s):
@@ -298,6 +302,7 @@ def interpolate(d, context):
             return s.format(**context)
         except KeyError:
             return s
+
     if isinstance(d, dict):
         for key, value in d.items():
             if isinstance(value, str):

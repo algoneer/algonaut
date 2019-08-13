@@ -1,7 +1,7 @@
 from .field import Field
 
+
 class FormMeta(type):
-    
     def __init__(cls, name, bases, namespace):
         fields = {}
         for key, value in namespace.items():
@@ -10,8 +10,8 @@ class FormMeta(type):
         cls.fields = fields
         super().__init__(name, bases, namespace)
 
-class Form(metaclass=FormMeta):
 
+class Form(metaclass=FormMeta):
     def __init__(self, t, data):
         self.t = t
         self.raw_data = data

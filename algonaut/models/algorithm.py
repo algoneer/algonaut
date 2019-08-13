@@ -3,9 +3,10 @@ from .base import Base, PkType, ExtPkType
 from sqlalchemy import Column, DateTime, Unicode, BigInteger, Integer
 from sqlalchemy.dialects.postgresql import ARRAY
 
+
 class Algorithm(Base):
 
-    __tablename__ = 'algorithm'
+    __tablename__ = "algorithm"
 
     """
     Describes an algorithm.

@@ -1,5 +1,6 @@
 from distutils.core import setup
 from setuptools import find_packages
+from req import reqs
 
 setup(
     name='algonaut',
@@ -12,18 +13,7 @@ setup(
     packages=find_packages(),
     package_data={'': ['*.yml', '*.sql']},
     include_package_data=True,
-    install_requires=[
-        'psycopg2_binary==2.8.3',
-        'celery==4.2.1',
-        'cryptography==2.7',
-        'click==6.7',
-        'Flask==1.0.2',
-        'pytz==2018.7',
-        'PyYAML==3.12',
-        'requests==2.18.4',
-        'SQLAlchemy==1.2.7',
-        'SQLAlchemy-Utils==0.33.3',
-    ],
+    install_requires=reqs,
     zip_safe=False,
     entry_points={
         'console_scripts': [
