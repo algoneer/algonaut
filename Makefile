@@ -19,5 +19,5 @@ release:
 	twine upload dist/* -u ${TWINE_USER} -p ${TWINE_PASSWORD}
 
 test:
-	ALGONAUT_SETTINGS_D=$(ALGONAUT_SETTINGS_D) pytest $(args) tests
-	#ALGONAUT_SETTINGS_D=$(ALGONAUT_SETTINGS_D) pytest $(args) algonaut/plugins
+	ALGONAUT_SETTINGS_D=$(ALGONAUT_SETTINGS_D) pytest $(testargs) tests
+	#ALGONAUT_SETTINGS_D=$(ALGONAUT_SETTINGS_D) pytest $(testargs) algonaut/plugins

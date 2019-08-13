@@ -64,6 +64,20 @@ class DatabaseTest(unittest.TestCase):
         _migrate_db(None, None)
 
 
+class MockApiTest(DatabaseTest):
+    @classmethod
+    def setUpClass(cls):
+
+        super(MockApiTest, cls).setUpClass()
+
+        if not settings.get("test"):
+            raise AttributeError("You try to run tests in a non-TEST environment!")
+
+        cls.settings = settings
+        cls.app = get_app(settings).test_client()
+        cls.app.testing = True
+
+
 class ApplicationProcess(multiprocessing.Process):
     def __init__(self, host, port, app, settings, queue=None):
         super(ApplicationProcess, self).__init__()

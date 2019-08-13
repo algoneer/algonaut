@@ -18,3 +18,4 @@ from .datasetversion import DataSetVersion
 from .model_result import ModelResult
 from .model import Model
 from .result import Result
+from .object_role import ObjectRole

@@ -34,7 +34,7 @@ class MigrationManager(object):
         """
         with open(os.path.join(self.path, "config.yml"), "r") as input_file:
             content = input_file.read()
-        self.config = yaml.load(content)
+        self.config = yaml.load(content, Loader=yaml.FullLoader)
 
     def load_migrations(self, encoding="utf-8"):
         """
