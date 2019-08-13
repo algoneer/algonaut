@@ -1,5 +1,13 @@
 image: python:3.6.7
 
+services:
+  - postgres:latest
+
+variables:
+  POSTGRES_DB: algonaut_test
+  POSTGRES_USER: algonaut
+  POSTGRES_PASSWORD: algonaut
+
 stages:
   - test
   - deploy
