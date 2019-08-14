@@ -23,7 +23,7 @@ from typing import List, Callable, Dict, Any
 
 class DatabaseTest(unittest.TestCase):
 
-    fixtures: List[Callable[["DatabaseTest", Dict[str, Any]], Any]] = []
+    fixtures: List[Callable[[unittest.TestCase, Dict[str, Any]], Any]] = []
 
     @classmethod
     def setup(cls):
@@ -118,7 +118,7 @@ class ApiTest(DatabaseTest):
     port = 5557
     protocol = "http"
 
-    fixtures: List[Callable[["DatabaseTest", Dict[str, Any]], Any]] = []
+    fixtures: List[Callable[[unittest.TestCase, Dict[str, Any]], Any]] = []
 
     settings = None
     app = None

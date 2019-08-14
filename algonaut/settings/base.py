@@ -1,7 +1,9 @@
-from algonaut.utils.settings import Settings, load_settings
+from algonaut.utils.settings import Settings as BaseSettings, load_settings
+import algonaut.utils.worf as worf
+from algonaut.utils.auth_client import AuthClient
 import os
 
-from typing import List
+from typing import List, Optional
 
 settings_filenames: List[str] = []
 
@@ -17,5 +19,25 @@ if _algonaut_settings_d:
             for fn in sorted(os.listdir(settings_directory))
             if fn.endswith(".yml") and not fn.startswith(".")
         ]
+
+
+class Settings(BaseSettings):
+    def __init__(self, d):
+        super().__init__(d)
+        self._auth_client: Optional[AuthClient] = None
+
+    def _get_auth_client(self):
+        self._auth_client = worf.AuthClient(self)
+
+    @property
+    def auth_client(self):
+        if self._auth_client is None:
+            self._get_auth_client()
+        return self._auth_client
+
+    @auth_client.setter
+    def auth_client(self, client: AuthClient):
+        self._auth_client = client
+
 
 settings = Settings(load_settings(settings_filenames))

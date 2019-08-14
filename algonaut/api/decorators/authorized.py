@@ -1,7 +1,6 @@
-from algonaut.utils.worf.user import User
-
 from flask import request
 from functools import wraps
+from algonaut.settings import settings
 
 
 def authorized(f=None, scopes=None, superuser=False):
@@ -13,7 +12,12 @@ def authorized(f=None, scopes=None, superuser=False):
     def decorator(f):
         @wraps(f)
         def decorated_function(*args, **kwargs):
-            request.user = User({})
+            client = settings.auth_client
+            # the client retrieves the user object for the given request
+            user = client.get_user(request)
+            if user is None:
+                return {"message": "unauthorized"}, 403
+            request.user = user
             return f(*args, **kwargs)
 
         return decorated_function
