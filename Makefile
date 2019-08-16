@@ -1,5 +1,5 @@
 SETTINGS := postgres
-ALGONAUT_SETTINGS_D := settings:tests/settings/$(SETTINGS)
+ALGONAUT_SETTINGS_D := settings:algonaut_tests/settings/$(SETTINGS)
 
 all: format mypy test
 
@@ -19,5 +19,5 @@ release:
 	twine upload dist/* -u ${TWINE_USER} -p ${TWINE_PASSWORD}
 
 test:
-	ALGONAUT_SETTINGS_D=$(ALGONAUT_SETTINGS_D) pytest $(testargs) tests
+	ALGONAUT_SETTINGS_D=$(ALGONAUT_SETTINGS_D) pytest $(testargs) algonaut_tests
 	#ALGONAUT_SETTINGS_D=$(ALGONAUT_SETTINGS_D) pytest $(testargs) algonaut/plugins

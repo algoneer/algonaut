@@ -1,5 +1,5 @@
-from algonaut.tests.helpers import MockApiTest
-from algonaut.tests.fixtures.user import user, auth_client
+from algonaut_tests.helpers import MockApiTest
+from algonaut_tests.fixtures.user import user, auth_client
 
 class TestAlgorithms(MockApiTest):
 
