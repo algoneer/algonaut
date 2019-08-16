@@ -5,6 +5,7 @@ all: format mypy test
 
 format:
 	black algonaut/
+	black algonaut_tests/
 
 mypy:
 	mypy algonaut/

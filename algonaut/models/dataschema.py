@@ -1,6 +1,7 @@
 from .base import Base, PkType, ExtPkType
 
 from sqlalchemy import Column, DateTime, Unicode, BigInteger, Integer
+from sqlalchemy.dialects.postgresql import BYTEA
 
 
 class DataSchema(Base):
@@ -10,3 +11,5 @@ class DataSchema(Base):
     """
     Describes a data schema.
     """
+
+    hash = Column(BYTEA, nullable=False)

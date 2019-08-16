@@ -152,10 +152,13 @@ ALTER TABLE ONLY model
 ALTER TABLE ONLY datasetversion
     ADD CONSTRAINT datasetversion_dataset_id_fkey FOREIGN KEY (dataset_id) REFERENCES dataset(id);
 
+CREATE UNIQUE INDEX ix_datasetversion_hash ON datasetversion USING btree (hash);
+
 -- represents a data schema
 CREATE TABLE dataschema (
     id bigint NOT NULL,
     ext_id uuid NOT NULL,
+    hash BYTEA NOT NULL,
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     deleted_at timestamp without time zone,
@@ -178,6 +181,8 @@ CREATE SEQUENCE dataschema_id_seq
 ALTER SEQUENCE dataschema_id_seq OWNED BY dataschema.id;
 
 ALTER TABLE ONLY dataschema ALTER COLUMN id SET DEFAULT nextval('dataschema_id_seq'::regclass);
+
+CREATE UNIQUE INDEX ix_dataschema_hash ON dataschema USING btree (hash);
 
 -- represents an algorithm
 CREATE TABLE algorithm (
@@ -245,10 +250,13 @@ ALTER SEQUENCE algorithmversion_id_seq OWNED BY algorithmversion.id;
 
 ALTER TABLE ONLY algorithmversion ALTER COLUMN id SET DEFAULT nextval('algorithmversion_id_seq'::regclass);
 
+CREATE UNIQUE INDEX ix_algorithmversion_hash ON algorithmversion USING btree (hash);
+
 -- represents an algorithm schema
 CREATE TABLE algorithmschema (
     id bigint NOT NULL,
     ext_id uuid NOT NULL,
+    hash BYTEA NOT NULL,
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     deleted_at timestamp without time zone,
@@ -272,6 +280,8 @@ CREATE SEQUENCE algorithmschema_id_seq
 ALTER SEQUENCE algorithmschema_id_seq OWNED BY algorithmschema.id;
 
 ALTER TABLE ONLY algorithmschema ALTER COLUMN id SET DEFAULT nextval('algorithmschema_id_seq'::regclass);
+
+CREATE UNIQUE INDEX ix_algorithmschema_hash ON algorithmschema USING btree (hash);
 
 -- represents a test result
 CREATE TABLE result (
