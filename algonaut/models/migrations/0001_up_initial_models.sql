@@ -34,6 +34,7 @@ always belongs to one or more datasets.
 CREATE TABLE model (
     id bigint NOT NULL,
     ext_id uuid NOT NULL,
+    hash BYTEA NOT NULL,
     algorithmversion_id bigint NOT NULL,
     datasetversion_id bigint NOT NULL,
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
@@ -59,6 +60,7 @@ ALTER SEQUENCE model_id_seq OWNED BY model.id;
 
 ALTER TABLE ONLY model ALTER COLUMN id SET DEFAULT nextval('model_id_seq'::regclass);
 
+CREATE UNIQUE INDEX ix_model_hash ON model USING BTREE (hash);
 CREATE INDEX ix_model_created_at ON model USING BTREE (created_at);
 CREATE INDEX ix_model_updated_at ON model USING BTREE (updated_at);
 CREATE INDEX ix_model_deleted_at ON model USING BTREE (deleted_at);
@@ -325,6 +327,8 @@ CREATE INDEX ix_algorithmschema_deleted_at ON algorithmschema USING BTREE (delet
 CREATE TABLE result (
     id bigint NOT NULL,
     ext_id uuid NOT NULL,
+    name CHARACTER VARYING NOT NULL,
+    hash BYTEA NOT NULL,
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     deleted_at timestamp without time zone,
@@ -348,6 +352,12 @@ CREATE SEQUENCE result_id_seq
 ALTER SEQUENCE result_id_seq OWNED BY result.id;
 
 ALTER TABLE ONLY result ALTER COLUMN id SET DEFAULT nextval('result_id_seq'::regclass);
+
+CREATE UNIQUE INDEX ix_result_hash ON result USING BTREE (hash);
+CREATE INDEX ix_result_name ON result USING BTREE (name);
+CREATE INDEX ix_result_created_at ON result USING BTREE (created_at);
+CREATE INDEX ix_result_updated_at ON result USING BTREE (updated_at);
+CREATE INDEX ix_result_deleted_at ON result USING BTREE (deleted_at);
 
 /*
 Association tables

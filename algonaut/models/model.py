@@ -2,6 +2,7 @@ from .base import Base, PkType, ExtPkType
 
 from sqlalchemy import Column, DateTime, Unicode, BigInteger, Integer, ForeignKey
 from sqlalchemy.orm import relationship, backref
+from sqlalchemy.dialects.postgresql import BYTEA
 
 
 class Model(Base):
@@ -11,6 +12,8 @@ class Model(Base):
     """
     Describes a model.
     """
+
+    hash = Column(BYTEA, nullable=False)
 
     algorithmversion_id = Column(
         PkType, ForeignKey("algorithmversion.id"), nullable=False

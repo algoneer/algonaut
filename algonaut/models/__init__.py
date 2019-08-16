@@ -1,21 +1,21 @@
 # we import all relevant models
 
-from .algorithmversion import AlgorithmVersion
-from .algorithm import Algorithm
-from .algorithmschema import AlgorithmSchema
-from .algorithmversion_algorithmschema import AlgorithmVersionAlgorithmSchema
-from .algorithmversion_result import AlgorithmVersionResult
-from .datapoint import DataPoint
-from .dataschema import DataSchema
-from .dataset import DataSet
-from .datasetversion_dataschema import DataSetVersionDataSchema
-from .datasetversion_datapoint import DataSetVersionDataPoint
-from .datasetversion_result import DataSetVersionResult
-from .datasetversion import DataSetVersion
-from .model_result import ModelResult
-from .model import Model
-from .result import Result
-from .object_role import ObjectRole
+from .algorithmversion import AlgorithmVersion # noqa
+from .algorithm import Algorithm # noqa
+from .algorithmschema import AlgorithmSchema # noqa
+from .algorithmversion_algorithmschema import AlgorithmVersionAlgorithmSchema # noqa
+from .algorithmversion_result import AlgorithmVersionResult # noqa
+from .datapoint import DataPoint # noqa
+from .dataschema import DataSchema # noqa
+from .dataset import DataSet # noqa
+from .datasetversion_dataschema import DataSetVersionDataSchema # noqa
+from .datasetversion_datapoint import DataSetVersionDataPoint # noqa
+from .datasetversion_result import DataSetVersionResult # noqa
+from .datasetversion import DataSetVersion # noqa
+from .model_result import ModelResult # noqa
+from .model import Model # noqa
+from .result import Result # noqa
+from .object_role import ObjectRole # noqa
 
 
 def clean_db(session):
