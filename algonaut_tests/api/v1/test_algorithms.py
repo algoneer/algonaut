@@ -1,6 +1,11 @@
 from algonaut_tests.helpers import MockApiTest
 from algonaut_tests.fixtures.user import user, auth_client
-from algonaut_tests.fixtures.algorithm import algorithm, algorithmversion
+from algonaut_tests.fixtures.algorithm import (
+    algorithm,
+    algorithmversion,
+    algorithmschema,
+    algorithmversion_algorithmschema,
+)
 
 
 class TestGetAlgorithms(MockApiTest):
@@ -12,6 +17,15 @@ class TestGetAlgorithms(MockApiTest):
         {
             "algorithmversion": lambda test, fixtures: algorithmversion(
                 test, fixtures, "algorithm"
+            )
+        },
+        {"algorithmschema": lambda test, fixtures: algorithmschema(test, fixtures)},
+        {
+            "algorithmversion_algorithmschema": lambda test, fixtures: algorithmversion_algorithmschema(
+                test,
+                fixtures,
+                algoversion="algorithmversion",
+                algoschema="algorithmschema",
             )
         },
     ]

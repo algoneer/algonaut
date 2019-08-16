@@ -59,6 +59,10 @@ ALTER SEQUENCE model_id_seq OWNED BY model.id;
 
 ALTER TABLE ONLY model ALTER COLUMN id SET DEFAULT nextval('model_id_seq'::regclass);
 
+CREATE INDEX ix_model_created_at ON model USING BTREE (created_at);
+CREATE INDEX ix_model_updated_at ON model USING BTREE (updated_at);
+CREATE INDEX ix_model_deleted_at ON model USING BTREE (deleted_at);
+
 -- represents a dataset
 CREATE TABLE dataset (
     id bigint NOT NULL,
@@ -89,6 +93,12 @@ ALTER SEQUENCE dataset_id_seq OWNED BY dataset.id;
 
 ALTER TABLE ONLY dataset ALTER COLUMN id SET DEFAULT nextval('dataset_id_seq'::regclass);
 
+CREATE INDEX ix_dataset_tags ON dataset USING GIN (tags);
+CREATE INDEX ix_dataset_path ON dataset USING BTREE (path);
+CREATE INDEX ix_dataset_created_at ON dataset USING BTREE (created_at);
+CREATE INDEX ix_dataset_updated_at ON dataset USING BTREE (updated_at);
+CREATE INDEX ix_dataset_deleted_at ON dataset USING BTREE (deleted_at);
+
 -- represents a datapoint
 CREATE TABLE datapoint (
     id bigint NOT NULL,
@@ -116,6 +126,10 @@ ALTER SEQUENCE datapoint_id_seq OWNED BY datapoint.id;
 
 ALTER TABLE ONLY datapoint ALTER COLUMN id SET DEFAULT nextval('datapoint_id_seq'::regclass);
 
+CREATE INDEX ix_datapoint_created_at ON datapoint USING BTREE (created_at);
+CREATE INDEX ix_datapoint_updated_at ON datapoint USING BTREE (updated_at);
+CREATE INDEX ix_datapoint_deleted_at ON datapoint USING BTREE (deleted_at);
+
 -- represents a dataset version
 CREATE TABLE datasetversion (
     id bigint NOT NULL,
@@ -123,6 +137,7 @@ CREATE TABLE datasetversion (
     hash BYTEA NOT NULL,
     name CHARACTER VARYING NOT NULL DEFAULT '',
     dataset_id bigint NOT NULL,
+    tags CHARACTER VARYING[],
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     deleted_at timestamp without time zone,
@@ -152,7 +167,12 @@ ALTER TABLE ONLY model
 ALTER TABLE ONLY datasetversion
     ADD CONSTRAINT datasetversion_dataset_id_fkey FOREIGN KEY (dataset_id) REFERENCES dataset(id);
 
-CREATE UNIQUE INDEX ix_datasetversion_hash ON datasetversion USING btree (hash);
+CREATE UNIQUE INDEX ix_datasetversion_hash ON datasetversion USING BTREE (hash);
+CREATE INDEX ix_datasetversion_tags ON datasetversion USING GIN (tags);
+CREATE INDEX ix_datasetversion_name ON datasetversion USING BTREE (name);
+CREATE INDEX ix_datasetversion_created_at ON datasetversion USING BTREE (created_at);
+CREATE INDEX ix_datasetversion_updated_at ON datasetversion USING BTREE (updated_at);
+CREATE INDEX ix_datasetversion_deleted_at ON datasetversion USING BTREE (deleted_at);
 
 -- represents a data schema
 CREATE TABLE dataschema (
@@ -182,7 +202,10 @@ ALTER SEQUENCE dataschema_id_seq OWNED BY dataschema.id;
 
 ALTER TABLE ONLY dataschema ALTER COLUMN id SET DEFAULT nextval('dataschema_id_seq'::regclass);
 
-CREATE UNIQUE INDEX ix_dataschema_hash ON dataschema USING btree (hash);
+CREATE UNIQUE INDEX ix_dataschema_hash ON dataschema USING BTREE (hash);
+CREATE INDEX ix_dataschema_created_at ON dataschema USING BTREE (created_at);
+CREATE INDEX ix_dataschema_updated_at ON dataschema USING BTREE (updated_at);
+CREATE INDEX ix_dataschema_deleted_at ON dataschema USING BTREE (deleted_at);
 
 -- represents an algorithm
 CREATE TABLE algorithm (
@@ -214,10 +237,17 @@ ALTER SEQUENCE algorithm_id_seq OWNED BY algorithm.id;
 
 ALTER TABLE ONLY algorithm ALTER COLUMN id SET DEFAULT nextval('algorithm_id_seq'::regclass);
 
+CREATE INDEX ix_algorithm_tags ON algorithm USING GIN (tags);
+CREATE INDEX ix_algorithm_path ON algorithm USING BTREE (path);
+CREATE INDEX ix_algorithm_created_at ON algorithm USING BTREE (created_at);
+CREATE INDEX ix_algorithm_updated_at ON algorithm USING BTREE (updated_at);
+CREATE INDEX ix_algorithm_deleted_at ON algorithm USING BTREE (deleted_at);
+
 -- represents an algorithm version
 CREATE TABLE algorithmversion (
     id bigint NOT NULL,
     ext_id uuid NOT NULL,
+    tags CHARACTER VARYING[],
     hash BYTEA NOT NULL,
     name CHARACTER VARYING NOT NULL DEFAULT '',
     algorithm_id bigint NOT NULL,
@@ -250,7 +280,12 @@ ALTER SEQUENCE algorithmversion_id_seq OWNED BY algorithmversion.id;
 
 ALTER TABLE ONLY algorithmversion ALTER COLUMN id SET DEFAULT nextval('algorithmversion_id_seq'::regclass);
 
-CREATE UNIQUE INDEX ix_algorithmversion_hash ON algorithmversion USING btree (hash);
+CREATE UNIQUE INDEX ix_algorithmversion_hash ON algorithmversion USING BTREE (hash);
+CREATE INDEX ix_algorithmversion_created_at ON algorithmversion USING BTREE (created_at);
+CREATE INDEX ix_algorithmversion_updated_at ON algorithmversion USING BTREE (updated_at);
+CREATE INDEX ix_algorithmversion_deleted_at ON algorithmversion USING BTREE (deleted_at);
+CREATE INDEX ix_algorithmversion_tags ON algorithmversion USING GIN (tags);
+CREATE INDEX ix_algorithmversion_name ON algorithmversion USING BTREE (name);
 
 -- represents an algorithm schema
 CREATE TABLE algorithmschema (
@@ -281,7 +316,10 @@ ALTER SEQUENCE algorithmschema_id_seq OWNED BY algorithmschema.id;
 
 ALTER TABLE ONLY algorithmschema ALTER COLUMN id SET DEFAULT nextval('algorithmschema_id_seq'::regclass);
 
-CREATE UNIQUE INDEX ix_algorithmschema_hash ON algorithmschema USING btree (hash);
+CREATE UNIQUE INDEX ix_algorithmschema_hash ON algorithmschema USING BTREE (hash);
+CREATE INDEX ix_algorithmschema_created_at ON algorithmschema USING BTREE (created_at);
+CREATE INDEX ix_algorithmschema_updated_at ON algorithmschema USING BTREE (updated_at);
+CREATE INDEX ix_algorithmschema_deleted_at ON algorithmschema USING BTREE (deleted_at);
 
 -- represents a test result
 CREATE TABLE result (
@@ -351,7 +389,10 @@ ALTER TABLE ONLY algorithmversion_result
     ADD CONSTRAINT algorithmversion_result_result_id_fkey FOREIGN KEY (result_id) REFERENCES result(id);
 
 -- an algorithm version can only be mapped to a result once
-CREATE UNIQUE INDEX ix_algorithmversion_result_unique ON algorithmversion_result USING btree (algorithmversion_id, result_id);
+CREATE UNIQUE INDEX ix_algorithmversion_result_unique ON algorithmversion_result USING BTREE (algorithmversion_id, result_id);
+CREATE INDEX ix_algorithmversion_result_created_at ON algorithmversion_result USING BTREE (created_at);
+CREATE INDEX ix_algorithmversion_result_updated_at ON algorithmversion_result USING BTREE (updated_at);
+CREATE INDEX ix_algorithmversion_result_deleted_at ON algorithmversion_result USING BTREE (deleted_at);
 
 -- maps a result to a given dataset version
 CREATE TABLE datasetversion_result (
@@ -389,7 +430,10 @@ ALTER TABLE ONLY datasetversion_result
     ADD CONSTRAINT datasetversion_result_result_id_fkey FOREIGN KEY (result_id) REFERENCES result(id);
 
 -- a dataset version can only be mapped to a result once
-CREATE UNIQUE INDEX ix_datasetversion_result_unique ON datasetversion_result USING btree (datasetversion_id, result_id);
+CREATE UNIQUE INDEX ix_datasetversion_result_unique ON datasetversion_result USING BTREE (datasetversion_id, result_id);
+CREATE INDEX ix_datasetversion_result_created_at ON datasetversion_result USING BTREE (created_at);
+CREATE INDEX ix_datasetversion_result_updated_at ON datasetversion_result USING BTREE (updated_at);
+CREATE INDEX ix_datasetversion_result_deleted_at ON datasetversion_result USING BTREE (deleted_at);
 
 -- maps a result to a given model
 CREATE TABLE model_result (
@@ -427,7 +471,10 @@ ALTER TABLE ONLY model_result
     ADD CONSTRAINT model_result_result_id_fkey FOREIGN KEY (result_id) REFERENCES result(id);
 
 -- a result can only be mapped to a model once
-CREATE UNIQUE INDEX ix_model_result_unique ON model_result USING btree (model_id, result_id);
+CREATE UNIQUE INDEX ix_model_result_unique ON model_result USING BTREE (model_id, result_id);
+CREATE INDEX ix_model_result_created_at ON model_result USING BTREE (created_at);
+CREATE INDEX ix_model_result_updated_at ON model_result USING BTREE (updated_at);
+CREATE INDEX ix_model_result_deleted_at ON model_result USING BTREE (deleted_at);
 
 -- maps a dataset version to a data schema
 CREATE TABLE datasetversion_dataschema (
@@ -465,7 +512,10 @@ ALTER TABLE ONLY datasetversion_dataschema
     ADD CONSTRAINT datasetversion_dataschema_dataschema_id_fkey FOREIGN KEY (dataschema_id) REFERENCES dataschema(id);
 
 -- a dataset schema can only be mapped to a dataset version once
-CREATE UNIQUE INDEX ix_datasetversion_dataschema_unique ON datasetversion_dataschema USING btree (datasetversion_id, dataschema_id);
+CREATE UNIQUE INDEX ix_datasetversion_dataschema_unique ON datasetversion_dataschema USING BTREE (datasetversion_id, dataschema_id);
+CREATE INDEX ix_datasetversion_dataschema_created_at ON datasetversion_dataschema USING BTREE (created_at);
+CREATE INDEX ix_datasetversion_dataschema_updated_at ON datasetversion_dataschema USING BTREE (updated_at);
+CREATE INDEX ix_datasetversion_dataschema_deleted_at ON datasetversion_dataschema USING BTREE (deleted_at);
 
 -- maps an algorithm schema to an algorithm version
 CREATE TABLE algorithmversion_algorithmschema (
@@ -503,7 +553,10 @@ ALTER TABLE ONLY algorithmversion_algorithmschema
     ADD CONSTRAINT algorithmversion_algorithmschema_algorithmschema_id_fkey FOREIGN KEY (algorithmschema_id) REFERENCES algorithmschema(id);
 
 -- an algorithm schema can only be mapped to an algorithm version once
-CREATE UNIQUE INDEX ix_algorithmversion_algorithmschema_unique ON algorithmversion_algorithmschema USING btree (algorithmversion_id, algorithmschema_id);
+CREATE UNIQUE INDEX ix_algorithmversion_algorithmschema_unique ON algorithmversion_algorithmschema USING BTREE (algorithmversion_id, algorithmschema_id);
+CREATE INDEX ix_algorithmversion_algorithmschema_created_at ON algorithmversion_algorithmschema USING BTREE (created_at);
+CREATE INDEX ix_algorithmversion_algorithmschema_updated_at ON algorithmversion_algorithmschema USING BTREE (updated_at);
+CREATE INDEX ix_algorithmversion_algorithmschema_deleted_at ON algorithmversion_algorithmschema USING BTREE (deleted_at);
 
 -- maps a datapoint to a given dataset version
 CREATE TABLE datasetversion_datapoint (
@@ -541,7 +594,10 @@ ALTER TABLE ONLY datasetversion_datapoint
     ADD CONSTRAINT datasetversion_datapoint_datapoint_id_fkey FOREIGN KEY (datapoint_id) REFERENCES datapoint(id);
 
 -- a datapoint can only be mapped to a dataset version once
-CREATE UNIQUE INDEX ix_datasetversion_datapoint_unique ON datasetversion_datapoint USING btree (datasetversion_id, datapoint_id);
+CREATE UNIQUE INDEX ix_datasetversion_datapoint_unique ON datasetversion_datapoint USING BTREE (datasetversion_id, datapoint_id);
+CREATE INDEX ix_datasetversion_datapoint_created_at ON datasetversion_datapoint USING BTREE (created_at);
+CREATE INDEX ix_datasetversion_datapoint_updated_at ON datasetversion_datapoint USING BTREE (updated_at);
+CREATE INDEX ix_datasetversion_datapoint_deleted_at ON datasetversion_datapoint USING BTREE (deleted_at);
 
 -- models for role-based access concept
 
@@ -579,6 +635,9 @@ ALTER TABLE ONLY object_role
     ADD CONSTRAINT object_role_ext_id_key UNIQUE (ext_id);
 
 CREATE UNIQUE INDEX ix_object_role_unique ON object_role (object_id, organization_id, organization_role);
+CREATE INDEX ix_object_role_created_at ON object_role USING BTREE (created_at);
+CREATE INDEX ix_object_role_updated_at ON object_role USING BTREE (updated_at);
+CREATE INDEX ix_object_role_deleted_at ON object_role USING BTREE (deleted_at);
 
 CREATE INDEX
     ix_object_role_object_role
