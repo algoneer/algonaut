@@ -57,6 +57,8 @@ CREATE SEQUENCE model_id_seq
 
 ALTER SEQUENCE model_id_seq OWNED BY model.id;
 
+ALTER TABLE ONLY model ALTER COLUMN id SET DEFAULT nextval('model_id_seq'::regclass);
+
 -- represents a dataset
 CREATE TABLE dataset (
     id bigint NOT NULL,
@@ -64,8 +66,8 @@ CREATE TABLE dataset (
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     deleted_at timestamp without time zone,
-    name CHARACTER VARYING NOT NULL,
-    description CHARACTER VARYING NOT NULL,
+    path CHARACTER VARYING NOT NULL,
+    description CHARACTER VARYING DEFAULT '',
     tags CHARACTER VARYING[],
     data json
 );
@@ -84,6 +86,8 @@ CREATE SEQUENCE dataset_id_seq
     CACHE 1;
 
 ALTER SEQUENCE dataset_id_seq OWNED BY dataset.id;
+
+ALTER TABLE ONLY dataset ALTER COLUMN id SET DEFAULT nextval('dataset_id_seq'::regclass);
 
 -- represents a datapoint
 CREATE TABLE datapoint (
@@ -110,6 +114,8 @@ CREATE SEQUENCE datapoint_id_seq
 
 ALTER SEQUENCE datapoint_id_seq OWNED BY datapoint.id;
 
+ALTER TABLE ONLY datapoint ALTER COLUMN id SET DEFAULT nextval('datapoint_id_seq'::regclass);
+
 -- represents a dataset version
 CREATE TABLE datasetversion (
     id bigint NOT NULL,
@@ -135,6 +141,8 @@ CREATE SEQUENCE datasetversion_id_seq
     CACHE 1;
 
 ALTER SEQUENCE datasetversion_id_seq OWNED BY datasetversion.id;
+
+ALTER TABLE ONLY datasetversion ALTER COLUMN id SET DEFAULT nextval('datasetversion_id_seq'::regclass);
 
 ALTER TABLE ONLY model
     ADD CONSTRAINT model_datasetversion_id_fkey FOREIGN KEY (datasetversion_id) REFERENCES datasetversion(id);
@@ -167,6 +175,8 @@ CREATE SEQUENCE dataschema_id_seq
 
 ALTER SEQUENCE dataschema_id_seq OWNED BY dataschema.id;
 
+ALTER TABLE ONLY dataschema ALTER COLUMN id SET DEFAULT nextval('dataschema_id_seq'::regclass);
+
 -- represents an algorithm
 CREATE TABLE algorithm (
     id bigint NOT NULL,
@@ -174,8 +184,8 @@ CREATE TABLE algorithm (
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     deleted_at timestamp without time zone,
-    name CHARACTER VARYING NOT NULL,
-    description CHARACTER VARYING NOT NULL,
+    path CHARACTER VARYING NOT NULL,
+    description CHARACTER VARYING DEFAULT '',
     tags CHARACTER VARYING[],
     data json
 );
@@ -194,6 +204,8 @@ CREATE SEQUENCE algorithm_id_seq
     CACHE 1;
 
 ALTER SEQUENCE algorithm_id_seq OWNED BY algorithm.id;
+
+ALTER TABLE ONLY algorithm ALTER COLUMN id SET DEFAULT nextval('algorithm_id_seq'::regclass);
 
 -- represents an algorithm version
 CREATE TABLE algorithmversion (
@@ -227,6 +239,8 @@ CREATE SEQUENCE algorithmversion_id_seq
 
 ALTER SEQUENCE algorithmversion_id_seq OWNED BY algorithmversion.id;
 
+ALTER TABLE ONLY algorithmversion ALTER COLUMN id SET DEFAULT nextval('algorithmversion_id_seq'::regclass);
+
 -- represents an algorithm schema
 CREATE TABLE algorithmschema (
     id bigint NOT NULL,
@@ -253,6 +267,8 @@ CREATE SEQUENCE algorithmschema_id_seq
 
 ALTER SEQUENCE algorithmschema_id_seq OWNED BY algorithmschema.id;
 
+ALTER TABLE ONLY algorithmschema ALTER COLUMN id SET DEFAULT nextval('algorithmschema_id_seq'::regclass);
+
 -- represents a test result
 CREATE TABLE result (
     id bigint NOT NULL,
@@ -278,6 +294,8 @@ CREATE SEQUENCE result_id_seq
     CACHE 1;
 
 ALTER SEQUENCE result_id_seq OWNED BY result.id;
+
+ALTER TABLE ONLY result ALTER COLUMN id SET DEFAULT nextval('result_id_seq'::regclass);
 
 /*
 Association tables
@@ -309,6 +327,8 @@ CREATE SEQUENCE algorithmversion_result_id_seq
     CACHE 1;
 
 ALTER SEQUENCE algorithmversion_result_id_seq OWNED BY algorithmversion_result.id;
+
+ALTER TABLE ONLY algorithmversion_result ALTER COLUMN id SET DEFAULT nextval('algorithmversion_result_id_seq'::regclass);
 
 ALTER TABLE ONLY algorithmversion_result
     ADD CONSTRAINT algorithmversion_result_algorithmversion_id_fkey FOREIGN KEY (algorithmversion_id) REFERENCES algorithmversion(id);
@@ -346,6 +366,8 @@ CREATE SEQUENCE datasetversion_result_id_seq
 
 ALTER SEQUENCE datasetversion_result_id_seq OWNED BY datasetversion_result.id;
 
+ALTER TABLE ONLY datasetversion_result ALTER COLUMN id SET DEFAULT nextval('datasetversion_result_id_seq'::regclass);
+
 ALTER TABLE ONLY datasetversion_result
     ADD CONSTRAINT datasetversion_result_datasetversion_id_fkey FOREIGN KEY (datasetversion_id) REFERENCES datasetversion(id);
 
@@ -381,6 +403,8 @@ CREATE SEQUENCE model_result_id_seq
     CACHE 1;
 
 ALTER SEQUENCE model_result_id_seq OWNED BY model_result.id;
+
+ALTER TABLE ONLY model_result ALTER COLUMN id SET DEFAULT nextval('model_result_id_seq'::regclass);
 
 ALTER TABLE ONLY model_result
     ADD CONSTRAINT model_result_model_id_fkey FOREIGN KEY (model_id) REFERENCES model(id);
@@ -418,6 +442,8 @@ CREATE SEQUENCE datasetversion_dataschema_id_seq
 
 ALTER SEQUENCE datasetversion_dataschema_id_seq OWNED BY datasetversion_dataschema.id;
 
+ALTER TABLE ONLY datasetversion_dataschema ALTER COLUMN id SET DEFAULT nextval('datasetversion_dataschema_id_seq'::regclass);
+
 ALTER TABLE ONLY datasetversion_dataschema
     ADD CONSTRAINT datasetversion_dataschema_datasetversion_id_fkey FOREIGN KEY (datasetversion_id) REFERENCES datasetversion(id);
 
@@ -454,6 +480,8 @@ CREATE SEQUENCE algorithmversion_algorithmschema_id_seq
 
 ALTER SEQUENCE algorithmversion_algorithmschema_id_seq OWNED BY algorithmversion_algorithmschema.id;
 
+ALTER TABLE ONLY algorithmversion_algorithmschema ALTER COLUMN id SET DEFAULT nextval('algorithmversion_algorithmschema_id_seq'::regclass);
+
 ALTER TABLE ONLY algorithmversion_algorithmschema
     ADD CONSTRAINT algorithmversion_algorithmschema_algorithmversion_id_fkey FOREIGN KEY (algorithmversion_id) REFERENCES algorithmversion(id);
 
@@ -489,6 +517,8 @@ CREATE SEQUENCE datasetversion_datapoint_id_seq
     CACHE 1;
 
 ALTER SEQUENCE datasetversion_datapoint_id_seq OWNED BY datasetversion_datapoint.id;
+
+ALTER TABLE ONLY datasetversion_datapoint ALTER COLUMN id SET DEFAULT nextval('datasetversion_datapoint_id_seq'::regclass);
 
 ALTER TABLE ONLY datasetversion_datapoint
     ADD CONSTRAINT datasetversion_datapoint_datasetversion_id_fkey FOREIGN KEY (datasetversion_id) REFERENCES datasetversion(id);
@@ -528,6 +558,8 @@ CREATE SEQUENCE object_role_id_seq
     CACHE 1;
 
 ALTER SEQUENCE object_role_id_seq OWNED BY object_role.id;
+
+ALTER TABLE ONLY object_role ALTER COLUMN id SET DEFAULT nextval('object_role_id_seq'::regclass);
 
 ALTER TABLE ONLY object_role
     ADD CONSTRAINT object_role_ext_id_key UNIQUE (ext_id);
