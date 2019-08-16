@@ -25,5 +25,5 @@ class Model(Base):
         backref=backref("models", cascade="all,delete,delete-orphan"),
     )
     datasetversion = relationship(
-        "DataSetVersion", backref=backref("models", cascade="all,delete,delete-orphan")
+        "DatasetVersion", backref=backref("models", cascade="all,delete,delete-orphan")
     )

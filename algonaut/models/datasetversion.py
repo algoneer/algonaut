@@ -6,7 +6,7 @@ from sqlalchemy.dialects.postgresql import BYTEA
 from sqlalchemy.dialects.postgresql import ARRAY
 
 
-class DataSetVersion(Base):
+class DatasetVersion(Base):
 
     __tablename__ = "datasetversion"
 
@@ -17,6 +17,6 @@ class DataSetVersion(Base):
     dataset_id = Column(PkType, ForeignKey("dataset.id"), nullable=False)
     hash = Column(BYTEA, nullable=False)
     dataset = relationship(
-        "DataSet", backref=backref("versions", cascade="all,delete,delete-orphan")
+        "Dataset", backref=backref("versions", cascade="all,delete,delete-orphan")
     )
     tags = Column(ARRAY(Unicode, dimensions=1))

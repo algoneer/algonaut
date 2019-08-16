@@ -1,7 +1,7 @@
 from .base import Base
 
 
-class DataPoint(Base):
+class Datapoint(Base):
 
     __tablename__ = "datapoint"
 

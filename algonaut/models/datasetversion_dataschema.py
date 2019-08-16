@@ -4,7 +4,7 @@ from sqlalchemy import Column, ForeignKey
 from sqlalchemy.orm import relationship, backref
 
 
-class DataSetVersionDataSchema(Base):
+class DatasetVersionDataSchema(Base):
 
     __tablename__ = "datasetversion_dataschema"
 
@@ -16,7 +16,7 @@ class DataSetVersionDataSchema(Base):
     dataschema_id = Column(PkType, ForeignKey("dataschema.id"), nullable=False)
 
     datasetversion = relationship(
-        "DataSetVersion",
+        "DatasetVersion",
         backref=backref("dataschemas", cascade="all,delete,delete-orphan"),
     )
     dataschema = relationship(

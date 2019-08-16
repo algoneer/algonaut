@@ -4,7 +4,7 @@ from sqlalchemy import Column, Unicode
 from sqlalchemy.dialects.postgresql import ARRAY
 
 
-class DataSet(Base):
+class Dataset(Base):
 
     __tablename__ = "dataset"
 
