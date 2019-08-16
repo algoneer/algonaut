@@ -41,3 +41,15 @@ class Base(DeclarativeBase):  # type: ignore
         if self.data is None:
             return None
         return self.data.get(key)
+
+    @property
+    def type(self):
+        return self.__class__.__name__.lower()
+
+    def export(self):
+        return {
+            "created_at": self.created_at,
+            "updated_at": self.updated_at,
+            "deleted_at": self.deleted_at,
+            "data": self.data,
+        }

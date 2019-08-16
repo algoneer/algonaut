@@ -1,4 +1,4 @@
-from ..access_token import AccessToken as BaseAccessToken
+from .. import AccessToken as BaseAccessToken
 
 from typing import Dict, Any
 

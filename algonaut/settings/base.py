@@ -1,6 +1,6 @@
 from algonaut.utils.settings import Settings as BaseSettings, load_settings
-import algonaut.utils.worf as worf
-from algonaut.utils.auth_client import AuthClient
+import algonaut.utils.auth.worf as worf
+from algonaut.utils.auth import AuthClient
 import os
 
 from typing import List, Optional

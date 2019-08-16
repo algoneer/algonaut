@@ -5,13 +5,17 @@ from algonaut.models import (
     AlgorithmSchema,
     AlgorithmVersionAlgorithmSchema,
 )
-from ..auth_client import PlainAuthClient, PlainUser, PlainAccessToken
+from ..auth import PlainAuthClient, PlainUser, PlainAccessToken
 from ..helpers import DatabaseTest
 
-from typing import Any, Dict
+from typing import Any, Dict, Type
+import unittest
 
 
-def algorithm(test: DatabaseTest, fixtures: Dict[str, Any], path: str) -> Any:
+def algorithm(
+    test: Type[unittest.TestCase], fixtures: Dict[str, Any], path: str
+) -> Any:
+    assert issubclass(test, DatabaseTest)
     algorithm = Algorithm(path=path)
     test.session.add(algorithm)
     test.session.commit()
@@ -19,8 +23,9 @@ def algorithm(test: DatabaseTest, fixtures: Dict[str, Any], path: str) -> Any:
 
 
 def algorithmversion(
-    test: DatabaseTest, fixtures: Dict[str, Any], algo: str = "algorithm"
+    test: Type[unittest.TestCase], fixtures: Dict[str, Any], algo: str = "algorithm"
 ) -> Any:
+    assert issubclass(test, DatabaseTest)
     algorithm = fixtures[algo]
     algorithmversion = AlgorithmVersion(algorithm=algorithm, hash=b"foo")
     test.session.add(algorithmversion)
@@ -28,7 +33,8 @@ def algorithmversion(
     return algorithmversion
 
 
-def algorithmschema(test: DatabaseTest, fixtures: Dict[str, Any]) -> Any:
+def algorithmschema(test: Type[unittest.TestCase], fixtures: Dict[str, Any]) -> Any:
+    assert issubclass(test, DatabaseTest)
     algorithmschema = AlgorithmSchema(hash=b"foo")
     test.session.add(algorithmschema)
     test.session.commit()
@@ -36,11 +42,12 @@ def algorithmschema(test: DatabaseTest, fixtures: Dict[str, Any]) -> Any:
 
 
 def algorithmversion_algorithmschema(
-    test: DatabaseTest,
+    test: Type[unittest.TestCase],
     fixtures: Dict[str, Any],
     algoschema: str = "algorithmschema",
     algoversion: str = "algorithmversion",
 ) -> Any:
+    assert issubclass(test, DatabaseTest)
     algorithmschema = fixtures[algoschema]
     algorithmversion = fixtures[algoversion]
     algorithmversion_algorithmschema = AlgorithmVersionAlgorithmSchema(

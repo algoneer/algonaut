@@ -4,7 +4,7 @@ from .user import User
 from .access_token import AccessToken
 import flask
 
-from ..auth_client import AuthClient as BaseAuthClient, get_access_token
+from .. import AuthClient as BaseAuthClient, get_access_token
 
 from typing import Callable, Optional
 

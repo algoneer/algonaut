@@ -18,12 +18,16 @@ from algonaut.settings import settings as settings
 from algonaut.api.app import get_app
 from algonaut.cli.db import _migrate_db, _clean_db
 
-from typing import List, Callable, Dict, Any
+from typing import List, Callable, Dict, Any, Type
 
 
 class DatabaseTest(unittest.TestCase):
 
-    fixtures: List[Callable[[unittest.TestCase, Dict[str, Any]], Any]] = []
+    fixtures: List[
+        Dict[str, Callable[[Type[unittest.TestCase], Dict[str, Any]], Any]]
+    ] = []
+    session: Any
+    engine: Any
 
     @classmethod
     def setup(cls):
@@ -117,8 +121,6 @@ class ApiTest(DatabaseTest):
     host = "localhost"
     port = 5557
     protocol = "http"
-
-    fixtures: List[Callable[[unittest.TestCase, Dict[str, Any]], Any]] = []
 
     settings = None
     app = None

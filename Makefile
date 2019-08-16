@@ -16,6 +16,7 @@ format:
 
 mypy:
 	mypy algonaut/
+	mypy algonaut_tests/
 
 update:
 	pip3 install pur

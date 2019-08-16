@@ -16,6 +16,7 @@ from .model_result import ModelResult  # noqa
 from .model import Model  # noqa
 from .result import Result  # noqa
 from .object_role import ObjectRole  # noqa
+from .base import Base  # noqa
 
 
 def clean_db(session):

@@ -1,5 +1,10 @@
-from ..user import User as BaseUser
+from .. import User as BaseUser, OrganizationRoles as BaseOrganizationRoles
 from .access_token import AccessToken
+
+
+class OrganizationRoles(BaseOrganizationRoles):
+    def __init__(self):
+        pass
 
 
 class User(BaseUser):
@@ -12,5 +17,5 @@ class User(BaseUser):
         return self._access_token
 
     @property
-    def roles(self):
+    def roles(self) -> BaseOrganizationRoles:
         return self.d.get("roles", [])

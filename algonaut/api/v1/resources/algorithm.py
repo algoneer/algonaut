@@ -1,5 +1,5 @@
 from ...resource import Resource
-from algonaut.models import ObjectRole
+from algonaut.models import ObjectRole, Algorithm
 from algonaut.settings import settings
 from flask import request
 from ...decorators import authorized
@@ -13,5 +13,12 @@ class Algorithms(Resource):
         allowed to see.
         """
         with settings.session() as session:
-            visible_objs = ObjectRole.select_for(session, request.user, "algorithm", [])
-            return {}, 200
+            visible_algos = ObjectRole.select_for(session, request.user, "algorithm")
+            algorithms = (
+                session.query(Algorithm)
+                .filter(
+                    Algorithm.ext_id.in_(visible_algos), Algorithm.deleted_at == None
+                )
+                .all()
+            )
+            return [algorithm.export() for algorithm in algorithms], 200
