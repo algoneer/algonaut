@@ -166,9 +166,9 @@ class MigrationManager(object):
                 )
                 if in_transaction:
                     with self.connection.begin():
-                        result = self.connection.execute(text(migration["script"]))
+                        self.connection.execute(text(migration["script"]))
                 else:
-                    result = self.connection.execute(text(migration["script"]))
+                    self.connection.execute(text(migration["script"]))
             except ProgrammingError as pe:
                 logger.error(
                     "An error occurred when executing migration {}, aborting...".format(

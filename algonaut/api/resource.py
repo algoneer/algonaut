@@ -110,7 +110,6 @@ class Resource(View):
         )
         request.anon_ip = ".".join(request.originating_ip.split(".")[:-1] + ["0"])
 
-        _do_profile = 1
         start = time.time()
         if method.lower() == "options":
             response = make_response("")
@@ -129,11 +128,11 @@ class Resource(View):
                 else:
                     response = handler_response
                     status_code = response.status_code
-            except TypeError as e:
+            except TypeError:
                 response = self.make_response({"message": "An unknown error occured"})
                 logger.error(traceback.format_exc())
                 status_code = 403
-            except BaseException as e:
+            except BaseException:
                 response = self.make_response({"message": "Internal server error"})
                 logger.error(traceback.format_exc())
                 status_code = 500

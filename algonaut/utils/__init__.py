@@ -1,1 +1,1 @@
-from .regex import RegexConverter
+from .regex import RegexConverter  # noqa

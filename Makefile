@@ -1,7 +1,14 @@
 SETTINGS := postgres
 ALGONAUT_SETTINGS_D := settings:algonaut_tests/settings/$(SETTINGS)
 
-all: format mypy test
+all: format flake mypy test
+
+lint:
+	pylint -E algonaut
+
+flake:
+	autoflake --remove-all-unused-imports -i algonaut/**/*.py
+	autoflake --remove-unused-variables -i algonaut/**/*.py
 
 format:
 	black algonaut/
