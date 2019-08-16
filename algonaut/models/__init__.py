@@ -4,7 +4,7 @@ def clean_db(session):
 
 # we import all relevant models
 
-from .algorithm_version import AlgorithmVersion
+from .algorithmversion import AlgorithmVersion
 from .algorithm import Algorithm
 from .algorithmschema import AlgorithmSchema
 from .algorithmversion_algorithmschema import AlgorithmVersionAlgorithmSchema

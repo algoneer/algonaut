@@ -12,12 +12,8 @@ class DataSetVersionDataPoint(Base):
     Describes a data set version mapped to a data point.
     """
 
-    datasetversion_id = Column(
-        PkType, ForeignKey("datasetversion.id"), index=True, nullable=False
-    )
-    datapoint_id = Column(
-        PkType, ForeignKey("datapoint.id"), index=True, nullable=False
-    )
+    datasetversion_id = Column(PkType, ForeignKey("datasetversion.id"), nullable=False)
+    datapoint_id = Column(PkType, ForeignKey("datapoint.id"), nullable=False)
 
     datasetversion = relationship(
         "DataSetVersion",

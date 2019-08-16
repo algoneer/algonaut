@@ -12,8 +12,8 @@ class ModelResult(Base):
     Describes a model result.
     """
 
-    model_id = Column(PkType, ForeignKey("model.id"), index=True, nullable=False)
-    result_id = Column(PkType, ForeignKey("result.id"), index=True, nullable=False)
+    model_id = Column(PkType, ForeignKey("model.id"), nullable=False)
+    result_id = Column(PkType, ForeignKey("result.id"), nullable=False)
 
     model = relationship(
         "Model", backref=backref("results", cascade="all,delete,delete-orphan")

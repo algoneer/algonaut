@@ -13,11 +13,9 @@ class Model(Base):
     """
 
     algorithmversion_id = Column(
-        PkType, ForeignKey("algorithmversion.id"), index=True, nullable=False
+        PkType, ForeignKey("algorithmversion.id"), nullable=False
     )
-    datasetversion_id = Column(
-        PkType, ForeignKey("datasetversion.id"), index=True, nullable=False
-    )
+    datasetversion_id = Column(PkType, ForeignKey("datasetversion.id"), nullable=False)
 
     algorithmversion = relationship(
         "AlgorithmVersion",

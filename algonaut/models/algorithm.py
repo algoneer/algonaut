@@ -11,7 +11,6 @@ class Algorithm(Base):
     """
     Describes an algorithm.
     """
-
-    path = Column(Unicode, index=True, nullable=False)
-    description = Column(Unicode, index=True, nullable=False)
+    path = Column(Unicode, nullable=False)
+    description = Column(Unicode, nullable=False, default="")
     tags = Column(ARRAY(Unicode, dimensions=1))

@@ -67,7 +67,7 @@ CREATE TABLE dataset (
     updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     deleted_at timestamp without time zone,
     path CHARACTER VARYING NOT NULL,
-    description CHARACTER VARYING DEFAULT '',
+    description CHARACTER VARYING NOT NULL DEFAULT '',
     tags CHARACTER VARYING[],
     data json
 );
@@ -120,6 +120,8 @@ ALTER TABLE ONLY datapoint ALTER COLUMN id SET DEFAULT nextval('datapoint_id_seq
 CREATE TABLE datasetversion (
     id bigint NOT NULL,
     ext_id uuid NOT NULL,
+    hash BYTEA NOT NULL,
+    name CHARACTER VARYING NOT NULL DEFAULT '',
     dataset_id bigint NOT NULL,
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
@@ -185,7 +187,7 @@ CREATE TABLE algorithm (
     updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     deleted_at timestamp without time zone,
     path CHARACTER VARYING NOT NULL,
-    description CHARACTER VARYING DEFAULT '',
+    description CHARACTER VARYING NOT NULL DEFAULT '',
     tags CHARACTER VARYING[],
     data json
 );
@@ -211,6 +213,8 @@ ALTER TABLE ONLY algorithm ALTER COLUMN id SET DEFAULT nextval('algorithm_id_seq
 CREATE TABLE algorithmversion (
     id bigint NOT NULL,
     ext_id uuid NOT NULL,
+    hash BYTEA NOT NULL,
+    name CHARACTER VARYING NOT NULL DEFAULT '',
     algorithm_id bigint NOT NULL,
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
@@ -536,9 +540,9 @@ CREATE TYPE obj_role AS ENUM ('superuser', 'admin', 'developer', 'viewer', 'audi
 -- object roles for organizations
 CREATE TABLE object_role (
     id bigint NOT NULL,
-    ext_id BYTEA NOT NULL,
-    object_id BYTEA NOT NULL,
-    organization_id BYTEA NOT NULL,
+    ext_id uuid NOT NULL,
+    object_id uuid NOT NULL,
+    organization_id uuid NOT NULL,
     organization_role CHARACTER VARYING NOT NULL, --the role in the organization
     object_type CHARACTER VARYING NOT NULL,
     object_role obj_role NOT NULL,

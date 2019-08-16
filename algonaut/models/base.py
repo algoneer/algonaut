@@ -29,7 +29,7 @@ class Base(DeclarativeBase):  # type: ignore
         DateTime, server_onupdate=func.current_timestamp(), server_default=func.now()
     )
     deleted_at = Column(DateTime)
-    data = Column(JSONType, index=False, nullable=True)
+    data = Column(JSONType, nullable=True)
 
     def set_data(self, key, value):
         if self.data is None:

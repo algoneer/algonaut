@@ -12,12 +12,8 @@ class DataSetVersionDataSchema(Base):
     Describes a data set version mapped to a data schema.
     """
 
-    datasetversion_id = Column(
-        PkType, ForeignKey("datasetversion.id"), index=True, nullable=False
-    )
-    dataschema_id = Column(
-        PkType, ForeignKey("dataschema.id"), index=True, nullable=False
-    )
+    datasetversion_id = Column(PkType, ForeignKey("datasetversion.id"), nullable=False)
+    dataschema_id = Column(PkType, ForeignKey("dataschema.id"), nullable=False)
 
     datasetversion = relationship(
         "DataSetVersion",

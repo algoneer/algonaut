@@ -1,5 +1,5 @@
 from algonaut.settings import settings
-from algonaut.models import Algorithm
+from algonaut.models import Algorithm, AlgorithmVersion
 from ..auth_client import PlainAuthClient, PlainUser, PlainAccessToken
 from ..helpers import DatabaseTest
 
@@ -10,3 +10,10 @@ def algorithm(test : DatabaseTest, fixtures : Dict[str, Any], path: str) -> Any:
     test.session.add(algorithm)
     test.session.commit()
     return algorithm
+
+def algorithmversion(test : DatabaseTest, fixtures : Dict[str, Any], algo: str = "algorithm") -> Any:
+    algorithm = fixtures[algo]
+    algorithmversion = AlgorithmVersion(algorithm=algorithm, hash=b"foo")
+    test.session.add(algorithmversion)
+    test.session.commit()
+    return algorithmversion

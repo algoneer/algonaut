@@ -12,10 +12,8 @@ class DataSetVersionResult(Base):
     Describes a data set version mapped to a result.
     """
 
-    datasetversion_id = Column(
-        PkType, ForeignKey("datasetversion.id"), index=True, nullable=False
-    )
-    result_id = Column(PkType, ForeignKey("result.id"), index=True, nullable=False)
+    datasetversion_id = Column(PkType, ForeignKey("datasetversion.id"), nullable=False)
+    result_id = Column(PkType, ForeignKey("result.id"), nullable=False)
 
     datasetversion = relationship(
         "DataSetVersion", backref=backref("results", cascade="all,delete,delete-orphan")

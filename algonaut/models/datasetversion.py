@@ -12,7 +12,7 @@ class DataSetVersion(Base):
     Describes a data set version.
     """
 
-    dataset_id = Column(PkType, ForeignKey("dataset.id"), index=True, nullable=False)
+    dataset_id = Column(PkType, ForeignKey("dataset.id"), nullable=False)
     dataset = relationship(
         "DataSet", backref=backref("versions", cascade="all,delete,delete-orphan")
     )

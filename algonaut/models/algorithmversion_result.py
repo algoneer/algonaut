@@ -13,9 +13,9 @@ class AlgorithmVersionResult(Base):
     """
 
     algorithmversion_id = Column(
-        PkType, ForeignKey("algorithmversion.id"), index=True, nullable=False
+        PkType, ForeignKey("algorithmversion.id"), nullable=False
     )
-    result_id = Column(PkType, ForeignKey("result.id"), index=True, nullable=False)
+    result_id = Column(PkType, ForeignKey("result.id"), nullable=False)
 
     algorithmversion = relationship(
         "AlgorithmVersion",

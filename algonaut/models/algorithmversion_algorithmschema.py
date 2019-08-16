@@ -13,10 +13,10 @@ class AlgorithmVersionAlgorithmSchema(Base):
     """
 
     algorithmversion_id = Column(
-        PkType, ForeignKey("algorithmversion.id"), index=True, nullable=False
+        PkType, ForeignKey("algorithmversion.id"), nullable=False
     )
     algorithmschema_id = Column(
-        PkType, ForeignKey("algorithmschema.id"), index=True, nullable=False
+        PkType, ForeignKey("algorithmschema.id"), nullable=False
     )
 
     algorithmversion = relationship(

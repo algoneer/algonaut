@@ -14,11 +14,11 @@ class ObjectRole(Base):
     Describes a model.
     """
 
-    organization_id = Column(ExtPkType, index=True, nullable=False)
-    object_id = Column(ExtPkType, index=True, nullable=False)
-    object_type = Column(Unicode, index=True)
-    organization_role = Column(Unicode, index=True)
-    object_role = Column(Unicode, index=True)
+    organization_id = Column(ExtPkType, nullable=False)
+    object_id = Column(ExtPkType, nullable=False)
+    object_type = Column(Unicode)
+    organization_role = Column(Unicode)
+    object_role = Column(Unicode)
 
     @classmethod
     def select_for(
