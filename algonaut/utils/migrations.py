@@ -2,7 +2,6 @@ import re
 import os
 import yaml
 import logging
-import traceback
 
 from collections import defaultdict
 from sqlalchemy import text

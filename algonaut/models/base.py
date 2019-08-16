@@ -1,6 +1,6 @@
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy_utils import UUIDType, JSONType
-from sqlalchemy import Column, DateTime, Unicode, BigInteger, Integer
+from sqlalchemy import BigInteger, Column, DateTime
 from sqlalchemy.sql import func
 from sqlalchemy.dialects import sqlite, postgresql
 from sqlalchemy.orm.attributes import flag_modified

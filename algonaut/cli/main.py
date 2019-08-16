@@ -2,8 +2,6 @@ from algonaut.settings import settings
 from algonaut.cli import commands
 
 import click
-import os
-import logging
 
 
 @click.group()

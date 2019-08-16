@@ -1,6 +1,6 @@
-from .base import Base, PkType, ExtPkType
+from .base import Base
 
-from sqlalchemy import Column, DateTime, Unicode, BigInteger, Integer
+from sqlalchemy import Column, Unicode
 from sqlalchemy.dialects.postgresql import ARRAY
 
 

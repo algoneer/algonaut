@@ -1,5 +1,3 @@
-from flask import request
-
 from werkzeug.routing import BaseConverter
 
 

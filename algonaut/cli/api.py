@@ -4,15 +4,12 @@ from algonaut.settings import settings
 from algonaut.api.app import get_app
 from urllib.parse import urlparse
 
-import flask
-
 
 @click.group("api")
 def api():
     """
     API-related functionality.
     """
-    pass
 
 
 @api.command("run")

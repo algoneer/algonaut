@@ -1,6 +1,6 @@
-from .base import Base, PkType, ExtPkType
+from .base import Base, PkType
 
-from sqlalchemy import Column, DateTime, Unicode, BigInteger, Integer, ForeignKey
+from sqlalchemy import Column, ForeignKey
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.dialects.postgresql import BYTEA
 

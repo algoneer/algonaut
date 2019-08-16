@@ -12,7 +12,6 @@ def worker():
     """
     Worker-related functionality.
     """
-    pass
 
 
 @worker.command("run")

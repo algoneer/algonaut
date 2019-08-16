@@ -3,7 +3,6 @@ import importlib
 import logging
 import yaml
 import json
-import sys
 import os
 
 from sqlalchemy.orm.scoping import scoped_session

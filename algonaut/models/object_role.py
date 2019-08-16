@@ -1,6 +1,6 @@
-from .base import Base, PkType, ExtPkType
+from .base import Base, ExtPkType
 
-from sqlalchemy import Column, DateTime, Unicode, BigInteger, Integer
+from sqlalchemy import Column, Unicode
 from algonaut.utils.worf.user import User
 from typing import Iterable, Any
 import sqlalchemy

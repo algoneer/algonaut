@@ -15,7 +15,6 @@ def db():
     """
     Database-related functionality.
     """
-    pass
 
 
 @db.command("migrate")

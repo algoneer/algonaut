@@ -1,6 +1,4 @@
-from .base import Base, PkType, ExtPkType
-
-from sqlalchemy import Column, DateTime, Unicode, BigInteger, Integer
+from .base import Base
 
 
 class DataPoint(Base):
