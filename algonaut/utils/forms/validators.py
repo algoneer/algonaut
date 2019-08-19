@@ -1,6 +1,7 @@
 import re
 import uuid
 import json
+import base64
 from algonaut.settings import settings as settings
 
 
@@ -37,6 +38,31 @@ class Optional:
             return [], self.default, not self.validate_default
 
 
+class List:
+    def __init__(self, validators=None):
+        if validators is None:
+            validators = []
+        self.validators = validators
+
+    def __call__(self, name, value, form):
+        if not isinstance(value, (list, tuple)):
+            return [form.t("form.not-a-list")], None, True
+        if not self.validators:
+            return [], value, False
+        l = []
+        for elem in value:
+            for validator in self.validators:
+                result = validator(name, elem, form)
+                if result is None:
+                    errors, stop = [], False
+                else:
+                    errors, elem, stop = result
+                if errors:
+                    return errors, elem, stop
+            l.append(elem)
+        return l
+
+
 class Required:
     def __call__(self, name, value, form):
         if value is None:
@@ -68,6 +94,18 @@ class Length:
                 [form.t("form.invalid-length", min=self.min, max=self.max)],
                 None,
                 True,
+            )
+
+
+class Binary:
+    def __call__(self, name, value, form):
+        try:
+            return [], base64.b64decode(value), False
+        except:
+            return (
+                [form.t("form.invalid-encoding")],
+                None,
+                True,  # continue validation
             )
 
 
