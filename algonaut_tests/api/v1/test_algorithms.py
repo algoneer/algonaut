@@ -47,7 +47,7 @@ class TestGetAlgorithms(MockApiTest):
         },
     ]
 
-    def test_get(self):
+    def test_get_list(self):
         result = self.app.get(
             "/v1/algorithms", headers={"Authorization": "bearer test"}
         )
@@ -59,3 +59,19 @@ class TestGetAlgorithms(MockApiTest):
         assert len(l) == 1
         algorithm = l[0]
         assert algorithm["path"] == "example"
+
+    def test_valid_get_details(self):
+        result = self.app.get(
+            "/v1/algorithms/{}".format(self.algorithm.ext_id),
+            headers={"Authorization": "bearer test"},
+        )
+        assert result.status_code == 200
+        algorithm = result.json
+        assert isinstance(algorithm, dict)
+
+    def test_invalid_get_details(self):
+        result = self.app.get(
+            "/v1/algorithms/{}".format(self.another_algorithm.ext_id),
+            headers={"Authorization": "bearer test"},
+        )
+        assert result.status_code == 404

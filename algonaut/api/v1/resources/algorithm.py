@@ -2,7 +2,7 @@ from ...resource import Resource
 from algonaut.models import ObjectRole, Algorithm
 from algonaut.settings import settings
 from flask import request
-from ...decorators import authorized
+from ...decorators import authorized, valid_object
 
 
 class Algorithms(Resource):
@@ -22,3 +22,10 @@ class Algorithms(Resource):
                 .all()
             )
             return {"data": [algorithm.export() for algorithm in algorithms]}, 200
+
+
+class AlgorithmDetails(Resource):
+    @authorized
+    @valid_object(Algorithm, roles=["admin", "view"])
+    def get(self, object_id):
+        return request.algorithm.export(), 200

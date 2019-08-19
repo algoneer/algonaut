@@ -69,6 +69,21 @@ class ObjectRole(Base):
         return obj_role
 
     @classmethod
+    def roles_for(
+        cls, session: "sqlalchemy.orm.session.Session", user: User, object: Base
+    ):
+        return (
+            session.query(ObjectRole)
+            .filter(
+                ObjectRole.organization_id == user.roles.organization.id,
+                ObjectRole.organization_role.in_(user.roles.roles),
+                ObjectRole.object_id == object.ext_id,
+                ObjectRole.object_type == object.type,
+            )
+            .all()
+        )
+
+    @classmethod
     def select_for(
         cls,
         session: "sqlalchemy.orm.session.Session",
