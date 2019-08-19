@@ -60,7 +60,7 @@ ALTER SEQUENCE model_id_seq OWNED BY model.id;
 
 ALTER TABLE ONLY model ALTER COLUMN id SET DEFAULT nextval('model_id_seq'::regclass);
 
-CREATE UNIQUE INDEX ix_model_hash ON model USING BTREE (hash);
+CREATE INDEX ix_model_hash ON model USING BTREE (hash);
 CREATE INDEX ix_model_created_at ON model USING BTREE (created_at);
 CREATE INDEX ix_model_updated_at ON model USING BTREE (updated_at);
 CREATE INDEX ix_model_deleted_at ON model USING BTREE (deleted_at);
@@ -170,7 +170,7 @@ ALTER TABLE ONLY model
 ALTER TABLE ONLY datasetversion
     ADD CONSTRAINT datasetversion_dataset_id_fkey FOREIGN KEY (dataset_id) REFERENCES dataset(id);
 
-CREATE UNIQUE INDEX ix_datasetversion_hash ON datasetversion USING BTREE (hash);
+CREATE INDEX ix_datasetversion_hash ON datasetversion USING BTREE (hash);
 CREATE INDEX ix_datasetversion_tags ON datasetversion USING GIN (tags);
 CREATE INDEX ix_datasetversion_name ON datasetversion USING BTREE (name);
 CREATE INDEX ix_datasetversion_created_at ON datasetversion USING BTREE (created_at);
@@ -205,7 +205,7 @@ ALTER SEQUENCE dataschema_id_seq OWNED BY dataschema.id;
 
 ALTER TABLE ONLY dataschema ALTER COLUMN id SET DEFAULT nextval('dataschema_id_seq'::regclass);
 
-CREATE UNIQUE INDEX ix_dataschema_hash ON dataschema USING BTREE (hash);
+CREATE INDEX ix_dataschema_hash ON dataschema USING BTREE (hash);
 CREATE INDEX ix_dataschema_created_at ON dataschema USING BTREE (created_at);
 CREATE INDEX ix_dataschema_updated_at ON dataschema USING BTREE (updated_at);
 CREATE INDEX ix_dataschema_deleted_at ON dataschema USING BTREE (deleted_at);
@@ -283,7 +283,7 @@ ALTER SEQUENCE algorithmversion_id_seq OWNED BY algorithmversion.id;
 
 ALTER TABLE ONLY algorithmversion ALTER COLUMN id SET DEFAULT nextval('algorithmversion_id_seq'::regclass);
 
-CREATE UNIQUE INDEX ix_algorithmversion_hash ON algorithmversion USING BTREE (hash);
+CREATE INDEX ix_algorithmversion_hash ON algorithmversion USING BTREE (hash);
 CREATE INDEX ix_algorithmversion_created_at ON algorithmversion USING BTREE (created_at);
 CREATE INDEX ix_algorithmversion_updated_at ON algorithmversion USING BTREE (updated_at);
 CREATE INDEX ix_algorithmversion_deleted_at ON algorithmversion USING BTREE (deleted_at);
@@ -319,7 +319,7 @@ ALTER SEQUENCE algorithmschema_id_seq OWNED BY algorithmschema.id;
 
 ALTER TABLE ONLY algorithmschema ALTER COLUMN id SET DEFAULT nextval('algorithmschema_id_seq'::regclass);
 
-CREATE UNIQUE INDEX ix_algorithmschema_hash ON algorithmschema USING BTREE (hash);
+CREATE INDEX ix_algorithmschema_hash ON algorithmschema USING BTREE (hash);
 CREATE INDEX ix_algorithmschema_created_at ON algorithmschema USING BTREE (created_at);
 CREATE INDEX ix_algorithmschema_updated_at ON algorithmschema USING BTREE (updated_at);
 CREATE INDEX ix_algorithmschema_deleted_at ON algorithmschema USING BTREE (deleted_at);
@@ -354,7 +354,7 @@ ALTER SEQUENCE result_id_seq OWNED BY result.id;
 
 ALTER TABLE ONLY result ALTER COLUMN id SET DEFAULT nextval('result_id_seq'::regclass);
 
-CREATE UNIQUE INDEX ix_result_hash ON result USING BTREE (hash);
+CREATE INDEX ix_result_hash ON result USING BTREE (hash);
 CREATE INDEX ix_result_name ON result USING BTREE (name);
 CREATE INDEX ix_result_created_at ON result USING BTREE (created_at);
 CREATE INDEX ix_result_updated_at ON result USING BTREE (updated_at);
