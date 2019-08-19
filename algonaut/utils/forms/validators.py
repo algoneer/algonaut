@@ -138,6 +138,11 @@ class Boolean(Type):
     type = bool
 
 
+class Dict(Type):
+
+    type = dict
+
+
 class Integer(Type):
 
     type = int

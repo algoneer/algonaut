@@ -2,6 +2,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy_utils import UUIDType, JSONType
 from sqlalchemy import BigInteger, Column, DateTime
 from sqlalchemy.sql import func
+import sqlalchemy
 from sqlalchemy.dialects import sqlite, postgresql
 from sqlalchemy.orm.attributes import flag_modified
 
@@ -48,8 +49,17 @@ class Base(DeclarativeBase):  # type: ignore
 
     def export(self):
         return {
+            "id" : self.ext_id,
             "created_at": self.created_at,
             "updated_at": self.updated_at,
             "deleted_at": self.deleted_at,
             "data": self.data,
         }
+
+    def delete(self, session: "sqlalchemy.orm.session.Session") -> None:
+        """
+        This is the default delete implementation, which just uses SQLAlchemy's
+        delete capabilities. We may override this in subclasses to provide more
+        efficient deletion capabilities.
+        """
+        session.delete(self)

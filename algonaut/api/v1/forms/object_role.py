@@ -1,5 +1,5 @@
 from algonaut.utils.forms import Form, Field
-from algonaut.utils.forms.validators import String, Required, JSON, UUID
+from algonaut.utils.forms.validators import String, Required, Dict, UUID
 
 
 class ObjectRoleForm(Form):

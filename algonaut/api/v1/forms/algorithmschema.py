@@ -3,7 +3,7 @@ from algonaut.utils.forms.validators import (
     String,
     Required,
     Optional,
-    JSON,
+    Dict,
     Binary,
     UUID,
 )
@@ -13,4 +13,4 @@ class AlgorithmSchemaForm(Form):
 
     algorithm_id = Field([Required(), UUID()])
     hash = Field([Optional(), Binary()])
-    data = Field([Optional(), JSON()])
+    data = Field([Optional(), Dict()])

@@ -1,4 +1,35 @@
-from .field import Field
+import datetime
+
+from typing import List, Callable, Any, Optional, Tuple, Dict
+
+
+class Field:
+
+    default_validators: List[
+        Callable[[str, Any, "Form"], Optional[Tuple[Dict[str, Any], Any, bool]]]
+    ] = []
+
+    @property
+    def validators(self):
+        return self.default_validators + self._validators
+
+    def __init__(self, validators=None):
+        if validators is None:
+            validators = []
+        self._validators = validators
+
+    def validate(self, name, value, form):
+        for validator in self.validators:
+            result = validator(name, value, form)
+            if result is None:
+                errors, stop = [], False
+            else:
+                errors, value, stop = result
+            if errors:
+                return errors, value
+            if stop:
+                return [], value
+        return [], value
 
 
 class FormMeta(type):
@@ -12,8 +43,9 @@ class FormMeta(type):
 
 
 class Form(metaclass=FormMeta):
-    def __init__(self, t, data):
+    def __init__(self, t, data, is_update=False):
         self.t = t
+        self.is_update = is_update
         self.raw_data = data
 
     @property
@@ -34,6 +66,8 @@ class Form(metaclass=FormMeta):
 
         for name, field in self.fields.items():
             value = self.raw_data.get(name)
+            if self.is_update and value is None:
+                continue
             field_errors, value = field.validate(name, value, self)
             if field_errors:
                 errors[name] = field_errors

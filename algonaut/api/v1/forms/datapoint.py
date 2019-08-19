@@ -3,7 +3,7 @@ from algonaut.utils.forms.validators import (
     String,
     Required,
     Optional,
-    JSON,
+    Dict,
     List,
     Binary,
     UUID,
@@ -14,4 +14,4 @@ class DatapointForm(Form):
 
     datasetversion_ids = Field([Required(), List([UUID()])])
     hash = Field([Optional(), Binary()])
-    data = Field([Optional(), JSON()])
+    data = Field([Optional(), Dict()])

@@ -9,7 +9,7 @@ from algonaut_tests.fixtures.algorithm import (
 )
 
 
-class TestGetAlgorithms(MockApiTest):
+class TestAlgorithms(MockApiTest):
 
     """
     Test listing of algorithms
@@ -47,7 +47,7 @@ class TestGetAlgorithms(MockApiTest):
         },
     ]
 
-    def test_get_list(self):
+    def test_list(self):
         result = self.app.get(
             "/v1/algorithms", headers={"Authorization": "bearer test"}
         )
@@ -60,7 +60,7 @@ class TestGetAlgorithms(MockApiTest):
         algorithm = l[0]
         assert algorithm["path"] == "example"
 
-    def test_valid_get_details(self):
+    def test_valid_get(self):
         result = self.app.get(
             "/v1/algorithms/{}".format(self.algorithm.ext_id),
             headers={"Authorization": "bearer test"},
@@ -69,9 +69,66 @@ class TestGetAlgorithms(MockApiTest):
         algorithm = result.json
         assert isinstance(algorithm, dict)
 
-    def test_invalid_get_details(self):
+    def test_invalid_get(self):
         result = self.app.get(
             "/v1/algorithms/{}".format(self.another_algorithm.ext_id),
             headers={"Authorization": "bearer test"},
         )
         assert result.status_code == 404
+
+    def test_create(self):
+        data = {
+                "path": "my/example/algo",
+                "description": "test",
+                "data": {"foo": "bar"},
+        }
+        result = self.app.post(
+            "/v1/algorithms",
+            headers={"Authorization": "bearer test"},
+            json=data,
+        )
+        assert result.status_code == 201
+        algo = result.json
+        assert "id" in algo
+        for key, value in data.items():
+            assert algo[key] == value
+
+    def test_delete(self):
+
+        result = self.app.get(
+            "/v1/algorithms/{}".format(self.algorithm.ext_id),
+            headers={"Authorization": "bearer test"},
+        )
+        assert result.status_code == 200
+
+        result = self.app.delete(
+            "/v1/algorithms/{}".format(self.algorithm.ext_id),
+            headers={"Authorization": "bearer test"},
+        )
+        assert result.status_code == 200
+
+        result = self.app.get(
+            "/v1/algorithms/{}".format(self.algorithm.ext_id),
+            headers={"Authorization": "bearer test"},
+        )
+        assert result.status_code == 404
+
+
+    def test_update(self):
+
+        data = {
+                "path": "my/example/algo",
+                "description": "test",
+                "data": {"foo": "bar"},
+        }
+        for key, value in data.items():
+            update_data = {key: value}
+            result = self.app.patch(
+                "/v1/algorithms/{}".format(self.algorithm.ext_id),
+                headers={"Authorization": "bearer test"},
+                json=update_data,
+            )
+            assert result.status_code == 200
+            self.session.add(self.algorithm)
+            self.session.refresh(self.algorithm)
+            assert getattr(self.algorithm, key) == value

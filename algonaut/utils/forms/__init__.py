@@ -1,3 +1,2 @@
-from .form import Form
+from .form import Form, Field  # noqa
 from .validators import *  # noqa
-from .field import Field
