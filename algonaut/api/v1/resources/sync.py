@@ -5,9 +5,16 @@ from flask import request
 from ...decorators import authorized
 
 
-class Algorithms(Resource):
+class Sync(Resource):
+
+    """
+    The sync endpoint allows the Python library to send one large request with
+    algorithms, algorithm versions, models, datasets, datapoints and results
+    to the API. The API will reply with a
+    """
+
     @authorized
-    def get(self):
+    def post(self):
         """
         Return all objects that match the given criteria and that the user is
         allowed to see.

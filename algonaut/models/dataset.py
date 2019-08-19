@@ -12,6 +12,6 @@ class Dataset(Base):
     Describes a data set.
     """
 
-    name = Column(Unicode, nullable=False)
+    path = Column(Unicode, nullable=False)
     description = Column(Unicode, nullable=False, default="")
     tags = Column(ARRAY(Unicode, dimensions=1))

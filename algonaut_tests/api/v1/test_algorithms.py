@@ -11,11 +11,21 @@ from algonaut_tests.fixtures.algorithm import (
 
 class TestGetAlgorithms(MockApiTest):
 
+    """
+    Test listing of algorithms
+    """
+
     fixtures = [
         {"auth_client": auth_client},
         {"organization": organization},
         {"user": user},
         {"algorithm": lambda test, fixtures: algorithm(test, fixtures, "example")},
+        # the next algorithm is not visible to the user
+        {
+            "another_algorithm": lambda test, fixtures: algorithm(
+                test, fixtures, "another_example"
+            )
+        },
         {
             "algorithmversion": lambda test, fixtures: algorithmversion(
                 test, fixtures, "algorithm"
@@ -43,6 +53,9 @@ class TestGetAlgorithms(MockApiTest):
         )
         assert result.status_code == 200
         algorithms = result.json
-        assert len(algorithms) == 1
-        algorithm = algorithms[0]
+        assert isinstance(algorithms, dict)
+        assert "data" in algorithms
+        l = algorithms["data"]
+        assert len(l) == 1
+        algorithm = l[0]
         assert algorithm["path"] == "example"

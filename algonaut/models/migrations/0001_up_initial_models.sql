@@ -105,6 +105,7 @@ CREATE INDEX ix_dataset_deleted_at ON dataset USING BTREE (deleted_at);
 CREATE TABLE datapoint (
     id bigint NOT NULL,
     ext_id uuid NOT NULL,
+    hash BYTEA NOT NULL,
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     deleted_at timestamp without time zone,
