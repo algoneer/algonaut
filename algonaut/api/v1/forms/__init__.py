@@ -5,3 +5,5 @@ from .datapoint import DatapointForm  # noqa
 from .dataschema import DataSchemaForm  # noqa
 from .model import ModelForm  # noqa
 from .object_role import ObjectRoleForm  # noqa
+from .dataset import DatasetForm  # noqa
+from .result import ResultForm  # noqa

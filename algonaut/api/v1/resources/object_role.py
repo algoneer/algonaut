@@ -1,5 +1,6 @@
-from ...resource import Resource
+from algonaut.models import ObjectRole
+from ..forms import ObjectRoleForm
+from .object import Objects, ObjectDetails
 
-
-class ObjectRole(Resource):
-    pass
+ObjectRoles = Objects(ObjectRole, ObjectRoleForm)
+ObjectRoleDetails = ObjectDetails(ObjectRole, ObjectRoleForm)
