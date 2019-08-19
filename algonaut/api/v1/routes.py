@@ -31,15 +31,27 @@ routes: List[Dict[str, Tuple[Type[Resource], Dict[str, Any]]]] = [
             {"methods": ["GET", "POST", "PATCH", "DELETE"]},
         )
     },
+    {
+        "/algorithms/<object_id>/versions": (
+            AlgorithmVersions,
+            {"methods": ["GET", "POST"]},
+        )
+    },
+    {
+        "/algorithms/<dependent_id>/versions/<object_id>": (
+            AlgorithmVersionDetails,
+            {"methods": ["GET", "PATCH", "DELETE"]},
+        )
+    },
     {"/algorithmschemas": (AlgorithmSchemas, {"methods": ["GET", "POST"]})},
     {
         "/algorithmschemas/<object_id>": (
             AlgorithmSchemaDetails,
-            {"methods": ["GET", "POST", "PATCH", "DELETE"]},
+            {"methods": ["GET", "PATCH", "DELETE"]},
         )
     },
     {
-        "/algorithmversions/<dependent_id>/results": (
+        "/algorithmversions/<object_id>/results": (
             AlgorithmResults,
             {"methods": ["GET", "POST"]},
         )
@@ -47,11 +59,11 @@ routes: List[Dict[str, Tuple[Type[Resource], Dict[str, Any]]]] = [
     {
         "/algorithmversions/<dependent_id>/results/<object_id>": (
             AlgorithmResultDetails,
-            {"methods": ["GET", "POST", "PATCH", "DELETE"]},
+            {"methods": ["GET", "PATCH", "DELETE"]},
         )
     },
     {
-        "/datasetversions/<dependent_id>/results": (
+        "/datasetversions/<object_id>/results": (
             DatasetResults,
             {"methods": ["GET", "POST"]},
         )
@@ -59,32 +71,32 @@ routes: List[Dict[str, Tuple[Type[Resource], Dict[str, Any]]]] = [
     {
         "/datasetversions/<dependent_id>/results/<object_id>": (
             DatasetResultDetails,
-            {"methods": ["GET", "POST", "PATCH", "DELETE"]},
+            {"methods": ["GET", "PATCH", "DELETE"]},
         )
     },
-    {"/models/<dependent_id>/results": (ModelResults, {"methods": ["GET", "POST"]})},
+    {"/models/<object_id>/results": (ModelResults, {"methods": ["GET", "POST"]})},
     {
         "/models/<dependent_id>/results/<object_id>": (
             ModelResultDetails,
-            {"methods": ["GET", "POST", "PATCH", "DELETE"]},
+            {"methods": ["GET", "PATCH", "DELETE"]},
         )
     },
     {"/datasets": (Datasets, {"methods": ["GET", "POST"]})},
     {
-        "/dataset/<object_id>": (
+        "/datasets/<object_id>": (
             DatasetDetails,
-            {"methods": ["GET", "POST", "PATCH", "DELETE"]},
+            {"methods": ["GET", "PATCH", "DELETE"]},
         )
     },
-    {"/datasets/<dependent_id>/datapoints": (Datapoints, {"methods": ["GET", "POST"]})},
+    {"/datasets/<object_id>/datapoints": (Datapoints, {"methods": ["GET", "POST"]})},
     {
         "/datasets/<dependent_id>/datapoints/<object_id>": (
             Datapoints,
-            {"methods": ["GET", "POST", "PATCH", "DELETE"]},
+            {"methods": ["GET", "PATCH", "DELETE"]},
         )
     },
     {
-        "/algorithmversions/<dependent_id>/models": (
+        "/algorithmversions/<object_id>/models": (
             AlgorithmModels,
             {"methods": ["GET", "POST"]},
         )
@@ -92,28 +104,28 @@ routes: List[Dict[str, Tuple[Type[Resource], Dict[str, Any]]]] = [
     {
         "/algorithmversions/<dependent_id>/models/<object_id>": (
             AlgorithmModelDetails,
-            {"methods": ["GET", "POST", "PATCH", "DELETE"]},
+            {"methods": ["GET", "PATCH", "DELETE"]},
         )
     },
-    {"/datasets/<dependent_id>/models": (DatasetModels, {"methods": ["GET", "POST"]})},
+    {"/datasets/<object_id>/models": (DatasetModels, {"methods": ["GET", "POST"]})},
     {
         "/datasets/<dependent_id>/models/<object_id>": (
             DatasetModelDetails,
-            {"methods": ["GET", "POST", "PATCH", "DELETE"]},
+            {"methods": ["GET", "PATCH", "DELETE"]},
         )
     },
     {"/objectroles": (ObjectRoles, {"methods": ["GET", "POST"]})},
     {
         "/objectroles/<object_id>": (
             ObjectRoleDetails,
-            {"methods": ["GET", "POST", "PATCH", "DELETE"]},
+            {"methods": ["GET", "PATCH", "DELETE"]},
         )
     },
     {"/dataschemas": (DataSchemas, {"methods": ["GET", "POST"]})},
     {
         "/dataschemas/<object_id>": (
             DataSchemaDetails,
-            {"methods": ["GET", "POST", "PATCH", "DELETE"]},
+            {"methods": ["GET", "PATCH", "DELETE"]},
         )
     },
 ]

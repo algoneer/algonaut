@@ -6,12 +6,10 @@ from algonaut.utils.forms.validators import (
     Dict,
     List,
     Binary,
-    UUID,
 )
 
 
 class DatapointForm(Form):
 
-    datasetversion_ids = Field([Required(), List([UUID()])])
     hash = Field([Optional(), Binary()])
     data = Field([Optional(), Dict()])

@@ -45,9 +45,9 @@ class Base(DeclarativeBase):  # type: ignore
             return None
         return self.data.get(key)
 
-    @classmethod
-    def type(cls):
-        return cls.__class__.__name__.lower()
+    @property
+    def type(self):
+        return self.__class__.__name__.lower()
 
     def export(self):
         return {
