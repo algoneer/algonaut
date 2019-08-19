@@ -1,11 +1,16 @@
 from ...resource import Resource
-from algonaut.models import ObjectRole
+from algonaut.models import ObjectRole, Base
 from algonaut.settings import settings
+from algonaut.utils.forms import Form
 from flask import request
 from ...decorators import authorized, valid_object
 
+from typing import Type, Optional
 
-def Objects(Type, Form):
+
+def Objects(
+    Type: Type[Base], Form: Type[Form], Dependent: Optional[Type[Base]] = None
+) -> Type[Resource]:
     class Objects(Resource):
         @authorized
         def get(self):
@@ -40,7 +45,9 @@ def Objects(Type, Form):
     return Objects
 
 
-def ObjectDetails(Type, Form):
+def ObjectDetails(
+    Type: Type[Base], Form: Type[Form], Dependent: Optional[Type[Base]] = None
+) -> Type[Resource]:
     class ObjectDetails(Resource):
         @authorized
         @valid_object(Type, roles=["admin", "view"])

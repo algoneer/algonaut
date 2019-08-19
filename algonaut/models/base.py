@@ -16,6 +16,8 @@ ExtPkType = UUIDType(binary=False)
 
 import uuid
 
+from typing import Optional
+
 
 class Base(DeclarativeBase):  # type: ignore
 
@@ -56,10 +58,19 @@ class Base(DeclarativeBase):  # type: ignore
             "data": self.data,
         }
 
-    def delete(self, session: "sqlalchemy.orm.session.Session") -> None:
+    def delete(
+        self,
+        session: "sqlalchemy.orm.session.Session",
+        context: Optional["Base"] = None,
+    ) -> None:
         """
         This is the default delete implementation, which just uses SQLAlchemy's
         delete capabilities. We may override this in subclasses to provide more
         efficient deletion capabilities.
+
+        :param session: The SQLAlchemy session that should be used to delete the object.
+        :param context: An optional context object for the deletion. Sometimes useful
+                        to determine which linked classes to delete or to modify the
+                        default deletion behavior.
         """
         session.delete(self)
