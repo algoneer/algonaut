@@ -43,7 +43,7 @@ def valid_object(
                     else:
                         return {"message": "not found"}, 404
                 obj._roles = obj_roles
-                setattr(request, obj.type, obj)
+                setattr(request, obj.type(), obj)
                 return f(*args, **kwargs)
 
             if hasattr(request, "session"):

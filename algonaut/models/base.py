@@ -43,13 +43,13 @@ class Base(DeclarativeBase):  # type: ignore
             return None
         return self.data.get(key)
 
-    @property
-    def type(self):
-        return self.__class__.__name__.lower()
+    @classmethod
+    def type(cls):
+        return cls.__class__.__name__.lower()
 
     def export(self):
         return {
-            "id" : self.ext_id,
+            "id": self.ext_id,
             "created_at": self.created_at,
             "updated_at": self.updated_at,
             "deleted_at": self.deleted_at,

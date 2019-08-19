@@ -49,7 +49,7 @@ class ObjectRole(Base):
             .filter(
                 ObjectRole.organization_id == organization.id,
                 ObjectRole.object_id == object.ext_id,
-                ObjectRole.object_type == object.type,
+                ObjectRole.object_type == object.type(),
                 ObjectRole.object_role == object_role,
                 ObjectRole.organization_role == organization_role,
             )
@@ -60,7 +60,7 @@ class ObjectRole(Base):
             obj_role = ObjectRole(
                 organization_id=organization.id,
                 object_id=object.ext_id,
-                object_type=object.type,
+                object_type=object.type(),
                 object_role=object_role,
                 organization_role=organization_role,
             )
@@ -78,7 +78,7 @@ class ObjectRole(Base):
                 ObjectRole.organization_id == user.roles.organization.id,
                 ObjectRole.organization_role.in_(user.roles.roles),
                 ObjectRole.object_id == object.ext_id,
-                ObjectRole.object_type == object.type,
+                ObjectRole.object_type == object.type(),
             )
             .all()
         )

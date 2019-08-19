@@ -26,7 +26,7 @@ def object_role(
         object_role=object_role,
         organization_role=organization_role,
         object_id=obj.ext_id,
-        object_type=obj.type,
+        object_type=obj.type(),
     )
     test.session.add(object_role)
     test.session.commit()
