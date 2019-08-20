@@ -89,10 +89,12 @@ def Objects(
                         setattr(obj, dependent_type, dependent_obj)
                 session.add(obj)
                 session.commit()
-                # we create an object role for the newly created object
-                ObjectRole.get_or_create(
-                    session, obj, request.user.roles.organization, "admin", "admin"
-                )
+                if not DependentTypes:
+                    # we create an object role for the newly created object
+                    # only if it does not depends on another object
+                    ObjectRole.get_or_create(
+                        session, obj, request.user.roles.organization, "admin", "admin"
+                    )
                 return obj.export(), 201
 
     return Objects

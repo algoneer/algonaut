@@ -73,29 +73,34 @@ def valid_object(
                         else:
                             # otherwise, we retrieve the object by its relation
                             # to the main object.
-                            query = session.query(DependentType).filter(
-                                DependentType.id
-                                == getattr(obj, "{}_id".format(DependentType().type)),
-                                DependentType.deleted_at == None,
-                            )
-                        if len(DependentTypes) > 1:
-                            # if there are more than one dependent types, we add joinedload
-                            # conditions for all of them to make sure they get loaded efficiently
-                            # from the database.
                             if JoinBy is not None:
                                 # if there is a M2M table that we should join by, we
                                 # include it in the query to ensure there is an actual entry between
                                 # the requested object and the dependent objects
-                                query = query.join(JoinBy).filter(
+                                query = session.query(DependentType).filter(DependentType.deleted_at == None).join(JoinBy).filter(
                                     getattr(JoinBy, obj.type) == obj,
                                     getattr(
                                         JoinBy, "{}_id".format(DependentType().type)
                                     )
                                     == DependentType.id,
+                                    DependentType.deleted_at == None,
                                 )
+                            else:
+                                query = session.query(DependentType).filter(
+                                    DependentType.id
+                                    == getattr(
+                                        obj, "{}_id".format(DependentType().type)
+                                    ),
+                                    DependentType.deleted_at == None,
+                                )
+                        if len(DependentTypes) > 1:
+                            # if there are more than one dependent types, we add joinedload
+                            # conditions for all of them to make sure they get loaded efficiently
+                            # from the database.
                             joinedloads = None
                             for NextType in DependentTypes[1:]:
                                 nt = NextType().type
+                                query = query.filter(NextType.deleted_at==None)
                                 if joinedloads is None:
                                     joinedloads = joinedload(getattr(DependentType, nt))
                                 else:

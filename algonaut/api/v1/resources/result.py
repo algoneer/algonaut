@@ -2,6 +2,9 @@ from algonaut.models import (
     Result,
     Model,
     ModelResult,
+    Datapoint,
+    DatasetVersionDatapoint,
+    DatapointModelResult,
     AlgorithmVersionResult,
     DatasetVersionResult,
     AlgorithmVersion,
@@ -11,6 +14,20 @@ from algonaut.models import (
 )
 from ..forms import ResultForm
 from .object import Objects, ObjectDetails
+
+from algonaut.api.resource import Resource, ResponseType
+from algonaut.api.decorators import valid_object, authorized
+from algonaut.settings import settings
+from flask import request
+
+from typing import Optional
+
+DatapointModelResultDetails = ObjectDetails(
+    Result,
+    ResultForm,
+    [Datapoint, DatasetVersionDatapoint, DatasetVersion, Dataset],
+    DatapointModelResult,
+)
 
 # Returns results for a given dataset version
 DatasetVersionResults = Objects(
@@ -35,3 +52,53 @@ ModelResults = Objects(
 ModelResultDetails = ObjectDetails(
     Result, ResultForm, [Model, AlgorithmVersion, Algorithm], ModelResult
 )
+
+
+class DatapointModelResults(Resource):
+    @authorized()
+    @valid_object(
+        Datapoint,
+        roles=["view", "admin"],
+        DependentTypes=[DatasetVersion, Dataset],
+        JoinBy=DatasetVersionDatapoint,
+    )
+    def get(self, object_id: Optional[str] = None) -> ResponseType:
+        """
+        Return all objects that match the given criteria and that the user is
+        allowed to see.
+        """
+        with settings.session() as session:
+            filters = [
+                Result.deleted_at == None,
+                DatapointModelResult.datapoint == request.datapoint,
+            ]
+            objs = session.query(Result).filter(*filters).join(DatapointModelResult).all()
+            return {"data": [obj.export() for obj in objs]}, 200
+
+    @authorized(roles=["admin"])
+    @valid_object(
+        Datapoint,
+        roles=["view", "admin"],
+        DependentTypes=[DatasetVersion, Dataset],
+        JoinBy=DatasetVersionDatapoint,
+        id_field="datapoint_id",
+    )
+    @valid_object(
+        Model,
+        roles=["view", "admin"],
+        DependentTypes=[AlgorithmVersion, Algorithm],
+        id_field="model_id",
+    )
+    def post(self, datapoint_id: str, model_id: str) -> ResponseType:
+        form = ResultForm(self.t, request.get_json() or {})
+        if not form.validate():
+            return {"message": "invalid data", "errors": form.errors}, 400
+        with settings.session() as session:
+            obj = Result(**form.valid_data)
+            dpmr = DatapointModelResult(
+                datapoint=request.datapoint, model=request.model, result=obj
+            )
+            session.add(dpmr)
+            session.add(obj)
+            session.commit()
+            return obj.export(), 201

@@ -46,8 +46,4 @@ class CreateModel(Resource):
             obj.datasetversion = request.datasetversion
             session.add(obj)
             session.commit()
-            # we create an object role for the newly created object
-            ObjectRole.get_or_create(
-                session, obj, request.user.roles.organization, "admin", "admin"
-            )
             return obj.export(), 201

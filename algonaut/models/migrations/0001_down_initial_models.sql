@@ -4,6 +4,7 @@ DROP TYPE obj_role;
 DROP TABLE datasetversion_datapoint;
 DROP TABLE algorithmversion_algorithmschema;
 DROP TABLE datasetversion_dataschema;
+DROP TABLE datapoint_model_result;
 DROP TABLE model_result;
 DROP TABLE datasetversion_result;
 DROP TABLE algorithmversion_result;

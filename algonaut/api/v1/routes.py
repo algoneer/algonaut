@@ -11,6 +11,8 @@ from .resources.result import (
     ModelResultDetails,
     DatasetVersionResults,
     DatasetVersionResultDetails,
+    DatapointModelResults,
+    DatapointModelResultDetails,
 )
 from .resources.dataset import Datasets, DatasetDetails
 from .resources.datasetversion import DatasetVersions, DatasetVersionDetails
@@ -54,6 +56,18 @@ routes: List[Dict[str, Tuple[Type[Resource], Dict[str, Any]]]] = [
     {
         "/algorithmversions/<dependent_id>/schemas/<object_id>": (
             AlgorithmSchemaDetails,
+            {"methods": ["GET", "PATCH", "DELETE"]},
+        )
+    },
+    {
+        "/datapoints/<object_id>/results": (
+            DatapointModelResults,
+            {"methods": ["GET", "POST"]},
+        )
+    },
+    {
+        "/datapoints/<dependent_id>/results/<object_id>": (
+            DatapointModelResultDetails,
             {"methods": ["GET", "PATCH", "DELETE"]},
         )
     },

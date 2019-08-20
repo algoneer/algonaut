@@ -12,6 +12,7 @@ from .datasetversion_dataschema import DatasetVersionDataSchema  # noqa
 from .datasetversion_datapoint import DatasetVersionDatapoint  # noqa
 from .datasetversion_result import DatasetVersionResult  # noqa
 from .datasetversion import DatasetVersion  # noqa
+from .datapoint_model_result import DatapointModelResult  # noqa
 from .model_result import ModelResult  # noqa
 from .model import Model  # noqa
 from .result import Result  # noqa
@@ -24,6 +25,7 @@ def clean_db(session):
     for model in [
         AlgorithmVersionAlgorithmSchema,
         AlgorithmVersionResult,
+        DatapointModelResult,
         ModelResult,
         Model,
         AlgorithmVersion,
