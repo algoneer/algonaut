@@ -94,12 +94,7 @@ routes: List[Dict[str, Tuple[Type[Resource], Dict[str, Any]]]] = [
             {"methods": ["GET", "PATCH", "DELETE"]},
         )
     },
-    {
-        "/datasets/<object_id>/versions": (
-            DatasetVersions,
-            {"methods": ["GET", "POST"]},
-        )
-    },
+    {"/datasets/<object_id>/versions": (DatasetVersions, {"methods": ["GET", "POST"]})},
     {
         "/datasets/<dependent_id>/versions/<object_id>": (
             DatasetVersionDetails,

@@ -3,6 +3,4 @@ from ..forms import DatasetVersionForm
 from .object import Objects, ObjectDetails
 
 DatasetVersions = Objects(DatasetVersion, DatasetVersionForm, [Dataset])
-DatasetVersionDetails = ObjectDetails(
-    DatasetVersion, DatasetVersionForm, [Dataset]
-)
+DatasetVersionDetails = ObjectDetails(DatasetVersion, DatasetVersionForm, [Dataset])

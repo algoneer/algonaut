@@ -7,4 +7,4 @@ from .model import ModelForm  # noqa
 from .object_role import ObjectRoleForm  # noqa
 from .dataset import DatasetForm  # noqa
 from .result import ResultForm  # noqa
-from .datasetversion import DatasetVersionForm # noqa
+from .datasetversion import DatasetVersionForm  # noqa

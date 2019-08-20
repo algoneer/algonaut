@@ -2,10 +2,7 @@ from algonaut_tests.helpers import MockApiTest
 from algonaut_tests.fixtures.user import user, auth_client, organization
 from algonaut_tests.fixtures.object_role import object_role
 import datetime
-from algonaut_tests.fixtures.dataset import (
-    dataset,
-    datasetversion,
-)
+from algonaut_tests.fixtures.dataset import dataset, datasetversion
 
 from .helpers import ObjectTest
 
