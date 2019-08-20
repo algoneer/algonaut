@@ -1,4 +1,5 @@
 import abc
+import base64
 import datetime
 
 from typing import Dict, Any
@@ -35,6 +36,8 @@ class ObjectTest(abc.ABC):
                     orig_value = datetime.datetime.strftime(
                         orig_value, "%Y-%m-%dT%H:%M:%SZ"
                     )
+            if isinstance(orig_value, bytes):
+                orig_value = base64.b64encode(orig_value).decode("utf-8")
             assert value == orig_value
 
     def test_get(self):
@@ -51,7 +54,6 @@ class ObjectTest(abc.ABC):
         result = self.app.post(
             self.url, headers={"Authorization": "bearer test"}, json=data
         )
-        print(result.status_code, self.url)
         assert result.status_code == 201
         obj = result.json
         assert "id" in obj

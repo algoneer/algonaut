@@ -3,9 +3,9 @@ from algonaut_tests.fixtures.user import user, auth_client, organization
 from algonaut_tests.fixtures.object_role import object_role
 import datetime
 from algonaut_tests.fixtures.algorithm import algorithm, algorithmversion
-from algonaut_tests.fixtures.model import model, model_result
+from algonaut_tests.fixtures.model import model
 from algonaut_tests.fixtures.dataset import dataset, datasetversion
-from algonaut_tests.fixtures.result import result
+from algonaut_tests.fixtures.result import result, model_result
 
 from .helpers import ObjectTest
 

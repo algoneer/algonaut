@@ -32,7 +32,6 @@ def Objects(
             DependentTypes[0] if DependentTypes else None,
             roles=["view", "admin"],
             DependentTypes=DependentTypes[1:] if DependentTypes else None,
-            JoinBy=JoinBy,
         )
         def get(self, object_id: Optional[str] = None) -> ResponseType:
             """
@@ -69,7 +68,6 @@ def Objects(
             DependentTypes[0] if DependentTypes else None,
             roles=["view", "admin"],
             DependentTypes=DependentTypes[1:] if DependentTypes else None,
-            JoinBy=JoinBy,
         )
         def post(self, object_id: Optional[str] = None) -> ResponseType:
             form = Form(self.t, request.get_json() or {})

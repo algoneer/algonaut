@@ -1,6 +1,9 @@
 from algonaut.models import (
     Result,
     Model,
+    ModelResult,
+    AlgorithmVersionResult,
+    DatasetVersionResult,
     AlgorithmVersion,
     DatasetVersion,
     Dataset,
@@ -10,17 +13,25 @@ from ..forms import ResultForm
 from .object import Objects, ObjectDetails
 
 # Returns results for a given dataset version
-DatasetResults = Objects(Result, ResultForm, [DatasetVersion, Dataset])
-DatasetResultDetails = ObjectDetails(Result, ResultForm, [DatasetVersion, Dataset])
+DatasetVersionResults = Objects(
+    Result, ResultForm, [DatasetVersion, Dataset], DatasetVersionResult
+)
+DatasetVersionResultDetails = ObjectDetails(
+    Result, ResultForm, [DatasetVersion, Dataset], DatasetVersionResult
+)
 
 # Returns results for a given algorithm version
-AlgorithmResults = Objects(Result, ResultForm, [AlgorithmVersion, Algorithm])
-AlgorithmResultDetails = ObjectDetails(
-    Result, ResultForm, [AlgorithmVersion, Algorithm]
+AlgorithmVersionResults = Objects(
+    Result, ResultForm, [AlgorithmVersion, Algorithm], AlgorithmVersionResult
+)
+AlgorithmVersionResultDetails = ObjectDetails(
+    Result, ResultForm, [AlgorithmVersion, Algorithm], AlgorithmVersionResult
 )
 
 # Returns results for a given model version
-ModelResults = Objects(Result, ResultForm, [Model, AlgorithmVersion, Algorithm])
+ModelResults = Objects(
+    Result, ResultForm, [Model, AlgorithmVersion, Algorithm], ModelResult
+)
 ModelResultDetails = ObjectDetails(
-    Result, ResultForm, [Model, AlgorithmVersion, Algorithm]
+    Result, ResultForm, [Model, AlgorithmVersion, Algorithm], ModelResult
 )

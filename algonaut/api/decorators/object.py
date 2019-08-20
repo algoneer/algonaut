@@ -102,7 +102,7 @@ def valid_object(
                                     joinedloads = joinedloads.joinedload(
                                         getattr(DependentType, nt)
                                     )
-                            DependentType = NextType
+                                DependentType = NextType
                             query.options(joinedloads)
 
                         dependent_obj = query.one_or_none()

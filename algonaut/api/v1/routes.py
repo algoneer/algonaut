@@ -5,12 +5,12 @@ from .resources.algorithm import Algorithms, AlgorithmDetails
 from .resources.algorithmschema import AlgorithmSchemas, AlgorithmSchemaDetails
 from .resources.algorithmversion import AlgorithmVersions, AlgorithmVersionDetails
 from .resources.result import (
-    AlgorithmResults,
-    AlgorithmResultDetails,
+    AlgorithmVersionResults,
+    AlgorithmVersionResultDetails,
     ModelResults,
     ModelResultDetails,
-    DatasetResults,
-    DatasetResultDetails,
+    DatasetVersionResults,
+    DatasetVersionResultDetails,
 )
 from .resources.dataset import Datasets, DatasetDetails
 from .resources.datasetversion import DatasetVersions, DatasetVersionDetails
@@ -59,25 +59,25 @@ routes: List[Dict[str, Tuple[Type[Resource], Dict[str, Any]]]] = [
     },
     {
         "/algorithmversions/<object_id>/results": (
-            AlgorithmResults,
+            AlgorithmVersionResults,
             {"methods": ["GET", "POST"]},
         )
     },
     {
         "/algorithmversions/<dependent_id>/results/<object_id>": (
-            AlgorithmResultDetails,
+            AlgorithmVersionResultDetails,
             {"methods": ["GET", "PATCH", "DELETE"]},
         )
     },
     {
         "/datasetversions/<object_id>/results": (
-            DatasetResults,
+            DatasetVersionResults,
             {"methods": ["GET", "POST"]},
         )
     },
     {
         "/datasetversions/<dependent_id>/results/<object_id>": (
-            DatasetResultDetails,
+            DatasetVersionResultDetails,
             {"methods": ["GET", "PATCH", "DELETE"]},
         )
     },
