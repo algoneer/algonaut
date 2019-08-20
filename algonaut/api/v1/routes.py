@@ -13,6 +13,7 @@ from .resources.result import (
     DatasetResultDetails,
 )
 from .resources.dataset import Datasets, DatasetDetails
+from .resources.datasetversion import DatasetVersions, DatasetVersionDetails
 from .resources.datapoint import Datapoints, DatapointDetails
 from .resources.model import (
     AlgorithmModels,
@@ -90,6 +91,18 @@ routes: List[Dict[str, Tuple[Type[Resource], Dict[str, Any]]]] = [
     {
         "/datasets/<object_id>": (
             DatasetDetails,
+            {"methods": ["GET", "PATCH", "DELETE"]},
+        )
+    },
+    {
+        "/datasets/<object_id>/versions": (
+            DatasetVersions,
+            {"methods": ["GET", "POST"]},
+        )
+    },
+    {
+        "/datasets/<dependent_id>/versions/<object_id>": (
+            DatasetVersionDetails,
             {"methods": ["GET", "PATCH", "DELETE"]},
         )
     },

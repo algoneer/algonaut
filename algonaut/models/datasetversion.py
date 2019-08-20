@@ -20,3 +20,8 @@ class DatasetVersion(Base):
         "Dataset", backref=backref("versions", cascade="all,delete,delete-orphan")
     )
     tags = Column(ARRAY(Unicode, dimensions=1))
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        if self.hash is None:
+            self.hash = b"foo"
