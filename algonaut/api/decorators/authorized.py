@@ -1,23 +1,24 @@
 from flask import request
 from functools import wraps
 from algonaut.settings import settings
+from algonaut.api.resource import ResponseType
 
-from typing import Iterable, Optional
+from typing import Iterable, Optional, Callable
 
 
 def authorized(
-    f=None, scopes=None, superuser=False, roles: Optional[Iterable[str]] = None
-):
+    scopes=None, superuser=False, roles: Optional[Iterable[str]] = None
+) -> Callable[[Callable[..., ResponseType]], Callable[..., ResponseType]]:
 
     """
     Ensures that the request originates from a valid user.
     """
 
-    unauthorized = {"message": "unauthorized"}, 403
+    unauthorized: ResponseType = ({"message": "unauthorized"}, 403)
 
-    def decorator(f):
+    def decorator(f) -> Callable[..., ResponseType]:
         @wraps(f)
-        def decorated_function(*args, **kwargs):
+        def decorated_function(*args, **kwargs) -> ResponseType:
             client = settings.auth_client
             # the client retrieves the user object for the given request
             user = client.get_user(request)
@@ -35,7 +36,4 @@ def authorized(
 
         return decorated_function
 
-    if f:
-        return decorator(f)
-    else:
-        return decorator
+    return decorator

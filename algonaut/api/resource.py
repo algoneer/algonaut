@@ -11,6 +11,10 @@ from algonaut.settings import settings
 
 logger = logging.getLogger(__name__)
 
+from typing import Tuple, Dict, Any
+
+ResponseType = Tuple[Dict[str, Any], int]
+
 
 class NotModified(werkzeug.exceptions.HTTPException):
 

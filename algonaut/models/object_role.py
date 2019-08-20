@@ -35,7 +35,7 @@ class ObjectRole(Base):
     @classmethod
     def get_or_create(
         cls,
-        session: "sqlalchemy.orm.session.Session",
+        session: sqlalchemy.orm.session.Session,
         object: Base,
         organization: Organization,
         object_role: str,
@@ -70,7 +70,7 @@ class ObjectRole(Base):
 
     @classmethod
     def roles_for(
-        cls, session: "sqlalchemy.orm.session.Session", user: User, object: Base
+        cls, session: sqlalchemy.orm.session.Session, user: User, object: Base
     ):
         return (
             session.query(ObjectRole)
@@ -86,7 +86,7 @@ class ObjectRole(Base):
     @classmethod
     def select_for(
         cls,
-        session: "sqlalchemy.orm.session.Session",
+        session: sqlalchemy.orm.session.Session,
         user: User,
         object_type: str,
         object_roles: Optional[Iterable[str]] = None,

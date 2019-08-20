@@ -43,9 +43,14 @@ routes: List[Dict[str, Tuple[Type[Resource], Dict[str, Any]]]] = [
             {"methods": ["GET", "PATCH", "DELETE"]},
         )
     },
-    {"/algorithmschemas": (AlgorithmSchemas, {"methods": ["GET", "POST"]})},
     {
-        "/algorithmschemas/<object_id>": (
+        "/algorithmversions/<object_id>/schemas": (
+            AlgorithmSchemas,
+            {"methods": ["GET", "POST"]},
+        )
+    },
+    {
+        "/algorithmversions/<dependent_id>/schemas/<object_id>": (
             AlgorithmSchemaDetails,
             {"methods": ["GET", "PATCH", "DELETE"]},
         )

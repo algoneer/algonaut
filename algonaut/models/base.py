@@ -59,9 +59,7 @@ class Base(DeclarativeBase):  # type: ignore
         }
 
     def delete(
-        self,
-        session: "sqlalchemy.orm.session.Session",
-        context: Optional["Base"] = None,
+        self, session: sqlalchemy.orm.session.Session, context: Optional["Base"] = None
     ) -> None:
         """
         This is the default delete implementation, which just uses SQLAlchemy's

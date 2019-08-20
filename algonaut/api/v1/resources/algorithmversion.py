@@ -2,7 +2,7 @@ from algonaut.models import AlgorithmVersion, Algorithm
 from ..forms import AlgorithmVersionForm
 from .object import Objects, ObjectDetails
 
-args = [AlgorithmVersion, AlgorithmVersionForm, Algorithm]
-
-AlgorithmVersions = Objects(*args)
-AlgorithmVersionDetails = ObjectDetails(*args)
+AlgorithmVersions = Objects(AlgorithmVersion, AlgorithmVersionForm, [Algorithm])
+AlgorithmVersionDetails = ObjectDetails(
+    AlgorithmVersion, AlgorithmVersionForm, [Algorithm]
+)

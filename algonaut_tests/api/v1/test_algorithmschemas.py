@@ -10,7 +10,7 @@ from algonaut_tests.fixtures.algorithm import (
 )
 
 
-class TestAlgorithmVersions(MockApiTest):
+class TestAlgorithmSchemas(MockApiTest):
 
     """
     Test listing of algorithms
@@ -26,6 +26,15 @@ class TestAlgorithmVersions(MockApiTest):
                 test, fixtures, "algorithm"
             )
         },
+        {"algorithmschema": lambda test, fixtures: algorithmschema(test, fixtures)},
+        {
+            "algorithmversion_algorithmschema": lambda test, fixtures: algorithmversion_algorithmschema(
+                test,
+                fixtures,
+                algoversion="algorithmversion",
+                algoschema="algorithmschema",
+            )
+        },
         {
             "object_role": lambda test, fixtures: object_role(
                 test, fixtures, "admin", "admin", "organization", "algorithm"
@@ -35,7 +44,7 @@ class TestAlgorithmVersions(MockApiTest):
 
     def test_list(self):
         result = self.app.get(
-            "/v1/algorithms/{}/versions".format(self.algorithm.ext_id),
+            "/v1/algorithmversions/{}/schemas".format(self.algorithmversion.ext_id),
             headers={"Authorization": "bearer test"},
         )
         assert result.status_code == 200
@@ -44,12 +53,12 @@ class TestAlgorithmVersions(MockApiTest):
         assert "data" in algorithmversions
         l = algorithmversions["data"]
         assert len(l) == 1
-        algorithmversion = l[0]
-        for key, value in algorithmversion.items():
+        algorithmschema = l[0]
+        for key, value in algorithmschema.items():
             if key == "id":
-                orig_value = str(self.algorithmversion.ext_id)
+                orig_value = str(self.algorithmschema.ext_id)
             else:
-                orig_value = getattr(self.algorithmversion, key)
+                orig_value = getattr(self.algorithmschema, key)
             if key in ("created_at", "updated_at", "deleted_at"):
                 if orig_value is not None:
                     orig_value = datetime.datetime.strftime(
@@ -59,8 +68,8 @@ class TestAlgorithmVersions(MockApiTest):
 
     def test_get(self):
         result = self.app.get(
-            "/v1/algorithms/{}/versions/{}".format(
-                self.algorithm.ext_id, self.algorithmversion.ext_id
+            "/v1/algorithmversions/{}/schemas/{}".format(
+                self.algorithmversion.ext_id, self.algorithmschema.ext_id
             ),
             headers={"Authorization": "bearer test"},
         )
@@ -70,8 +79,9 @@ class TestAlgorithmVersions(MockApiTest):
 
     def test_create(self):
         data = {"data": {"foo": "bar"}}
+        print(self.algorithmversion.ext_id)
         result = self.app.post(
-            "/v1/algorithms/{}/versions".format(self.algorithm.ext_id),
+            "/v1/algorithmversions/{}/schemas".format(self.algorithmversion.ext_id),
             headers={"Authorization": "bearer test"},
             json=data,
         )
@@ -82,7 +92,9 @@ class TestAlgorithmVersions(MockApiTest):
         for key, value in data.items():
             assert algo[key] == value
         result = self.app.get(
-            "/v1/algorithms/{}/versions/{}".format(self.algorithm.ext_id, algo["id"]),
+            "/v1/algorithmversions/{}/schemas/{}".format(
+                self.algorithmversion.ext_id, algo["id"]
+            ),
             headers={"Authorization": "bearer test"},
         )
         assert result.status_code == 200
@@ -90,24 +102,24 @@ class TestAlgorithmVersions(MockApiTest):
     def test_delete(self):
 
         result = self.app.get(
-            "/v1/algorithms/{}/versions/{}".format(
-                self.algorithm.ext_id, self.algorithmversion.ext_id
+            "/v1/algorithmversions/{}/schemas/{}".format(
+                self.algorithmversion.ext_id, self.algorithmschema.ext_id
             ),
             headers={"Authorization": "bearer test"},
         )
         assert result.status_code == 200
 
         result = self.app.delete(
-            "/v1/algorithms/{}/versions/{}".format(
-                self.algorithm.ext_id, self.algorithmversion.ext_id
+            "/v1/algorithmversions/{}/schemas/{}".format(
+                self.algorithmversion.ext_id, self.algorithmschema.ext_id
             ),
             headers={"Authorization": "bearer test"},
         )
         assert result.status_code == 200
 
         result = self.app.get(
-            "/v1/algorithms/{}/versions/{}".format(
-                self.algorithm.ext_id, self.algorithmversion.ext_id
+            "/v1/algorithmversions/{}/schemas/{}".format(
+                self.algorithmversion.ext_id, self.algorithmschema.ext_id
             ),
             headers={"Authorization": "bearer test"},
         )
@@ -119,13 +131,13 @@ class TestAlgorithmVersions(MockApiTest):
         for key, value in data.items():
             update_data = {key: value}
             result = self.app.patch(
-                "/v1/algorithms/{}/versions/{}".format(
-                    self.algorithm.ext_id, self.algorithmversion.ext_id
+                "/v1/algorithmversions/{}/schemas/{}".format(
+                    self.algorithmversion.ext_id, self.algorithmschema.ext_id
                 ),
                 headers={"Authorization": "bearer test"},
                 json=update_data,
             )
             assert result.status_code == 200
-            self.session.add(self.algorithm)
-            self.session.refresh(self.algorithm)
-            assert getattr(self.algorithmversion, key) == value
+            self.session.add(self.algorithmschema)
+            self.session.refresh(self.algorithmschema)
+            assert getattr(self.algorithmschema, key) == value

@@ -1,8 +1,18 @@
-from algonaut.models import AlgorithmSchema
+from algonaut.models import (
+    AlgorithmSchema,
+    AlgorithmVersionAlgorithmSchema,
+    AlgorithmVersion,
+    Algorithm,
+)
 from ..forms import AlgorithmSchemaForm
 from .object import Objects, ObjectDetails
 
-args = [AlgorithmSchema, AlgorithmSchemaForm]
-
-AlgorithmSchemas = Objects(*args)
-AlgorithmSchemaDetails = ObjectDetails(*args)
+AlgorithmSchemas = Objects(
+    AlgorithmSchema,
+    AlgorithmSchemaForm,
+    [AlgorithmVersion, Algorithm],
+    AlgorithmVersionAlgorithmSchema,
+)
+AlgorithmSchemaDetails = ObjectDetails(
+    AlgorithmSchema, AlgorithmSchemaForm, [AlgorithmVersion, Algorithm]
+)
