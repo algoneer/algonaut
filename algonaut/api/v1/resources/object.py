@@ -32,6 +32,7 @@ def Objects(
             DependentTypes[0] if DependentTypes else None,
             roles=["view", "admin"],
             DependentTypes=DependentTypes[1:] if DependentTypes else None,
+            JoinBy=JoinBy,
         )
         def get(self, object_id: Optional[str] = None) -> ResponseType:
             """
@@ -68,6 +69,7 @@ def Objects(
             DependentTypes[0] if DependentTypes else None,
             roles=["view", "admin"],
             DependentTypes=DependentTypes[1:] if DependentTypes else None,
+            JoinBy=JoinBy,
         )
         def post(self, object_id: Optional[str] = None) -> ResponseType:
             form = Form(self.t, request.get_json() or {})
@@ -78,7 +80,15 @@ def Objects(
                 if DependentTypes:
                     dependent_type = DependentTypes[0]().type
                     dependent_obj = getattr(request, dependent_type)
-                    setattr(obj, dependent_type, dependent_obj)
+                    if JoinBy:
+                        # if this object has a M2M table, we create a row in
+                        # the table for the newly created object
+                        join_by = JoinBy()
+                        setattr(join_by, dependent_type, dependent_obj)
+                        setattr(join_by, obj.type, obj)
+                        session.add(join_by)
+                    else:
+                        setattr(obj, dependent_type, dependent_obj)
                 session.add(obj)
                 session.commit()
                 # we create an object role for the newly created object
@@ -94,6 +104,7 @@ def ObjectDetails(
     Type: Type[Base],
     Form: Type[Form],
     DependentTypes: Optional[List[Type[Base]]] = None,
+    JoinBy: Optional[Type[Base]] = None,
 ) -> Type[Resource]:
     """
     Returns a resource that gets, updates and deletes objects of a given type.
@@ -107,14 +118,18 @@ def ObjectDetails(
 
     class ObjectDetails(Resource):
         @authorized()
-        @valid_object(Type, roles=["admin", "view"], DependentTypes=DependentTypes)
+        @valid_object(
+            Type, roles=["admin", "view"], DependentTypes=DependentTypes, JoinBy=JoinBy
+        )
         def get(
             self, object_id: str, dependent_id: Optional[str] = None
         ) -> ResponseType:
             return getattr(request, Type().type).export(), 200
 
         @authorized()
-        @valid_object(Type, roles=["admin"], DependentTypes=DependentTypes)
+        @valid_object(
+            Type, roles=["admin"], DependentTypes=DependentTypes, JoinBy=JoinBy
+        )
         def patch(
             self, object_id: str, dependent_id: Optional[str] = None
         ) -> ResponseType:
@@ -128,7 +143,9 @@ def ObjectDetails(
             return obj.export(), 200
 
         @authorized(roles=["admin"])
-        @valid_object(Type, roles=["admin"], DependentTypes=DependentTypes)
+        @valid_object(
+            Type, roles=["admin"], DependentTypes=DependentTypes, JoinBy=JoinBy
+        )
         def delete(
             self, object_id: str, dependent_id: Optional[str] = None
         ) -> ResponseType:

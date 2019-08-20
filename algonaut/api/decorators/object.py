@@ -15,6 +15,7 @@ def valid_object(
     id_field: str = "object_id",
     dependent_id_field: str = "dependent_id",
     DependentTypes: Optional[List[Type[Base]]] = None,
+    JoinBy: Optional[Type[Base]] = None,
 ) -> Callable[[Callable[..., ResponseType]], Callable[..., ResponseType]]:
 
     """
@@ -81,6 +82,15 @@ def valid_object(
                             # if there are more than one dependent types, we add joinedload
                             # conditions for all of them to make sure they get loaded efficiently
                             # from the database.
+                            if JoinBy is not None:
+                                # if there is a M2M table that we should join by, we
+                                # include it in the query to ensure there is an actual entry between
+                                # the requested object and the dependent objects
+                                query = query.join(JoinBy).filter(
+                                    getattr(JoinBy, obj.type) == obj,
+                                    getattr(JoinBy, '{}_id'.format(DependentType().type))
+                                    == DependentType.id,
+                                )
                             joinedloads = None
                             for NextType in DependentTypes[1:]:
                                 nt = NextType().type

@@ -14,5 +14,8 @@ AlgorithmSchemas = Objects(
     AlgorithmVersionAlgorithmSchema,
 )
 AlgorithmSchemaDetails = ObjectDetails(
-    AlgorithmSchema, AlgorithmSchemaForm, [AlgorithmVersion, Algorithm]
+    AlgorithmSchema,
+    AlgorithmSchemaForm,
+    [AlgorithmVersion, Algorithm],
+    AlgorithmVersionAlgorithmSchema,
 )
