@@ -88,7 +88,9 @@ def valid_object(
                                 # the requested object and the dependent objects
                                 query = query.join(JoinBy).filter(
                                     getattr(JoinBy, obj.type) == obj,
-                                    getattr(JoinBy, '{}_id'.format(DependentType().type))
+                                    getattr(
+                                        JoinBy, "{}_id".format(DependentType().type)
+                                    )
                                     == DependentType.id,
                                 )
                             joinedloads = None

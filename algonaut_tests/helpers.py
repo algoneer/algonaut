@@ -46,6 +46,7 @@ class DatabaseTest(unittest.TestCase):
                 objs = fixture(cls, fixture_objs)
                 fixture_objs[key] = objs
                 setattr(cls, key, objs)
+        cls.fixture_objs = fixture_objs
 
     def setUp(self):
 

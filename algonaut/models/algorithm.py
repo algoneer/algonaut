@@ -21,7 +21,7 @@ class Algorithm(Base):
             {
                 "path": self.path,
                 "description": self.description,
-                "tags": [tag for tag in self.tags] if self.tags else [],
+                "tags": [tag for tag in self.tags] if self.tags else None,
             }
         )
         return d

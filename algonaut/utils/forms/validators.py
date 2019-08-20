@@ -60,7 +60,7 @@ class List:
                 if errors:
                     return errors, elem, stop
             l.append(elem)
-        return l
+        return [], l, False
 
 
 class Required:
