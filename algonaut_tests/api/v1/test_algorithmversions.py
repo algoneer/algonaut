@@ -9,11 +9,13 @@ from algonaut_tests.fixtures.algorithm import (
     algorithmversion_algorithmschema,
 )
 
+from .helpers import ObjectTest
 
-class TestAlgorithmVersions(MockApiTest):
 
-    base_url = "/v1/algorithmschemas"
-    obj_key = "algorithmschema"
+class TestAlgorithmVersions(MockApiTest, ObjectTest):
+
+    base_url = "/v1/algorithms/{algorithm.ext_id}/versions"
+    obj_key = "algorithmversion"
     obj_create_data = {"data": {"foo": "bar"}}
     obj_update_data = {"data": {"bar": "bam"}}
 
