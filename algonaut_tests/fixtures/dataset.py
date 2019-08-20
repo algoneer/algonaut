@@ -3,6 +3,8 @@ from algonaut.models import (
     Dataset,
     DatasetVersion,
     DataSchema,
+    Datapoint,
+    DatasetVersionDatapoint,
     DatasetVersionDataSchema,
 )
 from ..auth import PlainAuthClient, PlainUser, PlainAccessToken
@@ -39,18 +41,24 @@ def dataschema(test: Type[unittest.TestCase], fixtures: Dict[str, Any]) -> Any:
     return dataschema
 
 
-def datasetversion_dataschema(
+def datapoint(test: Type[unittest.TestCase], fixtures: Dict[str, Any]) -> Any:
+    assert issubclass(test, DatabaseTest)
+    datapoint = Datapoint(hash=b"foo")
+    test.session.add(datapoint)
+    test.session.commit()
+    return datapoint
+
+
+def datasetversion_datapoint(
     test: Type[unittest.TestCase],
     fixtures: Dict[str, Any],
-    algoschema: str = "dataschema",
-    algoversion: str = "datasetversion",
+    datasetversion: str = "datasetversion",
+    datapoint: str = "datapoint",
 ) -> Any:
     assert issubclass(test, DatabaseTest)
-    dataschema = fixtures[algoschema]
-    datasetversion = fixtures[algoversion]
-    datasetversion_dataschema = DatasetVersionDataSchema(
-        dataschema=dataschema, datasetversion=datasetversion
-    )
-    test.session.add(datasetversion_dataschema)
+    dp = fixtures[datapoint]
+    dsv = fixtures[datasetversion]
+    datasetversion_datapoint = DatasetVersionDatapoint(datapoint=dp, datasetversion=dsv)
+    test.session.add(datasetversion_datapoint)
     test.session.commit()
-    return datasetversion_dataschema
+    return datasetversion_datapoint

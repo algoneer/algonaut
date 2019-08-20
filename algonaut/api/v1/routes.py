@@ -16,10 +16,11 @@ from .resources.dataset import Datasets, DatasetDetails
 from .resources.datasetversion import DatasetVersions, DatasetVersionDetails
 from .resources.datapoint import Datapoints, DatapointDetails
 from .resources.model import (
+    CreateModel,
     AlgorithmModels,
     AlgorithmModelDetails,
-    DatasetModels,
-    DatasetModelDetails,
+    DatasetVersionModels,
+    DatasetVersionModelDetails,
 )
 from .resources.object_role import ObjectRoles, ObjectRoleDetails
 from .resources.dataschema import DataSchemas, DataSchemaDetails
@@ -101,29 +102,40 @@ routes: List[Dict[str, Tuple[Type[Resource], Dict[str, Any]]]] = [
             {"methods": ["GET", "PATCH", "DELETE"]},
         )
     },
-    {"/datasets/<object_id>/datapoints": (Datapoints, {"methods": ["GET", "POST"]})},
     {
-        "/datasets/<dependent_id>/datapoints/<object_id>": (
+        "/datasetversions/<object_id>/datapoints": (
             Datapoints,
-            {"methods": ["GET", "PATCH", "DELETE"]},
-        )
-    },
-    {
-        "/algorithmversions/<object_id>/models": (
-            AlgorithmModels,
             {"methods": ["GET", "POST"]},
         )
     },
+    {
+        "/datasetversions/<dependent_id>/datapoints/<object_id>": (
+            DatapointDetails,
+            {"methods": ["GET", "PATCH", "DELETE"]},
+        )
+    },
+    {"/algorithmversions/<object_id>/models": (AlgorithmModels, {"methods": ["GET"]})},
     {
         "/algorithmversions/<dependent_id>/models/<object_id>": (
             AlgorithmModelDetails,
             {"methods": ["GET", "PATCH", "DELETE"]},
         )
     },
-    {"/datasets/<object_id>/models": (DatasetModels, {"methods": ["GET", "POST"]})},
     {
-        "/datasets/<dependent_id>/models/<object_id>": (
-            DatasetModelDetails,
+        "/datasetversions/<datasetversion_id>/algorithmversions/<algorithmversion_id>/models": (
+            CreateModel,
+            {"methods": ["POST"]},
+        )
+    },
+    {
+        "/datasetversions/<object_id>/models": (
+            DatasetVersionModels,
+            {"methods": ["GET"]},
+        )
+    },
+    {
+        "/datasetversions/<dependent_id>/models/<object_id>": (
+            DatasetVersionModelDetails,
             {"methods": ["GET", "PATCH", "DELETE"]},
         )
     },

@@ -46,23 +46,31 @@ class Form(metaclass=FormMeta):
     def __init__(self, t, data, is_update=False):
         self.t = t
         self.is_update = is_update
-        self.raw_data = data
+        self._raw_data = data
 
     @property
     def raw_data(self):
         return self._raw_data
 
-    @raw_data.setter
-    def raw_data(self, data):
+    @property
+    def valid_data(self) -> Dict[str, Any]:
+        return self._valid_data
+
+    @property
+    def errors(self) -> Optional[Dict[str, List[str]]]:
+        return self._errors
+
+    @raw_data.setter  # type: ignore
+    def raw_data(self, data: Optional[Dict[str, Any]]):
         self._raw_data = data or {}
-        self.data = None
-        self.errors = None
+        self._valid_data: Dict[str, Any] = {}
+        self._errors: Optional[Dict[str, List[str]]] = None
 
     def validate(self):
-        data = {}
-        errors = {}
+        data: Dict[str, Any] = {}
+        errors: Dict[str, List[str]] = {}
         valid = True
-        self.data = None
+        self._valid_data = None
 
         for name, field in self.fields.items():
             value = self.raw_data.get(name)
@@ -75,7 +83,7 @@ class Form(metaclass=FormMeta):
             else:
                 data[name] = value
 
-        self.errors = errors
+        self._errors = errors
         if valid:
-            self.data = data
+            self._valid_data = data
         return valid

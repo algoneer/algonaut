@@ -51,6 +51,7 @@ class ObjectTest(abc.ABC):
         result = self.app.post(
             self.url, headers={"Authorization": "bearer test"}, json=data
         )
+        print(result.status_code, self.url)
         assert result.status_code == 201
         obj = result.json
         assert "id" in obj

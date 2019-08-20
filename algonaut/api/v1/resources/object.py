@@ -76,7 +76,7 @@ def Objects(
             if not form.validate():
                 return {"message": "invalid data", "errors": form.errors}, 400
             with settings.session() as session:
-                obj = Type(**form.data)
+                obj = Type(**form.valid_data)
                 if DependentTypes:
                     dependent_type = DependentTypes[0]().type
                     dependent_obj = getattr(request, dependent_type)
@@ -137,7 +137,7 @@ def ObjectDetails(
             if not form.validate():
                 return {"message": "invalid data", "errors": form.errors}, 400
             obj = getattr(request, Type().type)
-            for name, value in form.data.items():
+            for name, value in form.valid_data.items():
                 setattr(obj, name, value)
             request.session.commit()
             return obj.export(), 200

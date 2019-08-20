@@ -24,6 +24,8 @@ def clean_db(session):
     for model in [
         AlgorithmVersionAlgorithmSchema,
         AlgorithmVersionResult,
+        ModelResult,
+        Model,
         AlgorithmVersion,
         AlgorithmSchema,
         Algorithm,
@@ -34,9 +36,7 @@ def clean_db(session):
         DataSchema,
         Datapoint,
         Dataset,
-        ModelResult,
         Result,
-        Model,
         ObjectRole,
     ]:
         engine.execute(model.__table__.delete())

@@ -14,3 +14,8 @@ class Result(Base):
 
     hash = Column(BYTEA, nullable=False)
     name = Column(Unicode, nullable=False)
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        if self.hash is None:
+            self.hash = b"foo"
