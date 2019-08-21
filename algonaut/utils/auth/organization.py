@@ -1,13 +1,15 @@
-import abc
-
 from typing import Iterable
 
 
-class Organization(abc.ABC):
-    @abc.abstractproperty
-    def name(self) -> str:
-        pass
+class Organization:
+    def __init__(self, name: str, id: bytes) -> None:
+        self._name = name
+        self._id = id
 
-    @abc.abstractproperty
+    @property
+    def name(self) -> str:
+        return self._name
+
+    @property
     def id(self) -> bytes:
-        pass
+        return self._id

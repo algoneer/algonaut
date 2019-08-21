@@ -7,7 +7,6 @@ from algonaut.models import (
     DatasetVersionDatapoint,
     DatasetVersionDataSchema,
 )
-from ..auth import PlainAuthClient, PlainUser, PlainAccessToken
 from ..helpers import DatabaseTest
 
 from typing import Any, Dict, Type

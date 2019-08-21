@@ -1,6 +1,5 @@
 from algonaut.settings import settings
 from algonaut.models import Model
-from ..auth import PlainAuthClient, PlainUser, PlainAccessToken
 from ..helpers import DatabaseTest
 
 from typing import Any, Dict, Type

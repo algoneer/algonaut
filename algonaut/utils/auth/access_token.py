@@ -1,7 +1,7 @@
-import abc
+class AccessToken:
+    def __init__(self, token: str) -> None:
+        self._token = token
 
-
-class AccessToken(abc.ABC):
-    @abc.abstractproperty
+    @property
     def token(self) -> str:
-        pass
+        return self._token

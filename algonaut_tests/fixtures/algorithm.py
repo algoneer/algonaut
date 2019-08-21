@@ -5,7 +5,7 @@ from algonaut.models import (
     AlgorithmSchema,
     AlgorithmVersionAlgorithmSchema,
 )
-from ..auth import PlainAuthClient, PlainUser, PlainAccessToken
+from ..auth import PlainAuthClient
 from ..helpers import DatabaseTest
 
 from typing import Any, Dict, Type

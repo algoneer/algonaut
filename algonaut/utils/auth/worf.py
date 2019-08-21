@@ -1,10 +1,11 @@
 import requests
 import algonaut.settings
-from .user import User
+from .user import User, OrganizationRoles
+from .organization import Organization
 from .access_token import AccessToken
 import flask
 
-from .. import AuthClient as BaseAuthClient, get_access_token
+from . import AuthClient as BaseAuthClient, get_access_token
 
 from typing import Callable, Optional
 
@@ -33,5 +34,9 @@ class AuthClient(BaseAuthClient):
             return None
         response = self._get(token, "user")
         data = response.json()
-        access_token = AccessToken(data["access_token"])
-        return User(data["user"], access_token)
+        access_token = AccessToken(token=data["access_token"])
+        organization = Organization(
+            name=data["organization"]["name"], id=data["organization"]["id"]
+        )
+        org_roles = OrganizationRoles(organization=organization, roles=[])
+        return User(access_token=access_token, organization_roles=org_roles)
