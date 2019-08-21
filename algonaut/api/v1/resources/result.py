@@ -22,13 +22,6 @@ from flask import request
 
 from typing import Optional
 
-DatapointModelResultDetails = ObjectDetails(
-    Result,
-    ResultForm,
-    [Datapoint, DatasetVersionDatapoint, DatasetVersion, Dataset],
-    DatapointModelResult,
-)
-
 # Returns results for a given dataset version
 DatasetVersionResults = Objects(
     Result, ResultForm, [DatasetVersion, Dataset], DatasetVersionResult
@@ -53,16 +46,27 @@ ModelResultDetails = ObjectDetails(
     Result, ResultForm, [Model, AlgorithmVersion, Algorithm], ModelResult
 )
 
+DatapointModelResultDetails = ObjectDetails(
+    Result, ResultForm, [Model, AlgorithmVersion, Algorithm], DatapointModelResult
+)
+
 
 class DatapointModelResults(Resource):
-    @authorized()
+    @authorized(roles=["admin"])
     @valid_object(
         Datapoint,
         roles=["view", "admin"],
         DependentTypes=[DatasetVersion, Dataset],
         JoinBy=DatasetVersionDatapoint,
+        id_field="datapoint_id",
     )
-    def get(self, object_id: Optional[str] = None) -> ResponseType:
+    @valid_object(
+        Model,
+        roles=["view", "admin"],
+        DependentTypes=[AlgorithmVersion, Algorithm],
+        id_field="model_id",
+    )
+    def get(self, datapoint_id: str, model_id: str) -> ResponseType:
         """
         Return all objects that match the given criteria and that the user is
         allowed to see.
@@ -71,8 +75,11 @@ class DatapointModelResults(Resource):
             filters = [
                 Result.deleted_at == None,
                 DatapointModelResult.datapoint == request.datapoint,
+                DatapointModelResult.model == request.model,
             ]
-            objs = session.query(Result).filter(*filters).join(DatapointModelResult).all()
+            objs = (
+                session.query(Result).filter(*filters).join(DatapointModelResult).all()
+            )
             return {"data": [obj.export() for obj in objs]}, 200
 
     @authorized(roles=["admin"])

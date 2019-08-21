@@ -16,8 +16,16 @@ class ObjectTest(abc.ABC):
     def url(self):
         return self.base_url.format(**self.fixture_objs)
 
+    @property
+    def list_url(self):
+        return self.url
+
+    @property
+    def create_url(self):
+        return self.url
+
     def test_list(self):
-        result = self.app.get(self.url, headers={"Authorization": "bearer test"})
+        result = self.app.get(self.list_url, headers={"Authorization": "bearer test"})
         assert result.status_code == 200
         objs = result.json
         assert isinstance(objs, dict)
@@ -52,7 +60,7 @@ class ObjectTest(abc.ABC):
     def test_create(self):
         data = self.obj_create_data
         result = self.app.post(
-            self.url, headers={"Authorization": "bearer test"}, json=data
+            self.create_url, headers={"Authorization": "bearer test"}, json=data
         )
         assert result.status_code == 201
         obj = result.json

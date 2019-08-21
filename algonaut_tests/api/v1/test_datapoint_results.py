@@ -10,7 +10,7 @@ from algonaut_tests.fixtures.dataset import (
     datapoint,
     datasetversion_datapoint,
 )
-from algonaut_tests.fixtures.result import result, algorithmversion_result
+from algonaut_tests.fixtures.result import result, datapoint_model_result
 
 from .helpers import ObjectTest
 
@@ -38,7 +38,7 @@ class TestDatapointResults(MockApiTest, ObjectTest):
         {"datasetversion_datapoint": datasetversion_datapoint},
         {"model": model},
         {"result": lambda t, f: result(t, f, name="test")},
-        {"algorithmversion_result": algorithmversion_result},
+        {"datapoint_model_result": datapoint_model_result},
         {
             "object_role": lambda test, fixtures: object_role(
                 test, fixtures, "admin", "admin", "organization", "algorithm"
@@ -50,3 +50,18 @@ class TestDatapointResults(MockApiTest, ObjectTest):
             )
         },
     ]
+
+    @property
+    def url(self):
+        model = self.model
+        return "/v1/models/{}/datapointresults".format(model.ext_id)
+
+    @property
+    def list_url(self):
+        dp = self.datapoint
+        model = self.model
+        return "/v1/datapoints/{}/models/{}/results".format(dp.ext_id, model.ext_id)
+
+    @property
+    def create_url(self):
+        return self.list_url

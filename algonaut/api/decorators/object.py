@@ -77,13 +77,18 @@ def valid_object(
                                 # if there is a M2M table that we should join by, we
                                 # include it in the query to ensure there is an actual entry between
                                 # the requested object and the dependent objects
-                                query = session.query(DependentType).filter(DependentType.deleted_at == None).join(JoinBy).filter(
-                                    getattr(JoinBy, obj.type) == obj,
-                                    getattr(
-                                        JoinBy, "{}_id".format(DependentType().type)
+                                query = (
+                                    session.query(DependentType)
+                                    .filter(DependentType.deleted_at == None)
+                                    .join(JoinBy)
+                                    .filter(
+                                        getattr(JoinBy, obj.type) == obj,
+                                        getattr(
+                                            JoinBy, "{}_id".format(DependentType().type)
+                                        )
+                                        == DependentType.id,
+                                        DependentType.deleted_at == None,
                                     )
-                                    == DependentType.id,
-                                    DependentType.deleted_at == None,
                                 )
                             else:
                                 query = session.query(DependentType).filter(
@@ -100,7 +105,7 @@ def valid_object(
                             joinedloads = None
                             for NextType in DependentTypes[1:]:
                                 nt = NextType().type
-                                query = query.filter(NextType.deleted_at==None)
+                                query = query.filter(NextType.deleted_at == None)
                                 if joinedloads is None:
                                     joinedloads = joinedload(getattr(DependentType, nt))
                                 else:

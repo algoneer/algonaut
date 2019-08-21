@@ -1,6 +1,7 @@
 from algonaut.models import (
     Result,
     ModelResult,
+    DatapointModelResult,
     DatasetVersionResult,
     AlgorithmVersionResult,
 )
@@ -16,6 +17,23 @@ def result(test: Type[unittest.TestCase], fixtures: Dict[str, Any], name: str) -
     test.session.add(result)
     test.session.commit()
     return result
+
+
+def datapoint_model_result(
+    test: Type[unittest.TestCase],
+    fixtures: Dict[str, Any],
+    model: str = "model",
+    datapoint: str = "datapoint",
+    result: str = "result",
+) -> Any:
+    assert issubclass(test, DatabaseTest)
+    md = fixtures[model]
+    rs = fixtures[result]
+    dp = fixtures[datapoint]
+    datapoint_model_result = DatapointModelResult(datapoint=dp, model=md, result=rs)
+    test.session.add(datapoint_model_result)
+    test.session.commit()
+    return datapoint_model_result
 
 
 def model_result(

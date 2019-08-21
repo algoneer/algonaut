@@ -60,13 +60,13 @@ routes: List[Dict[str, Tuple[Type[Resource], Dict[str, Any]]]] = [
         )
     },
     {
-        "/datapoints/<object_id>/results": (
+        "/datapoints/<datapoint_id>/models/<model_id>/results": (
             DatapointModelResults,
             {"methods": ["GET", "POST"]},
         )
     },
     {
-        "/datapoints/<dependent_id>/results/<object_id>": (
+        "/models/<dependent_id>/datapointresults/<object_id>": (
             DatapointModelResultDetails,
             {"methods": ["GET", "PATCH", "DELETE"]},
         )
