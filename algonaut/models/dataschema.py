@@ -13,3 +13,8 @@ class DataSchema(Base):
     """
 
     hash = Column(BYTEA, nullable=False)
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        if self.hash is None:
+            self.hash = b"foo"

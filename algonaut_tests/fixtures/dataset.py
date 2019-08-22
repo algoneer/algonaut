@@ -40,6 +40,23 @@ def dataschema(test: Type[unittest.TestCase], fixtures: Dict[str, Any]) -> Any:
     return dataschema
 
 
+def datasetversion_dataschema(
+    test: Type[unittest.TestCase],
+    fixtures: Dict[str, Any],
+    dsschema: str = "dataschema",
+    dsversion: str = "datasetversion",
+) -> Any:
+    assert issubclass(test, DatabaseTest)
+    dataschema = fixtures[dsschema]
+    datasetversion = fixtures[dsversion]
+    datasetversion_dataschema = DatasetVersionDataSchema(
+        dataschema=dataschema, datasetversion=datasetversion
+    )
+    test.session.add(datasetversion_dataschema)
+    test.session.commit()
+    return datasetversion_dataschema
+
+
 def datapoint(test: Type[unittest.TestCase], fixtures: Dict[str, Any]) -> Any:
     assert issubclass(test, DatabaseTest)
     datapoint = Datapoint(hash=b"foo")

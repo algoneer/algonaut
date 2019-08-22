@@ -148,9 +148,14 @@ routes: List[Dict[str, Tuple[Type[Resource], Dict[str, Any]]]] = [
             {"methods": ["GET", "PATCH", "DELETE"]},
         )
     },
-    {"/dataschemas": (DataSchemas, {"methods": ["GET", "POST"]})},
     {
-        "/dataschemas/<object_id>": (
+        "/datasetversions/<object_id>/schemas": (
+            DataSchemas,
+            {"methods": ["GET", "POST"]},
+        )
+    },
+    {
+        "/datasetversions/<dependent_id>/schemas/<object_id>": (
             DataSchemaDetails,
             {"methods": ["GET", "PATCH", "DELETE"]},
         )
