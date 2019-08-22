@@ -20,9 +20,8 @@ from .resources.datapoint import Datapoints, DatapointDetails
 from .resources.model import (
     CreateModel,
     AlgorithmModels,
-    AlgorithmModelDetails,
+    ModelDetails,
     DatasetVersionModels,
-    DatasetVersionModelDetails,
 )
 from .resources.object_role import ObjectRoles, ObjectRoleDetails
 from .resources.dataschema import DataSchemas, DataSchemaDetails
@@ -42,7 +41,7 @@ routes: List[Dict[str, Tuple[Type[Resource], Dict[str, Any]]]] = [
         )
     },
     {
-        "/algorithms/<dependent_id>/versions/<object_id>": (
+        "/algorithmversions/<object_id>": (
             AlgorithmVersionDetails,
             {"methods": ["GET", "PATCH", "DELETE"]},
         )
@@ -111,7 +110,7 @@ routes: List[Dict[str, Tuple[Type[Resource], Dict[str, Any]]]] = [
     },
     {"/datasets/<object_id>/versions": (DatasetVersions, {"methods": ["GET", "POST"]})},
     {
-        "/datasets/<dependent_id>/versions/<object_id>": (
+        "/datasetversions/<object_id>": (
             DatasetVersionDetails,
             {"methods": ["GET", "PATCH", "DELETE"]},
         )
@@ -129,12 +128,7 @@ routes: List[Dict[str, Tuple[Type[Resource], Dict[str, Any]]]] = [
         )
     },
     {"/algorithmversions/<object_id>/models": (AlgorithmModels, {"methods": ["GET"]})},
-    {
-        "/algorithmversions/<dependent_id>/models/<object_id>": (
-            AlgorithmModelDetails,
-            {"methods": ["GET", "PATCH", "DELETE"]},
-        )
-    },
+    {"/models/<object_id>": (ModelDetails, {"methods": ["GET", "PATCH", "DELETE"]})},
     {
         "/datasetversions/<datasetversion_id>/algorithmversions/<algorithmversion_id>/models": (
             CreateModel,
@@ -145,12 +139,6 @@ routes: List[Dict[str, Tuple[Type[Resource], Dict[str, Any]]]] = [
         "/datasetversions/<object_id>/models": (
             DatasetVersionModels,
             {"methods": ["GET"]},
-        )
-    },
-    {
-        "/datasetversions/<dependent_id>/models/<object_id>": (
-            DatasetVersionModelDetails,
-            {"methods": ["GET", "PATCH", "DELETE"]},
         )
     },
     {"/objectroles": (ObjectRoles, {"methods": ["GET", "POST"]})},

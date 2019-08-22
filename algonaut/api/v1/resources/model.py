@@ -15,11 +15,10 @@ from algonaut.settings import settings
 
 # Returns models for a given dataset version
 DatasetVersionModels = Objects(Model, ModelForm, [DatasetVersion, Dataset])
-DatasetVersionModelDetails = ObjectDetails(Model, ModelForm, [DatasetVersion, Dataset])
 
 # Returns models for a given algorithm version
 AlgorithmModels = Objects(Model, ModelForm, [AlgorithmVersion, Algorithm])
-AlgorithmModelDetails = ObjectDetails(Model, ModelForm, [AlgorithmVersion, Algorithm])
+ModelDetails = ObjectDetails(Model, ModelForm, [AlgorithmVersion, Algorithm])
 
 
 class CreateModel(Resource):

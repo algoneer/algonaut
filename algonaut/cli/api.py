@@ -13,13 +13,12 @@ def api():
 
 
 @api.command("run")
-@click.option("--version", default="v1")
-def run_api(version):
+def run_api():
     """
     Run the API server.
     """
     app = get_app(settings)
-    o = urlparse(settings.get("{}.url".format(version)))
+    o = urlparse(settings.get("url"))
     if o.port:
         host = o.netloc.split(":")[0]
     else:

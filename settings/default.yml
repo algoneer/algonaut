@@ -10,6 +10,9 @@ crossdomain:
   enabled: false
   max-age: 86400 #1 day
 plugins: {}
+worf:
+  url: http://localhost:5000
+  version: v1
 worker:
   tasks:
     # tasks need to be registered here
@@ -40,7 +43,7 @@ worker:
   schedule: {}
 smtp:
   from: algonaut@enterprise.fed
-url: http://localhost:5000
+url: http://localhost:6000
 email:
   url: http://localhost:8080 #this is the frontend base URL (e.g. for e-mail change etc.)
   paths:

@@ -12,10 +12,18 @@ from .helpers import ObjectTest
 
 class TestAlgorithmModels(MockApiTest, ObjectTest):
 
-    base_url = "/v1/algorithmversions/{algorithmversion.ext_id}/models"
+    base_url = "/v1/models"
     obj_key = "model"
     obj_create_data = {"data": {"foo": "bar"}}
     obj_update_data = {"data": {"bar": "bam"}}
+
+    @property
+    def list_url(self):
+        return "/v1/algorithmversions/{}/models".format(self.algorithmversion.ext_id)
+
+    @property
+    def create_url(self):
+        return self.list_url
 
     fixtures = [
         {"auth_client": auth_client},
@@ -75,4 +83,12 @@ class TestAlgorithmModels(MockApiTest, ObjectTest):
 
 class TestDatasetModels(TestAlgorithmModels):
 
-    base_url = "/v1/datasetversions/{datasetversion.ext_id}/models"
+    base_url = "/v1/models"
+
+    @property
+    def list_url(self):
+        return "/v1/datasetversions/{}/models".format(self.datasetversion.ext_id)
+
+    @property
+    def create_url(self):
+        return self.list_url

@@ -14,10 +14,18 @@ from .helpers import ObjectTest
 
 class TestAlgorithmVersions(MockApiTest, ObjectTest):
 
-    base_url = "/v1/algorithms/{algorithm.ext_id}/versions"
+    base_url = "/v1/algorithmversions"
     obj_key = "algorithmversion"
     obj_create_data = {"data": {"foo": "bar"}}
     obj_update_data = {"data": {"bar": "bam"}}
+
+    @property
+    def list_url(self):
+        return "/v1/algorithms/{}/versions".format(self.algorithm.ext_id)
+
+    @property
+    def create_url(self):
+        return self.list_url
 
     fixtures = [
         {"auth_client": auth_client},

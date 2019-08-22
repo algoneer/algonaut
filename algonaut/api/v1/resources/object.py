@@ -63,7 +63,7 @@ def Objects(
                     )
                 return {"data": [obj.export() for obj in objs]}, 200
 
-        @authorized(roles=["admin"])
+        @authorized(roles=["admin", "superuser"])
         @valid_object(
             DependentTypes[0] if DependentTypes else None,
             roles=["view", "admin"],
@@ -92,9 +92,14 @@ def Objects(
                 if not DependentTypes:
                     # we create an object role for the newly created object
                     # only if it does not depends on another object
-                    ObjectRole.get_or_create(
-                        session, obj, request.user.roles.organization, "admin", "admin"
-                    )
+                    for org_role in ["admin", "superuser"]:
+                        ObjectRole.get_or_create(
+                            session,
+                            obj,
+                            request.user.roles.organization,
+                            "admin",
+                            org_role,
+                        )
                 return obj.export(), 201
 
     return Objects
@@ -142,7 +147,7 @@ def ObjectDetails(
             request.session.commit()
             return obj.export(), 200
 
-        @authorized(roles=["admin"])
+        @authorized(roles=["admin", "superuser"])
         @valid_object(
             Type, roles=["admin"], DependentTypes=DependentTypes, JoinBy=JoinBy
         )
