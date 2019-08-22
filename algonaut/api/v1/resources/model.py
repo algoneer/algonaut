@@ -22,7 +22,7 @@ ModelDetails = ObjectDetails(Model, ModelForm, [AlgorithmVersion, Algorithm])
 
 
 class CreateModel(Resource):
-    @authorized(roles=["admin"])
+    @authorized(roles=["admin", "superuser"])
     @valid_object(
         AlgorithmVersion,
         roles=["view", "admin"],
