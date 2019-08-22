@@ -1,0 +1,1098 @@
+openapi: "3.0.0"
+info:
+  version: 0.1.0
+  title: Algonaut - Algoneer API
+  description: An API that persists test results from Algoneer to display them in our web app.
+  termsOfService: https://algoneer.org
+  contact:
+    name: Algoneer Team
+    email: algonaut@algoneer.org
+    url: https://algoneer.org
+  license:
+    name: Affero General Public License
+    url: https://www.gnu.org/licenses/agpl-3.0.de.html
+servers:
+  - url: https://app.algoneer.org
+paths:
+  /algorithms:
+    get:
+      description: |
+        Returns all algorithms that you can see.
+      operationId: listAlgorithms
+      parameters: []
+      responses:
+        '200':
+          description: algorithnms response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Algorithm'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      description: Creates a new algorithm.
+      operationId: createAlgorithm
+      requestBody:
+        description: Algorithm to create.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAlgorithm'
+      responses:
+        '201':
+          description: algorithm response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Algorithm'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /algorithms/{id}:
+    get:
+      description: |
+        Returns details for a particular algorithm.
+      operationId: getAlgorithmDetails
+      parameters: 
+        - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: algorithnms response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Algorithm'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /algorithms/{id}/versions:
+    get:
+      description: |
+        Returns all algorithm versions that you can see.
+      operationId: listAlgorithmVersions
+      parameters:
+        - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: algorithnm versions response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AlgorithmVersion'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      description: Creates a new algorithm version.
+      operationId: createAlgorithmVersion
+      parameters:
+        - $ref: '#/components/parameters/ID'
+      requestBody:
+        description: Algorithm to create.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAlgorithmVersion'
+      responses:
+        '201':
+          description: algorithm version response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AlgorithmVersion'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /algorithmversions/{id}:
+    get:
+      description: |
+        Returns details for a particular algorithm version.
+      operationId: getAlgorithmVersionDetails
+      parameters:
+        - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: algorithnm versions response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AlgorithmVersion'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /algorithmversions/{id}/results:
+    get:
+      description: |
+        Returns all results for a given algorithm version.
+      operationId: listAlgorithmVersionResults
+      parameters:
+        - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: results response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Result'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      description: Creates a new result for a given algorithm version.
+      operationId: createAlgorithmVersionResult
+      parameters:
+        - $ref: '#/components/parameters/ID'
+      requestBody:
+        description: Result to create.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Result'
+      responses:
+        '201':
+          description: result response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Result'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /algorithmversions/{id}/results/{dependent_id}:
+    get:
+      description: |
+        Returns details for a given result of a given algorithmversion.
+      operationId: getAlgorithmVersionResultDetails
+      parameters:
+        - $ref: '#/components/parameters/ID'
+        - $ref: "#/components/parameters/DependentID"
+      responses:
+        '200':
+          description: result response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Result'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /algorithmversions/{id}/schemas:
+    get:
+      description: |
+        Returns all schemas of a given algorithm version.
+      operationId: listAlgorithmSchemas
+      parameters:
+        - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: algorithm schemas response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AlgorithmSchema'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      description: Creates a new algorithm schema and associate it with a algorithm version.
+      operationId: createAlgorithmSchema
+      parameters:
+        - $ref: '#/components/parameters/ID'
+      requestBody:
+        description: Algorithm schema to create.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAlgorithmSchema'
+      responses:
+        '201':
+          description: algorithm schema response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AlgorithmSchema'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /algorithmversions/{id}/schemas/{dependent_id}:
+    get:
+      description: |
+        Returns details for a particular algorithm schema.
+      operationId: getAlgorithmSchemaDetails
+      parameters:
+       - $ref: '#/components/parameters/ID'
+       - $ref: '#/components/parameters/DependentID'
+      responses:
+        '200':
+          description: algorithm schema response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AlgorithmSchema'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /algorithmversions/{id}/models:
+    get:
+      description: |
+        Returns all models for a given algorithm version that you can see.
+      operationId: listModels
+      parameters:
+        - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: models response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Model'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      description: Creates a new model for a given algorithm version.
+      operationId: createModel
+      parameters:
+        - $ref: '#/components/parameters/ID'
+      requestBody:
+        description: Model to create.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateModel'
+      responses:
+        '201':
+          description: model response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Model'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /models/{id}:
+    get:
+      description: |
+        Returns details for a particular model.
+      operationId: getModelDetails
+      parameters:
+        - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: model response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Model'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /models/{id}/results:
+    get:
+      description: |
+        Returns all results for a given model.
+      operationId: listModelResults
+      parameters:
+        - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: model results response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Result'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      description: Creates a new result for a given model.
+      operationId: createModelResult
+      parameters:
+        - $ref: '#/components/parameters/ID'
+      requestBody:
+        description: Result to create.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Result'
+      responses:
+        '201':
+          description: result response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Result'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /models/{id}/results/{dependent_id}:
+    get:
+      description: |
+        Returns details for a given result of a given model.
+      operationId: getModelResultDetails
+      parameters:
+        - $ref: '#/components/parameters/ID'
+        - $ref: "#/components/parameters/DependentID"
+      responses:
+        '200':
+          description: result response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Result'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /datasets:
+    get:
+      description: |
+        Returns all datasets that you can see.
+      operationId: listDatasets
+      parameters: []
+      responses:
+        '200':
+          description: algorithnms response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Dataset'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      description: Creates a new algorithm.
+      operationId: createDataset
+      requestBody:
+        description: Dataset to create.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateDataset'
+      responses:
+        '201':
+          description: dataset response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Dataset'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /datasets/{id}:
+    get:
+      description: |
+        Returns details for a particular dataset.
+      operationId: getDatasetDetails
+      parameters:
+        - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: dataset response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Dataset'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /datasets/{id}/versions:
+    get:
+      description: |
+        Returns all versions of a dataset that you can see.
+      operationId: listDatasetVersions
+      parameters:
+        - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: dataset versions response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/DatasetVersion'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      description: Creates a new dataset version.
+      operationId: createDatasetVersion
+      parameters:
+        - $ref: '#/components/parameters/ID'
+      requestBody:
+        description: Dataset version to create.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateDatasetVersion'
+      responses:
+        '201':
+          description: dataset version response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DatasetVersion'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /datasetversions/{id}:
+    get:
+      description: |
+        Returns details for a particular dataset version.
+      operationId: getDatasetVersionDetails
+      parameters:
+       - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: dataset version response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DatasetVersion'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /datasetversions/{id}/results:
+    get:
+      description: |
+        Returns all results for a given dataset version.
+      operationId: listDatasetVersionResults
+      parameters:
+        - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: results response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Result'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      description: Creates a new result for a given dataset version.
+      operationId: createDatasetVersionResult
+      parameters:
+        - $ref: '#/components/parameters/ID'
+      requestBody:
+        description: Result to create.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Result'
+      responses:
+        '201':
+          description: result response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Result'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /datasetversions/{id}/results/{dependent_id}:
+    get:
+      description: |
+        Returns details for a given result of a given datasetversion.
+      operationId: getDatasetVersionResultDetails
+      parameters:
+        - $ref: '#/components/parameters/ID'
+        - $ref: "#/components/parameters/DependentID"
+      responses:
+        '200':
+          description: result response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Result'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /datapoints/{id}/models/{dependent_id}/results:
+    get:
+      description: |
+        Returns all results for a given datapoint and model.
+      operationId: listDatapointModelResults
+      parameters:
+        - $ref: '#/components/parameters/ID'
+        - $ref: "#/components/parameters/DependentID"
+      responses:
+        '200':
+          description: results response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Result'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      description: Creates a new result for a given datapoint and model.
+      operationId: createDatapointModelResult
+      parameters:
+        - $ref: '#/components/parameters/ID'
+        - $ref: "#/components/parameters/DependentID"
+      requestBody:
+        description: Result to create.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Result'
+      responses:
+        '201':
+          description: result response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Result'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /models/{id}/datapointresults/{dependent_id}:
+    get:
+      description: |
+        Returns details for a given result of a given datapoint and model.
+      operationId: getDatapointModelResultDetails
+      parameters:
+        - $ref: '#/components/parameters/ID'
+        - $ref: "#/components/parameters/DependentID"
+      responses:
+        '200':
+          description: result response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Result'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /datasetversions/{id}/schemas:
+    get:
+      description: |
+        Returns all schemas of a given dataset version.
+      operationId: listDataSchemas
+      parameters:
+        - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: data schemas response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/DataSchema'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      description: Creates a new data schema and associate it with a dataset version.
+      operationId: createDataSchema
+      parameters:
+        - $ref: '#/components/parameters/ID'
+      requestBody:
+        description: Data schema to create.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateDataSchema'
+      responses:
+        '201':
+          description: data schema response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataSchema'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /datasetversions/{id}/schemas/{dependent_id}:
+    get:
+      description: |
+        Returns details for a particular data schema.
+      operationId: getDataSchemaDetails
+      parameters:
+       - $ref: '#/components/parameters/ID'
+       - $ref: '#/components/parameters/DependentID'
+      responses:
+        '200':
+          description: data schema response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DataSchema'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /datasetversions/{id}/datapoints:
+    get:
+      description: |
+        Returns all datapoints of a dataset version that you can see.
+      operationId: listDatapoints
+      parameters:
+        - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: datapoints response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Datapoint'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      description: Creates a new datapoint.
+      operationId: createDatapoint
+      parameters:
+        - $ref: '#/components/parameters/ID'
+      requestBody:
+        description: Datapoint to create.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateDatapoint'
+      responses:
+        '201':
+          description: datapoint response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Datapoint'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /datasetversions/{id}/datapoints/{dependent_id}:
+    get:
+      description: |
+        Returns details for a particular datapoints.
+      operationId: getDatapointDetails
+      parameters:
+       - $ref: '#/components/parameters/ID'
+       - $ref: '#/components/parameters/DependentID'
+      responses:
+        '200':
+          description: datapoint response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Datapoint'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /object_roles:
+    get:
+      description: |
+        Returns all object roles that you can see.
+      operationId: listObjectRoles
+      parameters: []
+      responses:
+        '200':
+          description: object roles response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ObjectRole'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      description: Creates a new object role.
+      operationId: createObjectRole
+      requestBody:
+        description: Object role to create.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateObjectRole'
+      responses:
+        '201':
+          description: object role response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ObjectRole'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /object_roles/{id}:
+    get:
+      description: |
+        Returns details for a given object role.
+      operationId: getObjectRoleDetails
+      parameters:
+        - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: object role response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ObjectRole'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  parameters:
+    DependentID:
+      name: dependent_id
+      in: path
+      description: ID of dependent object to fetch
+      required: true
+      schema:
+        type: string
+        format: uuid
+    ID:
+      name: id
+      in: path
+      description: ID of dependent object to fetch
+      required: true
+      schema:
+        type: string
+        format: uuid
+  schemas:
+    Base:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+    Algorithm:
+      allOf:
+        - $ref: '#/components/schemas/CreateAlgorithm'
+        - $ref: '#/components/schemas/Base'
+    CreateAlgorithm:
+      type: object
+      required:
+        - path
+      properties:
+        path:
+          type: string
+          example: hr/candidate-selection
+        data:
+          type: object
+    AlgorithmVersion:
+      allOf:
+        - $ref: '#/components/schemas/CreateAlgorithmVersion'
+        - $ref: '#/components/schemas/Base'
+    CreateAlgorithmVersion:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: object
+    Model:
+      allOf:
+        - $ref: '#/components/schemas/CreateModel'
+        - $ref: '#/components/schemas/Base'
+    CreateModel:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: object
+    Result:
+      allOf:
+        - $ref: '#/components/schemas/CreateResult'
+        - $ref: '#/components/schemas/Base'
+    CreateResult:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: object
+    ObjectRole:
+      allOf:
+        - $ref: '#/components/schemas/CreateObjectRole'
+        - $ref: '#/components/schemas/Base'
+    CreateObjectRole:
+      type: object
+      required:
+        - object_id
+        - object_type
+        - object_role
+        - organization_id
+        - organization_role
+      properties:
+        data:
+          type: object
+        object_id:
+          type: string
+          format: uuid
+        object_type:
+          type: string
+        object_role:
+          type: string
+        organization_id:
+          type: string
+          format: uuid
+        organization_role:
+          type: string
+    Dataset:
+      allOf:
+        - $ref: '#/components/schemas/CreateDataset'
+        - $ref: '#/components/schemas/Base'
+    CreateDataset:
+      type: object
+      required:
+        - data
+        - path
+      properties:
+        path:
+          type: string
+          example: hr/candidate-selection
+        data:
+          type: object
+    DatasetVersion:
+      allOf:
+        - $ref: '#/components/schemas/CreateDatasetVersion'
+        - $ref: '#/components/schemas/Base'
+    CreateDatasetVersion:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: object
+    Datapoint:
+      allOf:
+        - $ref: '#/components/schemas/CreateDatapoint'
+        - $ref: '#/components/schemas/Base'
+    CreateDatapoint:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: object
+    DataSchema:
+      allOf:
+        - $ref: '#/components/schemas/CreateDataSchema'
+        - $ref: '#/components/schemas/Base'
+    CreateDataSchema:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: object
+    AlgorithmSchema:
+      allOf:
+        - $ref: '#/components/schemas/CreateAlgorithmSchema'
+        - $ref: '#/components/schemas/Base'
+    CreateAlgorithmSchema:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: object
+    Error:
+      type: object
+      required:
+        - errors
+        - message
+      properties:
+        message:
+          type: string
+          example: error message
+        errors:
+          type: object
+          example:
+            path: [invalid path]
