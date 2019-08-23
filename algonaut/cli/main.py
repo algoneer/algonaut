@@ -1,7 +1,8 @@
-from algonaut.settings import settings
+from algonaut.settings import settings, settings_filenames
 from algonaut.cli import commands
 
 import click
+import sys
 
 
 @click.group()
@@ -16,6 +17,12 @@ for command in commands:
 
 
 def main():
+    if not settings_filenames:
+        sys.stderr.write(
+            "Error, no settings defined, aborting. Please define your settings"
+            " directory using ALGONAUT_SETTINGS_D environment variable.\n"
+        )
+        exit(-1)
     for plugin in settings.get("plugins", {}):
         config = settings.load_plugin_config(plugin)
         if "commands" in config:
