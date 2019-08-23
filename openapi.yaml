@@ -39,7 +39,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
     post:
-      description: Creates a new algorithm.
+      description: Bases a new algorithm.
       operationId: createAlgorithm
       requestBody:
         description: Algorithm to create.
@@ -47,7 +47,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateAlgorithm'
+              $ref: '#/components/schemas/BaseAlgorithm'
       responses:
         '201':
           description: algorithm response
@@ -107,7 +107,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
     post:
-      description: Creates a new algorithm version.
+      description: Bases a new algorithm version.
       operationId: createAlgorithmVersion
       parameters:
         - $ref: '#/components/parameters/ID'
@@ -117,7 +117,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateAlgorithmVersion'
+              $ref: '#/components/schemas/BaseAlgorithmVersion'
       responses:
         '201':
           description: algorithm version response
@@ -177,7 +177,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
     post:
-      description: Creates a new result for a given algorithm version.
+      description: Bases a new result for a given algorithm version.
       operationId: createAlgorithmVersionResult
       parameters:
         - $ref: '#/components/parameters/ID'
@@ -248,7 +248,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
     post:
-      description: Creates a new algorithm schema and associate it with a algorithm version.
+      description: Bases a new algorithm schema and associate it with a algorithm version.
       operationId: createAlgorithmSchema
       parameters:
         - $ref: '#/components/parameters/ID'
@@ -258,7 +258,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateAlgorithmSchema'
+              $ref: '#/components/schemas/BaseAlgorithmSchema'
       responses:
         '201':
           description: algorithm schema response
@@ -319,7 +319,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
     post:
-      description: Creates a new model for a given algorithm version.
+      description: Bases a new model for a given algorithm version.
       operationId: createModel
       parameters:
         - $ref: '#/components/parameters/ID'
@@ -329,7 +329,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateModel'
+              $ref: '#/components/schemas/BaseModel'
       responses:
         '201':
           description: model response
@@ -389,7 +389,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
     post:
-      description: Creates a new result for a given model.
+      description: Bases a new result for a given model.
       operationId: createModelResult
       parameters:
         - $ref: '#/components/parameters/ID'
@@ -459,7 +459,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
     post:
-      description: Creates a new algorithm.
+      description: Bases a new algorithm.
       operationId: createDataset
       requestBody:
         description: Dataset to create.
@@ -467,7 +467,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateDataset'
+              $ref: '#/components/schemas/BaseDataset'
       responses:
         '201':
           description: dataset response
@@ -527,7 +527,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
     post:
-      description: Creates a new dataset version.
+      description: Bases a new dataset version.
       operationId: createDatasetVersion
       parameters:
         - $ref: '#/components/parameters/ID'
@@ -537,7 +537,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateDatasetVersion'
+              $ref: '#/components/schemas/BaseDatasetVersion'
       responses:
         '201':
           description: dataset version response
@@ -597,7 +597,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
     post:
-      description: Creates a new result for a given dataset version.
+      description: Bases a new result for a given dataset version.
       operationId: createDatasetVersionResult
       parameters:
         - $ref: '#/components/parameters/ID'
@@ -642,80 +642,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /datapoints/{id}/models/{dependent_id}/results:
-    get:
-      description: |
-        Returns all results for a given datapoint and model.
-      operationId: listDatapointModelResults
-      parameters:
-        - $ref: '#/components/parameters/ID'
-        - $ref: "#/components/parameters/DependentID"
-      responses:
-        '200':
-          description: results response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Result'
-        default:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-    post:
-      description: Creates a new result for a given datapoint and model.
-      operationId: createDatapointModelResult
-      parameters:
-        - $ref: '#/components/parameters/ID'
-        - $ref: "#/components/parameters/DependentID"
-      requestBody:
-        description: Result to create.
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Result'
-      responses:
-        '201':
-          description: result response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Result'
-        default:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-  /models/{id}/datapointresults/{dependent_id}:
-    get:
-      description: |
-        Returns details for a given result of a given datapoint and model.
-      operationId: getDatapointModelResultDetails
-      parameters:
-        - $ref: '#/components/parameters/ID'
-        - $ref: "#/components/parameters/DependentID"
-      responses:
-        '200':
-          description: result response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Result'
-        default:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-
   /datasetversions/{id}/schemas:
     get:
       description: |
@@ -742,7 +668,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
     post:
-      description: Creates a new data schema and associate it with a dataset version.
+      description: Bases a new data schema and associate it with a dataset version.
       operationId: createDataSchema
       parameters:
         - $ref: '#/components/parameters/ID'
@@ -752,7 +678,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateDataSchema'
+              $ref: '#/components/schemas/BaseDataSchema'
       responses:
         '201':
           description: data schema response
@@ -813,7 +739,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
     post:
-      description: Creates a new datapoint.
+      description: Bases a new datapoint.
       operationId: createDatapoint
       parameters:
         - $ref: '#/components/parameters/ID'
@@ -823,7 +749,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateDatapoint'
+              $ref: '#/components/schemas/BaseDatapoint'
       responses:
         '201':
           description: datapoint response
@@ -858,6 +784,58 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /datapoints/{id}/models/{dependent_id}/results:
+    get:
+      description: |
+        Returns all results for a given datapoint and model.
+      operationId: listDatapointModelResults
+      parameters:
+        - $ref: '#/components/parameters/ID'
+        - $ref: "#/components/parameters/DependentID"
+      responses:
+        '200':
+          description: results response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Result'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      description: Bases a new result for a given datapoint and model.
+      operationId: createDatapointModelResult
+      parameters:
+        - $ref: '#/components/parameters/ID'
+        - $ref: "#/components/parameters/DependentID"
+      requestBody:
+        description: Result to create.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Result'
+      responses:
+        '201':
+          description: result response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Result'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /object_roles:
     get:
       description: |
@@ -883,7 +861,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
     post:
-      description: Creates a new object role.
+      description: Bases a new object role.
       operationId: createObjectRole
       requestBody:
         description: Object role to create.
@@ -891,7 +869,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateObjectRole'
+              $ref: '#/components/schemas/BaseObjectRole'
       responses:
         '201':
           description: object role response
@@ -952,9 +930,9 @@ components:
           format: uuid
     Algorithm:
       allOf:
-        - $ref: '#/components/schemas/CreateAlgorithm'
+        - $ref: '#/components/schemas/BaseAlgorithm'
         - $ref: '#/components/schemas/Base'
-    CreateAlgorithm:
+    BaseAlgorithm:
       type: object
       required:
         - path
@@ -966,9 +944,9 @@ components:
           type: object
     AlgorithmVersion:
       allOf:
-        - $ref: '#/components/schemas/CreateAlgorithmVersion'
+        - $ref: '#/components/schemas/BaseAlgorithmVersion'
         - $ref: '#/components/schemas/Base'
-    CreateAlgorithmVersion:
+    BaseAlgorithmVersion:
       type: object
       required:
         - data
@@ -977,9 +955,9 @@ components:
           type: object
     Model:
       allOf:
-        - $ref: '#/components/schemas/CreateModel'
+        - $ref: '#/components/schemas/BaseModel'
         - $ref: '#/components/schemas/Base'
-    CreateModel:
+    BaseModel:
       type: object
       required:
         - data
@@ -988,9 +966,9 @@ components:
           type: object
     Result:
       allOf:
-        - $ref: '#/components/schemas/CreateResult'
+        - $ref: '#/components/schemas/BaseResult'
         - $ref: '#/components/schemas/Base'
-    CreateResult:
+    BaseResult:
       type: object
       required:
         - data
@@ -999,9 +977,9 @@ components:
           type: object
     ObjectRole:
       allOf:
-        - $ref: '#/components/schemas/CreateObjectRole'
+        - $ref: '#/components/schemas/BaseObjectRole'
         - $ref: '#/components/schemas/Base'
-    CreateObjectRole:
+    BaseObjectRole:
       type: object
       required:
         - object_id
@@ -1026,9 +1004,9 @@ components:
           type: string
     Dataset:
       allOf:
-        - $ref: '#/components/schemas/CreateDataset'
+        - $ref: '#/components/schemas/BaseDataset'
         - $ref: '#/components/schemas/Base'
-    CreateDataset:
+    BaseDataset:
       type: object
       required:
         - data
@@ -1041,9 +1019,9 @@ components:
           type: object
     DatasetVersion:
       allOf:
-        - $ref: '#/components/schemas/CreateDatasetVersion'
+        - $ref: '#/components/schemas/BaseDatasetVersion'
         - $ref: '#/components/schemas/Base'
-    CreateDatasetVersion:
+    BaseDatasetVersion:
       type: object
       required:
         - data
@@ -1052,9 +1030,9 @@ components:
           type: object
     Datapoint:
       allOf:
-        - $ref: '#/components/schemas/CreateDatapoint'
+        - $ref: '#/components/schemas/BaseDatapoint'
         - $ref: '#/components/schemas/Base'
-    CreateDatapoint:
+    BaseDatapoint:
       type: object
       required:
         - data
@@ -1063,9 +1041,9 @@ components:
           type: object
     DataSchema:
       allOf:
-        - $ref: '#/components/schemas/CreateDataSchema'
+        - $ref: '#/components/schemas/BaseDataSchema'
         - $ref: '#/components/schemas/Base'
-    CreateDataSchema:
+    BaseDataSchema:
       type: object
       required:
         - data
@@ -1074,9 +1052,9 @@ components:
           type: object
     AlgorithmSchema:
       allOf:
-        - $ref: '#/components/schemas/CreateAlgorithmSchema'
+        - $ref: '#/components/schemas/BaseAlgorithmSchema'
         - $ref: '#/components/schemas/Base'
-    CreateAlgorithmSchema:
+    BaseAlgorithmSchema:
       type: object
       required:
         - data
