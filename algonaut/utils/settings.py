@@ -10,19 +10,76 @@ from sqlalchemy.orm.session import sessionmaker
 from cryptography.fernet import Fernet
 from sqlalchemy import create_engine
 from collections import defaultdict
-from .celery import make_celery
+import abc
 
 logger = logging.getLogger(__name__)
 
 
-class Settings(object):
+class Worker(abc.ABC):
+    @abc.abstractmethod
+    def register(self, f):
+        pass
+
+    @abc.abstractmethod
+    def run(self):
+        pass
+
+
+class CeleryWorker(Worker):
+    def __init__(self, settings, config):
+        from .celery import make_celery
+
+        self.settings = settings
+        self.config = config
+        self.celery = make_celery(config)
+        for task in self.settings.tasks:
+            self.register(task)
+
+    def register(self, task):
+        self.celery.task(task)
+
+    def run(self):
+        argv = ["worker", "--loglevel=INFO", "-B"]
+        self.celery.worker_main(argv)
+
+    def delay(self, func, **kwargs):
+        task_name = func.__module__ + "." + func.__name__
+        return self.celery.send_task(task_name, kwargs=kwargs)
+
+
+class ThreadWorker(Worker):
+    def __init__(self, settings, config):
+        self.settings = settings
+        self.config = config
+
+    def delay(self, func, **kwargs):
+        return func(**kwargs)
+
+    def register(self, f):
+        pass
+
+    def run(self):
+        logger.info("Thread worker does not need to run explicitly...")
+
+
+workers = {"thread": ThreadWorker, "celery": CeleryWorker}
+
+
+class Settings:
     def __init__(self, d):
         self._d = d
         self.providers = defaultdict(list)
         self.hooks = defaultdict(list)
         self.sessionmaker = None
         self.initialized = False
-        self.celery = None
+        self.tasks = []
+        self.worker = None
+
+    def register_task(self, task):
+        self.tasks.append(task)
+        if self.worker is not None:
+            self.worker.register(task)
+        return task
 
     def update(self, d):
         update(self._d, d)
@@ -90,35 +147,17 @@ class Settings(object):
         self.sessionmaker.get_bind().dispose()
         self.sessionmaker = None
 
-    def initialize_tasks(self):
-        tasks = self.get("worker.tasks", [])
-        for task in tasks:
-            if callable(task):
-                self.celery.task(task)
-            else:
-                task = get_func_by_name(task)
-                self.celery.task(task)
-
     def initialize(self):
         logger.warning("Initializing settings...")
         self.load_plugins()
-        self.celery = make_celery(self)
-        self.initialize_tasks()
+        self.initialize_worker()
 
-    def delay(self, func_or_name, **kwargs):
-        if isinstance(func_or_name, str):
-            task_name = func_or_name
-        elif callable(func_or_name):
-            task_name = func_or_name.__module__ + "." + func_or_name.__name__
-        else:
-            raise TypeError("Unknown func_or_name argument!")
-        if self.get("test"):
-            if not callable(func_or_name):
-                func_or_name = get_func_by_name(func_or_name)
-            # todo: we should wrap this is an AsyncResult-like object
-            return func_or_name(**kwargs)
-        else:
-            return self.celery.send_task(task_name, kwargs=kwargs)
+    def initialize_worker(self):
+        worker_type = self.get("worker.type")
+        self.worker = workers[worker_type](self, self.get("worker"))
+
+    def delay(self, func, **kwargs):
+        self.worker.delay(func, **kwargs)
 
     def get(self, key, default=None):
         """
@@ -191,11 +230,6 @@ class Settings(object):
         schedule = self.get("worker.schedule", {})
         schedule.update(config.get("schedule", {}))
         self.set("worker.schedule", schedule)
-
-        # register tasks
-        tasks = self.get("worker.tasks", [])
-        tasks.extend(config.get("tasks", []))
-        self.set("worker.tasks", tasks)
 
         for filename in config.get("yaml_settings", []):
             with open(filename) as yaml_file:
