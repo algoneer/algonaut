@@ -1,7 +1,8 @@
 # Algonaut - The Algoneer API
 
 Algonaut is an API service that exposes the functionality of
-the Algoneer algorithm toolkit.
+the Algoneer algorithm toolkit. The following sections explain how you can
+set up Algonaut locally.
 
 ## Installing
 
@@ -53,12 +54,13 @@ To run Algonaut:
 
     algonaut api run
 
-To run the background worker:
+To run the background worker (only required if you use RabbitMQ):
 
     algonaut worker run
 
-You can set up a local RabbitMQ broker by using the
-`algonaut worker initialize-rabbitmq` command.
+# Developer Information
+
+The following sections are only relevant if you want to actively develop Algonaut.
 
 ## Upgrading packages
 
