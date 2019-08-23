@@ -37,6 +37,16 @@ Alternatively you can source the `.dev-setup` file into your environment:
 
 This will set all required environment variables.
 
+## Database Configuration
+
+Algonaut requires access to a Postgres database. The database connection is
+configured in the `db` section of the settings. By default, Algoneer tries
+to connect to the default Postgres port on localhost and connect to a database
+named `algoneer` with a user named `algoneer` and password `algoneer` (when
+running Algoneer in production you should change these values). For testing,
+Algoneer tries to connect to the `algoneer_test` database by default,
+using the same credentials.
+
 ## Migrations
 
 Algonaut runs on Postgres (but can support SQLite too). The database schema is
