@@ -956,32 +956,21 @@ components:
           format: uuid
         organization_role:
           type: string
-    Dataset:
-      allOf:
-        - $ref: '#/components/schemas/BaseDataset'
-        - $ref: '#/components/schemas/Base'
     BaseDataset:
       type: object
       required:
         - data
-        - path
+        - name
       properties:
-        path:
+        name:
           type: string
-          example: hr/candidate-selection
+          example: my-dataset
         data:
           type: object
     Dataset:
       allOf:
         - $ref: '#/components/schemas/BaseDataset'
         - $ref: '#/components/schemas/Base'
-    BaseDataset:
-      type: object
-      required:
-        - data
-      properties:
-        data:
-          type: object
     Datapoint:
       allOf:
         - $ref: '#/components/schemas/BaseDatapoint'
