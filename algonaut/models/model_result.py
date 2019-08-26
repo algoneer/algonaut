@@ -16,8 +16,12 @@ class ModelResult(Base):
     result_id = Column(PkType, ForeignKey("result.id"), nullable=False)
 
     model = relationship(
-        "Model", backref=backref("results", cascade="all,delete,delete-orphan")
+        "Model",
+        backref=backref("results", cascade="all,delete,delete-orphan"),
+        innerjoin=True,
     )
     result = relationship(
-        "Result", backref=backref("models", cascade="all,delete,delete-orphan")
+        "Result",
+        backref=backref("models", cascade="all,delete,delete-orphan"),
+        innerjoin=True,
     )

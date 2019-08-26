@@ -1,6 +1,6 @@
-from .algorithm import AlgorithmForm  # noqa
+from .project import ProjectForm  # noqa
 from .algorithmschema import AlgorithmSchemaForm  # noqa
-from .algorithmversion import AlgorithmVersionForm  # noqa
+from .algorithm import AlgorithmForm  # noqa
 from .datapoint import DatapointForm  # noqa
 from .dataschema import DataSchemaForm  # noqa
 from .model import ModelForm  # noqa

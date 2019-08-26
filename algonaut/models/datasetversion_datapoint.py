@@ -18,7 +18,10 @@ class DatasetVersionDatapoint(Base):
     datasetversion = relationship(
         "DatasetVersion",
         backref=backref("datapoints", cascade="all,delete,delete-orphan"),
+        innerjoin=True,
     )
     datapoint = relationship(
-        "Datapoint", backref=backref("datasets", cascade="all,delete,delete-orphan")
+        "Datapoint",
+        backref=backref("datasets", cascade="all,delete,delete-orphan"),
+        innerjoin=True,
     )

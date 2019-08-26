@@ -1,9 +1,9 @@
 from algonaut.models import (
     Model,
-    AlgorithmVersion,
+    Algorithm,
     DatasetVersion,
     Dataset,
-    Algorithm,
+    Project,
     ObjectRole,
 )
 from algonaut.api.resource import Resource, ResponseType
@@ -14,7 +14,7 @@ from flask import request
 from algonaut.settings import settings
 
 joins = [
-    [Model.algorithmversion, AlgorithmVersion.algorithm, Algorithm.organization],
+    [Model.algorithm, Algorithm.project, Project.organization],
     [Model.datasetversion, DatasetVersion.dataset, Dataset.organization],
 ]
 
@@ -22,19 +22,14 @@ joins = [
 DatasetVersionModels = Objects(Model, ModelForm, [DatasetVersion, Dataset], Joins=joins)
 
 # Returns models for a given algorithm version
-AlgorithmModels = Objects(Model, ModelForm, [AlgorithmVersion, Algorithm], Joins=joins)
-ModelDetails = ObjectDetails(
-    Model, ModelForm, [AlgorithmVersion, Algorithm], Joins=joins
-)
+AlgorithmModels = Objects(Model, ModelForm, [Algorithm, Project], Joins=joins)
+ModelDetails = ObjectDetails(Model, ModelForm, [Algorithm, Project], Joins=joins)
 
 
 class CreateModel(Resource):
     @authorized()
     @valid_object(
-        AlgorithmVersion,
-        roles=["admin"],
-        DependentTypes=[Algorithm],
-        id_field="algorithmversion_id",
+        Algorithm, roles=["admin"], DependentTypes=[Project], id_field="algorithm_id"
     )
     @valid_object(
         DatasetVersion,
@@ -42,13 +37,13 @@ class CreateModel(Resource):
         DependentTypes=[Dataset],
         id_field="datasetversion_id",
     )
-    def post(self, algorithmversion_id: str, datasetversion_id: str) -> ResponseType:
+    def post(self, algorithm_id: str, datasetversion_id: str) -> ResponseType:
         form = ModelForm(self.t, request.get_json() or {})
         if not form.validate():
             return {"message": "invalid data", "errors": form.errors}, 400
         with settings.session() as session:
             obj = Model(**form.valid_data)
-            obj.algorithmversion = request.algorithmversion
+            obj.algorithm = request.algorithm
             obj.datasetversion = request.datasetversion
             session.add(obj)
             session.commit()

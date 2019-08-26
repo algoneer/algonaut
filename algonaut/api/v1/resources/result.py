@@ -5,12 +5,12 @@ from algonaut.models import (
     Datapoint,
     DatasetVersionDatapoint,
     DatapointModelResult,
-    AlgorithmVersionResult,
+    AlgorithmResult,
     DatasetVersionResult,
-    AlgorithmVersion,
+    Algorithm,
     DatasetVersion,
     Dataset,
-    Algorithm,
+    Project,
 )
 from ..forms import ResultForm
 from .object import Objects, ObjectDetails
@@ -31,23 +31,19 @@ DatasetVersionResultDetails = ObjectDetails(
 )
 
 # Returns results for a given algorithm version
-AlgorithmVersionResults = Objects(
-    Result, ResultForm, [AlgorithmVersion, Algorithm], AlgorithmVersionResult
-)
-AlgorithmVersionResultDetails = ObjectDetails(
-    Result, ResultForm, [AlgorithmVersion, Algorithm], AlgorithmVersionResult
+AlgorithmResults = Objects(Result, ResultForm, [Algorithm, Project], AlgorithmResult)
+AlgorithmResultDetails = ObjectDetails(
+    Result, ResultForm, [Algorithm, Project], AlgorithmResult
 )
 
 # Returns results for a given model version
-ModelResults = Objects(
-    Result, ResultForm, [Model, AlgorithmVersion, Algorithm], ModelResult
-)
+ModelResults = Objects(Result, ResultForm, [Model, Algorithm, Project], ModelResult)
 ModelResultDetails = ObjectDetails(
-    Result, ResultForm, [Model, AlgorithmVersion, Algorithm], ModelResult
+    Result, ResultForm, [Model, Algorithm, Project], ModelResult
 )
 
 DatapointModelResultDetails = ObjectDetails(
-    Result, ResultForm, [Model, AlgorithmVersion, Algorithm], DatapointModelResult
+    Result, ResultForm, [Model, Algorithm, Project], DatapointModelResult
 )
 
 
@@ -63,7 +59,7 @@ class DatapointModelResults(Resource):
     @valid_object(
         Model,
         roles=["view", "admin"],
-        DependentTypes=[AlgorithmVersion, Algorithm],
+        DependentTypes=[Algorithm, Project],
         id_field="model_id",
     )
     def get(self, datapoint_id: str, model_id: str) -> ResponseType:
@@ -91,10 +87,7 @@ class DatapointModelResults(Resource):
         id_field="datapoint_id",
     )
     @valid_object(
-        Model,
-        roles=["admin"],
-        DependentTypes=[AlgorithmVersion, Algorithm],
-        id_field="model_id",
+        Model, roles=["admin"], DependentTypes=[Algorithm, Project], id_field="model_id"
     )
     def post(self, datapoint_id: str, model_id: str) -> ResponseType:
         form = ResultForm(self.t, request.get_json() or {})

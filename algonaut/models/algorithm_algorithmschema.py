@@ -4,23 +4,21 @@ from sqlalchemy import Column, ForeignKey
 from sqlalchemy.orm import relationship, backref
 
 
-class AlgorithmVersionAlgorithmSchema(Base):
+class AlgorithmAlgorithmSchema(Base):
 
-    __tablename__ = "algorithmversion_algorithmschema"
+    __tablename__ = "algorithm_algorithmschema"
 
     """
     Describes an algorithm version mapped to an algorithm schema.
     """
 
-    algorithmversion_id = Column(
-        PkType, ForeignKey("algorithmversion.id"), nullable=False
-    )
+    algorithm_id = Column(PkType, ForeignKey("algorithm.id"), nullable=False)
     algorithmschema_id = Column(
         PkType, ForeignKey("algorithmschema.id"), nullable=False
     )
 
-    algorithmversion = relationship(
-        "AlgorithmVersion",
+    algorithm = relationship(
+        "Algorithm",
         backref=backref("schemas", cascade="all,delete,delete-orphan"),
         innerjoin=True,
     )

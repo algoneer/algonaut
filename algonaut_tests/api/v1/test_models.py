@@ -2,7 +2,7 @@ from algonaut_tests.helpers import MockApiTest
 from algonaut_tests.fixtures.user import user, auth_client, organization
 from algonaut_tests.fixtures.object_role import object_role
 import datetime
-from algonaut_tests.fixtures.algorithm import algorithm, algorithmversion
+from algonaut_tests.fixtures.algorithm import project, algorithm
 from algonaut_tests.fixtures.model import model
 from algonaut_tests.fixtures.dataset import dataset, datasetversion
 from algonaut_tests.fixtures.result import result, model_result
@@ -19,7 +19,7 @@ class TestAlgorithmModels(MockApiTest, ObjectTest):
 
     @property
     def list_url(self):
-        return "/v1/algorithmversions/{}/models".format(self.algorithmversion.ext_id)
+        return "/v1/algorithms/{}/models".format(self.algorithm.ext_id)
 
     @property
     def create_url(self):
@@ -29,12 +29,8 @@ class TestAlgorithmModels(MockApiTest, ObjectTest):
         {"auth_client": auth_client},
         {"organization": organization},
         {"user": user},
-        {"algorithm": lambda test, fixtures: algorithm(test, fixtures, "example")},
-        {
-            "algorithmversion": lambda test, fixtures: algorithmversion(
-                test, fixtures, "algorithm"
-            )
-        },
+        {"project": lambda test, fixtures: project(test, fixtures, "example")},
+        {"algorithm": lambda test, fixtures: algorithm(test, fixtures, "project")},
         {"dataset": lambda test, fixtures: dataset(test, fixtures, path="foo/bar")},
         {"datasetversion": datasetversion},
         {"model": model},
@@ -42,7 +38,7 @@ class TestAlgorithmModels(MockApiTest, ObjectTest):
         {"model_result": model_result},
         {
             "object_role": lambda test, fixtures: object_role(
-                test, fixtures, "admin", "admin", "organization", "algorithm"
+                test, fixtures, "admin", "admin", "organization", "project"
             )
         },
         {
@@ -55,16 +51,14 @@ class TestAlgorithmModels(MockApiTest, ObjectTest):
     def test_create(self):
         """
         We overwrite the create test since models require two dependent
-        objects (an algorithm version and a dataset version) to be created,
+        objects (an algorithm and a dataset version) to be created,
         so we need to pass both things in explicitly.
         """
         data = self.obj_create_data
         dsv = self.datasetversion
-        av = self.algorithmversion
+        av = self.algorithm
         result = self.app.post(
-            "/v1/datasetversions/{}/algorithmversions/{}/models".format(
-                dsv.ext_id, av.ext_id
-            ),
+            "/v1/datasetversions/{}/algorithms/{}/models".format(dsv.ext_id, av.ext_id),
             headers={"Authorization": "bearer test"},
             json=data,
         )

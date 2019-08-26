@@ -9,13 +9,13 @@ import unittest
 def model(
     test: Type[unittest.TestCase],
     fixtures: Dict[str, Any],
-    algorithmversion: str = "algorithmversion",
+    algorithm: str = "algorithm",
     datasetversion: str = "datasetversion",
 ) -> Any:
     assert issubclass(test, DatabaseTest)
-    algoversion = fixtures[algorithmversion]
+    algo = fixtures[algorithm]
     dsversion = fixtures[datasetversion]
-    model = Model(algorithmversion=algoversion, datasetversion=dsversion)
+    model = Model(algorithm=algo, datasetversion=dsversion)
     test.session.add(model)
     test.session.commit()
     return model

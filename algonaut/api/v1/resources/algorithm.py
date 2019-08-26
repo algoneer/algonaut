@@ -1,8 +1,8 @@
-from algonaut.models import Algorithm
+from algonaut.models import Algorithm, Project
 from ..forms import AlgorithmForm
 from .object import Objects, ObjectDetails
 
-joins = [[Algorithm.organization]]
+joins = [[Algorithm.project, Project.organization]]
 
-Algorithms = Objects(Algorithm, AlgorithmForm, Joins=joins)
-AlgorithmDetails = ObjectDetails(Algorithm, AlgorithmForm, Joins=joins)
+Algorithms = Objects(Algorithm, AlgorithmForm, [Project], Joins=joins)
+AlgorithmDetails = ObjectDetails(Algorithm, AlgorithmForm, [Project], Joins=joins)

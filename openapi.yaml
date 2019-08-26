@@ -14,15 +14,83 @@ info:
 servers:
   - url: https://app.algoneer.org
 paths:
-  /algorithms:
+  /projects:
+    get:
+      description: |
+        Returns all projects that you can see.
+      operationId: listProjects
+      parameters: []
+      responses:
+        '200':
+          description: projects response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Project'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      description: Creates a new project.
+      operationId: createProject
+      requestBody:
+        description: Project to create.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BaseProject'
+      responses:
+        '201':
+          description: project response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /projects/{id}:
+    get:
+      description: |
+        Returns details for a particular project.
+      operationId: getProjectDetails
+      parameters: 
+        - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: project details response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /projects/{id}/algorithms:
     get:
       description: |
         Returns all algorithms that you can see.
       operationId: listAlgorithms
-      parameters: []
+      parameters:
+        - $ref: '#/components/parameters/ID'
       responses:
         '200':
-          description: algorithnms response
+          description: algorithms response
           content:
             application/json:
               schema:
@@ -39,8 +107,10 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
     post:
-      description: Bases a new algorithm.
+      description: Creates a new algorithm.
       operationId: createAlgorithm
+      parameters:
+        - $ref: '#/components/parameters/ID'
       requestBody:
         description: Algorithm to create.
         required: true
@@ -66,11 +136,11 @@ paths:
       description: |
         Returns details for a particular algorithm.
       operationId: getAlgorithmDetails
-      parameters: 
+      parameters:
         - $ref: '#/components/parameters/ID'
       responses:
         '200':
-          description: algorithnms response
+          description: algorithms response
           content:
             application/json:
               schema:
@@ -81,81 +151,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /algorithms/{id}/versions:
+  /algorithms/{id}/results:
     get:
       description: |
-        Returns all algorithm versions that you can see.
-      operationId: listAlgorithmVersions
-      parameters:
-        - $ref: '#/components/parameters/ID'
-      responses:
-        '200':
-          description: algorithnm versions response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/AlgorithmVersion'
-        default:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-    post:
-      description: Bases a new algorithm version.
-      operationId: createAlgorithmVersion
-      parameters:
-        - $ref: '#/components/parameters/ID'
-      requestBody:
-        description: Algorithm to create.
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/BaseAlgorithmVersion'
-      responses:
-        '201':
-          description: algorithm version response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AlgorithmVersion'
-        default:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-  /algorithmversions/{id}:
-    get:
-      description: |
-        Returns details for a particular algorithm version.
-      operationId: getAlgorithmVersionDetails
-      parameters:
-        - $ref: '#/components/parameters/ID'
-      responses:
-        '200':
-          description: algorithnm versions response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/AlgorithmVersion'
-        default:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-  /algorithmversions/{id}/results:
-    get:
-      description: |
-        Returns all results for a given algorithm version.
-      operationId: listAlgorithmVersionResults
+        Returns all results for a given algorithm.
+      operationId: listAlgorithmResults
       parameters:
         - $ref: '#/components/parameters/ID'
       responses:
@@ -177,8 +177,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
     post:
-      description: Bases a new result for a given algorithm version.
-      operationId: createAlgorithmVersionResult
+      description: Creates a new result for a given algorithm.
+      operationId: createAlgorithmResult
       parameters:
         - $ref: '#/components/parameters/ID'
       requestBody:
@@ -201,11 +201,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /algorithmversions/{id}/results/{dependent_id}:
+  /algorithms/{id}/results/{dependent_id}:
     get:
       description: |
-        Returns details for a given result of a given algorithmversion.
-      operationId: getAlgorithmVersionResultDetails
+        Returns details for a given result of a given algorithm.
+      operationId: getAlgorithmResultDetails
       parameters:
         - $ref: '#/components/parameters/ID'
         - $ref: "#/components/parameters/DependentID"
@@ -222,10 +222,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /algorithmversions/{id}/schemas:
+  /algorithms/{id}/schemas:
     get:
       description: |
-        Returns all schemas of a given algorithm version.
+        Returns all schemas of a given algorithm.
       operationId: listAlgorithmSchemas
       parameters:
         - $ref: '#/components/parameters/ID'
@@ -248,7 +248,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
     post:
-      description: Bases a new algorithm schema and associate it with a algorithm version.
+      description: Creates a new algorithm schema and associate it with a algorithm.
       operationId: createAlgorithmSchema
       parameters:
         - $ref: '#/components/parameters/ID'
@@ -272,7 +272,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /algorithmversions/{id}/schemas/{dependent_id}:
+  /algorithms/{id}/schemas/{dependent_id}:
     get:
       description: |
         Returns details for a particular algorithm schema.
@@ -293,10 +293,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /algorithmversions/{id}/models:
+  /algorithms/{id}/models:
     get:
       description: |
-        Returns all models for a given algorithm version that you can see.
+        Returns all models for a given algorithm that you can see.
       operationId: listModels
       parameters:
         - $ref: '#/components/parameters/ID'
@@ -319,7 +319,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
     post:
-      description: Bases a new model for a given algorithm version.
+      description: Creates a new model for a given algorithm.
       operationId: createModel
       parameters:
         - $ref: '#/components/parameters/ID'
@@ -389,7 +389,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
     post:
-      description: Bases a new result for a given model.
+      description: Creates a new result for a given model.
       operationId: createModelResult
       parameters:
         - $ref: '#/components/parameters/ID'
@@ -464,7 +464,7 @@ paths:
       parameters: []
       responses:
         '200':
-          description: algorithnms response
+          description: datasets response
           content:
             application/json:
               schema:
@@ -481,7 +481,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
     post:
-      description: Bases a new algorithm.
+      description: Creates a new dataset.
       operationId: createDataset
       requestBody:
         description: Dataset to create.
@@ -549,7 +549,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
     post:
-      description: Bases a new dataset version.
+      description: Creates a new dataset version.
       operationId: createDatasetVersion
       parameters:
         - $ref: '#/components/parameters/ID'
@@ -619,7 +619,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
     post:
-      description: Bases a new result for a given dataset version.
+      description: Creates a new result for a given dataset version.
       operationId: createDatasetVersionResult
       parameters:
         - $ref: '#/components/parameters/ID'
@@ -690,7 +690,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
     post:
-      description: Bases a new data schema and associate it with a dataset version.
+      description: Creates a new data schema and associate it with a dataset version.
       operationId: createDataSchema
       parameters:
         - $ref: '#/components/parameters/ID'
@@ -761,7 +761,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
     post:
-      description: Bases a new datapoint.
+      description: Creates a new datapoint.
       operationId: createDatapoint
       parameters:
         - $ref: '#/components/parameters/ID'
@@ -833,7 +833,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
     post:
-      description: Bases a new result for a given datapoint and model.
+      description: Creates a new result for a given datapoint and model.
       operationId: createDatapointModelResult
       parameters:
         - $ref: '#/components/parameters/ID'
@@ -883,7 +883,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
     post:
-      description: Bases a new object role.
+      description: Creates a new object role.
       operationId: createObjectRole
       requestBody:
         description: Object role to create.
@@ -950,11 +950,11 @@ components:
         id:
           type: string
           format: uuid
-    Algorithm:
+    Project:
       allOf:
-        - $ref: '#/components/schemas/BaseAlgorithm'
+        - $ref: '#/components/schemas/BaseProject'
         - $ref: '#/components/schemas/Base'
-    BaseAlgorithm:
+    BaseProject:
       type: object
       required:
         - path
@@ -964,11 +964,11 @@ components:
           example: hr/candidate-selection
         data:
           type: object
-    AlgorithmVersion:
+    Algorithm:
       allOf:
-        - $ref: '#/components/schemas/BaseAlgorithmVersion'
+        - $ref: '#/components/schemas/BaseAlgorithm'
         - $ref: '#/components/schemas/Base'
-    BaseAlgorithmVersion:
+    BaseAlgorithm:
       type: object
       required:
         - data

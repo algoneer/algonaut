@@ -17,7 +17,9 @@ class DatasetVersion(Base):
     dataset_id = Column(PkType, ForeignKey("dataset.id"), nullable=False)
     hash = Column(BYTEA, nullable=False)
     dataset = relationship(
-        "Dataset", backref=backref("versions", cascade="all,delete,delete-orphan")
+        "Dataset",
+        backref=backref("versions", cascade="all,delete,delete-orphan"),
+        innerjoin=True,
     )
     tags = Column(ARRAY(Unicode, dimensions=1))
 

@@ -16,8 +16,12 @@ class DatasetVersionResult(Base):
     result_id = Column(PkType, ForeignKey("result.id"), nullable=False)
 
     datasetversion = relationship(
-        "DatasetVersion", backref=backref("results", cascade="all,delete,delete-orphan")
+        "DatasetVersion",
+        backref=backref("results", cascade="all,delete,delete-orphan"),
+        innerjoin=True,
     )
     result = relationship(
-        "Result", backref=backref("datasets", cascade="all,delete,delete-orphan")
+        "Result",
+        backref=backref("datasets", cascade="all,delete,delete-orphan"),
+        innerjoin=True,
     )

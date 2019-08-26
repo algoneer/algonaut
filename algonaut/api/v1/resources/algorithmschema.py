@@ -1,21 +1,15 @@
 from algonaut.models import (
     AlgorithmSchema,
-    AlgorithmVersionAlgorithmSchema,
-    AlgorithmVersion,
+    AlgorithmAlgorithmSchema,
     Algorithm,
+    Project,
 )
 from ..forms import AlgorithmSchemaForm
 from .object import Objects, ObjectDetails
 
 AlgorithmSchemas = Objects(
-    AlgorithmSchema,
-    AlgorithmSchemaForm,
-    [AlgorithmVersion, Algorithm],
-    AlgorithmVersionAlgorithmSchema,
+    AlgorithmSchema, AlgorithmSchemaForm, [Algorithm, Project], AlgorithmAlgorithmSchema
 )
 AlgorithmSchemaDetails = ObjectDetails(
-    AlgorithmSchema,
-    AlgorithmSchemaForm,
-    [AlgorithmVersion, Algorithm],
-    AlgorithmVersionAlgorithmSchema,
+    AlgorithmSchema, AlgorithmSchemaForm, [Algorithm, Project], AlgorithmAlgorithmSchema
 )

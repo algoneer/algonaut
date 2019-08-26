@@ -219,8 +219,8 @@ CREATE INDEX ix_dataschema_created_at ON dataschema USING BTREE (created_at);
 CREATE INDEX ix_dataschema_updated_at ON dataschema USING BTREE (updated_at);
 CREATE INDEX ix_dataschema_deleted_at ON dataschema USING BTREE (deleted_at);
 
--- represents an algorithm
-CREATE TABLE algorithm (
+-- represents a project
+CREATE TABLE project (
     id bigint NOT NULL,
     ext_id uuid NOT NULL,
     organization_id bigint NOT NULL,
@@ -234,11 +234,56 @@ CREATE TABLE algorithm (
     data json
 );
 
+ALTER TABLE ONLY project
+    ADD CONSTRAINT project_ext_id_key UNIQUE (ext_id);
+
+ALTER TABLE ONLY project
+    ADD CONSTRAINT project_pkey PRIMARY KEY (id);
+
+CREATE SEQUENCE project_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE project_id_seq OWNED BY project.id;
+
+ALTER TABLE ONLY project ALTER COLUMN id SET DEFAULT nextval('project_id_seq'::regclass);
+
+ALTER TABLE ONLY project
+    ADD CONSTRAINT project_organization_id_fkey FOREIGN KEY (organization_id) REFERENCES organization(id);
+
+CREATE INDEX ix_project_organization_id ON project USING BTREE (organization_id);
+CREATE INDEX ix_project_tags ON project USING GIN (tags);
+CREATE INDEX ix_project_path ON project USING BTREE (path);
+CREATE INDEX ix_project_name ON project USING BTREE (name);
+CREATE INDEX ix_project_created_at ON project USING BTREE (created_at);
+CREATE INDEX ix_project_updated_at ON project USING BTREE (updated_at);
+CREATE INDEX ix_project_deleted_at ON project USING BTREE (deleted_at);
+
+-- represents an algorithm version
+CREATE TABLE algorithm (
+    id bigint NOT NULL,
+    ext_id uuid NOT NULL,
+    tags CHARACTER VARYING[],
+    hash BYTEA NOT NULL,
+    name CHARACTER VARYING NOT NULL DEFAULT '',
+    project_id bigint NOT NULL,
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    deleted_at timestamp without time zone,
+    data json
+);
+
 ALTER TABLE ONLY algorithm
     ADD CONSTRAINT algorithm_ext_id_key UNIQUE (ext_id);
 
 ALTER TABLE ONLY algorithm
     ADD CONSTRAINT algorithm_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY algorithm
+    ADD CONSTRAINT algorithm_project_id_fkey FOREIGN KEY (project_id) REFERENCES project(id);
 
 CREATE SEQUENCE algorithm_id_seq
     START WITH 1
@@ -251,64 +296,19 @@ ALTER SEQUENCE algorithm_id_seq OWNED BY algorithm.id;
 
 ALTER TABLE ONLY algorithm ALTER COLUMN id SET DEFAULT nextval('algorithm_id_seq'::regclass);
 
-ALTER TABLE ONLY algorithm
-    ADD CONSTRAINT algorithm_organization_id_fkey FOREIGN KEY (organization_id) REFERENCES organization(id);
-
-CREATE INDEX ix_algorithm_organization_id ON algorithm USING BTREE (organization_id);
-CREATE INDEX ix_algorithm_tags ON algorithm USING GIN (tags);
-CREATE INDEX ix_algorithm_path ON algorithm USING BTREE (path);
-CREATE INDEX ix_algorithm_name ON algorithm USING BTREE (name);
+CREATE INDEX ix_algorithm_hash ON algorithm USING BTREE (hash);
 CREATE INDEX ix_algorithm_created_at ON algorithm USING BTREE (created_at);
 CREATE INDEX ix_algorithm_updated_at ON algorithm USING BTREE (updated_at);
 CREATE INDEX ix_algorithm_deleted_at ON algorithm USING BTREE (deleted_at);
-
--- represents an algorithm version
-CREATE TABLE algorithmversion (
-    id bigint NOT NULL,
-    ext_id uuid NOT NULL,
-    tags CHARACTER VARYING[],
-    hash BYTEA NOT NULL,
-    name CHARACTER VARYING NOT NULL DEFAULT '',
-    algorithm_id bigint NOT NULL,
-    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
-    updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
-    deleted_at timestamp without time zone,
-    data json
-);
-
-ALTER TABLE ONLY algorithmversion
-    ADD CONSTRAINT algorithmversion_ext_id_key UNIQUE (ext_id);
-
-ALTER TABLE ONLY algorithmversion
-    ADD CONSTRAINT algorithmversion_pkey PRIMARY KEY (id);
-
-ALTER TABLE ONLY algorithmversion
-    ADD CONSTRAINT algorithmversion_algorithm_id_fkey FOREIGN KEY (algorithm_id) REFERENCES algorithm(id);
-
-CREATE SEQUENCE algorithmversion_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-ALTER SEQUENCE algorithmversion_id_seq OWNED BY algorithmversion.id;
-
-ALTER TABLE ONLY algorithmversion ALTER COLUMN id SET DEFAULT nextval('algorithmversion_id_seq'::regclass);
-
-CREATE INDEX ix_algorithmversion_hash ON algorithmversion USING BTREE (hash);
-CREATE INDEX ix_algorithmversion_created_at ON algorithmversion USING BTREE (created_at);
-CREATE INDEX ix_algorithmversion_updated_at ON algorithmversion USING BTREE (updated_at);
-CREATE INDEX ix_algorithmversion_deleted_at ON algorithmversion USING BTREE (deleted_at);
-CREATE INDEX ix_algorithmversion_tags ON algorithmversion USING GIN (tags);
-CREATE INDEX ix_algorithmversion_name ON algorithmversion USING BTREE (name);
+CREATE INDEX ix_algorithm_tags ON algorithm USING GIN (tags);
+CREATE INDEX ix_algorithm_name ON algorithm USING BTREE (name);
 
 -- represents a model
 CREATE TABLE model (
     id bigint NOT NULL,
     ext_id uuid NOT NULL,
     hash BYTEA NOT NULL,
-    algorithmversion_id bigint NOT NULL,
+    algorithm_id bigint NOT NULL,
     datasetversion_id bigint NOT NULL,
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
@@ -342,7 +342,7 @@ ALTER TABLE ONLY model
     ADD CONSTRAINT model_datasetversion_id_fkey FOREIGN KEY (datasetversion_id) REFERENCES datasetversion(id);
 
 ALTER TABLE ONLY model
-    ADD CONSTRAINT model_algorithmversion_id_fkey FOREIGN KEY (algorithmversion_id) REFERENCES algorithmversion(id);
+    ADD CONSTRAINT model_algorithm_id_fkey FOREIGN KEY (algorithm_id) REFERENCES algorithm(id);
 
 -- represents an algorithm schema
 CREATE TABLE algorithmschema (
@@ -419,45 +419,45 @@ Association tables
 */
 
 -- maps a result to a given algorithn version
-CREATE TABLE algorithmversion_result (
+CREATE TABLE algorithm_result (
     id bigint NOT NULL,
     ext_id uuid NOT NULL,
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     deleted_at timestamp without time zone,
     data json,
-    algorithmversion_id bigint NOT NULL,
+    algorithm_id bigint NOT NULL,
     result_id bigint NOT NULL
 );
 
-ALTER TABLE ONLY algorithmversion_result
-    ADD CONSTRAINT algorithmversion_result_ext_id_key UNIQUE (ext_id);
+ALTER TABLE ONLY algorithm_result
+    ADD CONSTRAINT algorithm_result_ext_id_key UNIQUE (ext_id);
 
-ALTER TABLE ONLY algorithmversion_result
-    ADD CONSTRAINT algorithmversion_result_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY algorithm_result
+    ADD CONSTRAINT algorithm_result_pkey PRIMARY KEY (id);
 
-CREATE SEQUENCE algorithmversion_result_id_seq
+CREATE SEQUENCE algorithm_result_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
 
-ALTER SEQUENCE algorithmversion_result_id_seq OWNED BY algorithmversion_result.id;
+ALTER SEQUENCE algorithm_result_id_seq OWNED BY algorithm_result.id;
 
-ALTER TABLE ONLY algorithmversion_result ALTER COLUMN id SET DEFAULT nextval('algorithmversion_result_id_seq'::regclass);
+ALTER TABLE ONLY algorithm_result ALTER COLUMN id SET DEFAULT nextval('algorithm_result_id_seq'::regclass);
 
-ALTER TABLE ONLY algorithmversion_result
-    ADD CONSTRAINT algorithmversion_result_algorithmversion_id_fkey FOREIGN KEY (algorithmversion_id) REFERENCES algorithmversion(id);
+ALTER TABLE ONLY algorithm_result
+    ADD CONSTRAINT algorithm_result_algorithm_id_fkey FOREIGN KEY (algorithm_id) REFERENCES algorithm(id);
 
-ALTER TABLE ONLY algorithmversion_result
-    ADD CONSTRAINT algorithmversion_result_result_id_fkey FOREIGN KEY (result_id) REFERENCES result(id);
+ALTER TABLE ONLY algorithm_result
+    ADD CONSTRAINT algorithm_result_result_id_fkey FOREIGN KEY (result_id) REFERENCES result(id);
 
 -- an algorithm version can only be mapped to a result once
-CREATE UNIQUE INDEX ix_algorithmversion_result_unique ON algorithmversion_result USING BTREE (algorithmversion_id, result_id);
-CREATE INDEX ix_algorithmversion_result_created_at ON algorithmversion_result USING BTREE (created_at);
-CREATE INDEX ix_algorithmversion_result_updated_at ON algorithmversion_result USING BTREE (updated_at);
-CREATE INDEX ix_algorithmversion_result_deleted_at ON algorithmversion_result USING BTREE (deleted_at);
+CREATE UNIQUE INDEX ix_algorithm_result_unique ON algorithm_result USING BTREE (algorithm_id, result_id);
+CREATE INDEX ix_algorithm_result_created_at ON algorithm_result USING BTREE (created_at);
+CREATE INDEX ix_algorithm_result_updated_at ON algorithm_result USING BTREE (updated_at);
+CREATE INDEX ix_algorithm_result_deleted_at ON algorithm_result USING BTREE (deleted_at);
 
 -- maps a result to a given dataset version
 CREATE TABLE datasetversion_result (
@@ -628,45 +628,45 @@ CREATE INDEX ix_datasetversion_dataschema_updated_at ON datasetversion_dataschem
 CREATE INDEX ix_datasetversion_dataschema_deleted_at ON datasetversion_dataschema USING BTREE (deleted_at);
 
 -- maps an algorithm schema to an algorithm version
-CREATE TABLE algorithmversion_algorithmschema (
+CREATE TABLE algorithm_algorithmschema (
     id bigint NOT NULL,
     ext_id uuid NOT NULL,
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     deleted_at timestamp without time zone,
     data json,
-    algorithmversion_id bigint NOT NULL,
+    algorithm_id bigint NOT NULL,
     algorithmschema_id bigint NOT NULL
 );
 
-ALTER TABLE ONLY algorithmversion_algorithmschema
-    ADD CONSTRAINT algorithmversion_algorithmschema_ext_id_key UNIQUE (ext_id);
+ALTER TABLE ONLY algorithm_algorithmschema
+    ADD CONSTRAINT algorithm_algorithmschema_ext_id_key UNIQUE (ext_id);
 
-ALTER TABLE ONLY algorithmversion_algorithmschema
-    ADD CONSTRAINT algorithmversion_algorithmschema_pkey PRIMARY KEY (id);
+ALTER TABLE ONLY algorithm_algorithmschema
+    ADD CONSTRAINT algorithm_algorithmschema_pkey PRIMARY KEY (id);
 
-CREATE SEQUENCE algorithmversion_algorithmschema_id_seq
+CREATE SEQUENCE algorithm_algorithmschema_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
 
-ALTER SEQUENCE algorithmversion_algorithmschema_id_seq OWNED BY algorithmversion_algorithmschema.id;
+ALTER SEQUENCE algorithm_algorithmschema_id_seq OWNED BY algorithm_algorithmschema.id;
 
-ALTER TABLE ONLY algorithmversion_algorithmschema ALTER COLUMN id SET DEFAULT nextval('algorithmversion_algorithmschema_id_seq'::regclass);
+ALTER TABLE ONLY algorithm_algorithmschema ALTER COLUMN id SET DEFAULT nextval('algorithm_algorithmschema_id_seq'::regclass);
 
-ALTER TABLE ONLY algorithmversion_algorithmschema
-    ADD CONSTRAINT algorithmversion_algorithmschema_algorithmversion_id_fkey FOREIGN KEY (algorithmversion_id) REFERENCES algorithmversion(id);
+ALTER TABLE ONLY algorithm_algorithmschema
+    ADD CONSTRAINT algorithm_algorithmschema_algorithm_id_fkey FOREIGN KEY (algorithm_id) REFERENCES algorithm(id);
 
-ALTER TABLE ONLY algorithmversion_algorithmschema
-    ADD CONSTRAINT algorithmversion_algorithmschema_algorithmschema_id_fkey FOREIGN KEY (algorithmschema_id) REFERENCES algorithmschema(id);
+ALTER TABLE ONLY algorithm_algorithmschema
+    ADD CONSTRAINT algorithm_algorithmschema_algorithmschema_id_fkey FOREIGN KEY (algorithmschema_id) REFERENCES algorithmschema(id);
 
 -- an algorithm schema can only be mapped to an algorithm version once
-CREATE UNIQUE INDEX ix_algorithmversion_algorithmschema_unique ON algorithmversion_algorithmschema USING BTREE (algorithmversion_id, algorithmschema_id);
-CREATE INDEX ix_algorithmversion_algorithmschema_created_at ON algorithmversion_algorithmschema USING BTREE (created_at);
-CREATE INDEX ix_algorithmversion_algorithmschema_updated_at ON algorithmversion_algorithmschema USING BTREE (updated_at);
-CREATE INDEX ix_algorithmversion_algorithmschema_deleted_at ON algorithmversion_algorithmschema USING BTREE (deleted_at);
+CREATE UNIQUE INDEX ix_algorithm_algorithmschema_unique ON algorithm_algorithmschema USING BTREE (algorithm_id, algorithmschema_id);
+CREATE INDEX ix_algorithm_algorithmschema_created_at ON algorithm_algorithmschema USING BTREE (created_at);
+CREATE INDEX ix_algorithm_algorithmschema_updated_at ON algorithm_algorithmschema USING BTREE (updated_at);
+CREATE INDEX ix_algorithm_algorithmschema_deleted_at ON algorithm_algorithmschema USING BTREE (deleted_at);
 
 -- maps a datapoint to a given dataset version
 CREATE TABLE datasetversion_datapoint (

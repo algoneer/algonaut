@@ -1,12 +1,12 @@
 from typing import List, Dict, Tuple, Any, Type
 from ..resource import Resource
 
-from .resources.algorithm import Algorithms, AlgorithmDetails
+from .resources.project import Projects, ProjectDetails
 from .resources.algorithmschema import AlgorithmSchemas, AlgorithmSchemaDetails
-from .resources.algorithmversion import AlgorithmVersions, AlgorithmVersionDetails
+from .resources.algorithm import Algorithms, AlgorithmDetails
 from .resources.result import (
-    AlgorithmVersionResults,
-    AlgorithmVersionResultDetails,
+    AlgorithmResults,
+    AlgorithmResultDetails,
     ModelResults,
     ModelResultDetails,
     DatasetVersionResults,
@@ -29,34 +29,29 @@ from .resources.dataschema import DataSchemas, DataSchemaDetails
 
 routes: List[Dict[str, Tuple[Type[Resource], Dict[str, Any]]]] = [
     {"/organizations": (Organizations, {"methods": ["GET"]})},
-    {"/algorithms": (Algorithms, {"methods": ["GET"]})},
-    {"/algorithms/<organization_id>": (Algorithms, {"methods": ["POST"]})},
+    {"/projects": (Projects, {"methods": ["GET"]})},
+    {"/projects/<organization_id>": (Projects, {"methods": ["POST"]})},
     {
-        "/algorithms/<object_id>": (
-            AlgorithmDetails,
+        "/projects/<object_id>": (
+            ProjectDetails,
             {"methods": ["GET", "POST", "PATCH", "DELETE"]},
         )
     },
+    {"/projects/<object_id>/algorithms": (Algorithms, {"methods": ["GET", "POST"]})},
     {
-        "/algorithms/<object_id>/versions": (
-            AlgorithmVersions,
-            {"methods": ["GET", "POST"]},
-        )
-    },
-    {
-        "/algorithmversions/<object_id>": (
-            AlgorithmVersionDetails,
+        "/algorithms/<object_id>": (
+            AlgorithmDetails,
             {"methods": ["GET", "PATCH", "DELETE"]},
         )
     },
     {
-        "/algorithmversions/<object_id>/schemas": (
+        "/algorithms/<object_id>/schemas": (
             AlgorithmSchemas,
             {"methods": ["GET", "POST"]},
         )
     },
     {
-        "/algorithmversions/<dependent_id>/schemas/<object_id>": (
+        "/algorithms/<dependent_id>/schemas/<object_id>": (
             AlgorithmSchemaDetails,
             {"methods": ["GET", "PATCH", "DELETE"]},
         )
@@ -74,14 +69,14 @@ routes: List[Dict[str, Tuple[Type[Resource], Dict[str, Any]]]] = [
         )
     },
     {
-        "/algorithmversions/<object_id>/results": (
-            AlgorithmVersionResults,
+        "/algorithms/<object_id>/results": (
+            AlgorithmResults,
             {"methods": ["GET", "POST"]},
         )
     },
     {
-        "/algorithmversions/<dependent_id>/results/<object_id>": (
-            AlgorithmVersionResultDetails,
+        "/algorithms/<dependent_id>/results/<object_id>": (
+            AlgorithmResultDetails,
             {"methods": ["GET", "PATCH", "DELETE"]},
         )
     },
@@ -131,10 +126,10 @@ routes: List[Dict[str, Tuple[Type[Resource], Dict[str, Any]]]] = [
             {"methods": ["GET", "PATCH", "DELETE"]},
         )
     },
-    {"/algorithmversions/<object_id>/models": (AlgorithmModels, {"methods": ["GET"]})},
+    {"/algorithms/<object_id>/models": (AlgorithmModels, {"methods": ["GET"]})},
     {"/models/<object_id>": (ModelDetails, {"methods": ["GET", "PATCH", "DELETE"]})},
     {
-        "/datasetversions/<datasetversion_id>/algorithmversions/<algorithmversion_id>/models": (
+        "/datasetversions/<datasetversion_id>/algorithms/<algorithm_id>/models": (
             CreateModel,
             {"methods": ["POST"]},
         )

@@ -1,10 +1,10 @@
 # we import all relevant models
 
-from .algorithmversion import AlgorithmVersion  # noqa
 from .algorithm import Algorithm  # noqa
+from .project import Project  # noqa
 from .algorithmschema import AlgorithmSchema  # noqa
-from .algorithmversion_algorithmschema import AlgorithmVersionAlgorithmSchema  # noqa
-from .algorithmversion_result import AlgorithmVersionResult  # noqa
+from .algorithm_algorithmschema import AlgorithmAlgorithmSchema  # noqa
+from .algorithm_result import AlgorithmResult  # noqa
 from .datapoint import Datapoint  # noqa
 from .dataschema import DataSchema  # noqa
 from .dataset import Dataset  # noqa
@@ -24,14 +24,14 @@ from .base import Base  # noqa
 def clean_db(session):
     engine = session.connection().engine
     for model in [
-        AlgorithmVersionAlgorithmSchema,
-        AlgorithmVersionResult,
+        AlgorithmAlgorithmSchema,
+        AlgorithmResult,
         DatapointModelResult,
         ModelResult,
         Model,
-        AlgorithmVersion,
-        AlgorithmSchema,
         Algorithm,
+        AlgorithmSchema,
+        Project,
         DatasetVersionDatapoint,
         DatasetVersionResult,
         DatasetVersionDataSchema,
