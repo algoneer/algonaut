@@ -17,6 +17,9 @@ class OrganizationRoles:
     def roles(self) -> List[str]:
         return self._roles
 
+    def export(self):
+        return {"roles": self.roles, "organization": self.organization.export()}
+
 
 class User:
     def __init__(

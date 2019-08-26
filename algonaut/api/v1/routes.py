@@ -16,13 +16,12 @@ from .resources.result import (
 )
 from .resources.dataset import Datasets, DatasetDetails
 from .resources.datapoint import Datapoints, DatapointDetails
-from .resources.organization import Organizations
+from .resources.organization_role import OrganizationRoles
 from .resources.model import CreateModel, AlgorithmModels, ModelDetails, DatasetModels
 from .resources.object_role import ObjectRoles, ObjectRoleDetails
 from .resources.dataschema import DataSchemas, DataSchemaDetails
 
 routes: List[Dict[str, Tuple[Type[Resource], Dict[str, Any]]]] = [
-    {"/organizations": (Organizations, {"methods": ["GET"]})},
     {"/projects": (Projects, {"methods": ["GET"]})},
     {"/projects/<organization_id>": (Projects, {"methods": ["POST"]})},
     {
@@ -125,4 +124,5 @@ routes: List[Dict[str, Tuple[Type[Resource], Dict[str, Any]]]] = [
             {"methods": ["GET", "PATCH", "DELETE"]},
         )
     },
+    {"/organization_roles": (OrganizationRoles, {"methods": ["GET"]})},
 ]

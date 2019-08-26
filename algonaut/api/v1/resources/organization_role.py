@@ -4,7 +4,7 @@ from algonaut.api.decorators import authorized
 from flask import request
 
 
-class Organizations(Resource):
+class OrganizationRoles(Resource):
     @authorized()
     def get(self) -> ResponseType:
-        return {}, 200
+        return {"data": [org_roles.export() for org_roles in request.user.roles]}, 200

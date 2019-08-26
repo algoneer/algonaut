@@ -37,3 +37,12 @@ class Organization:
     @property
     def title(self) -> str:
         return self._title
+
+    def export(self):
+        return {
+            "title": self.title,
+            "description": self.description,
+            "source": self.source,
+            "id": self.id.hex(),
+            "name": self.name,
+        }
