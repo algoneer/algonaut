@@ -40,19 +40,19 @@ This will set all required environment variables.
 ## Database Configuration
 
 Algonaut requires access to a Postgres database. The database connection is
-configured in the `db` section of the settings. By default, Algoneer tries
+configured in the `db` section of the settings. By default, Algonaut tries
 to connect to the default Postgres port on localhost and connect to a database
-named `algoneer_development` with a user named `algoneer` and password `algoneer` (when
-running Algoneer in production you should change these values). For testing,
-Algoneer tries to connect to the `algoneer_test` database by default,
+named `algonaut_development` with a user named `algonaut` and password `algonaut` (when
+running Algonaut in production you should change these values). For testing,
+Algonaut tries to connect to the `algonaut_test` database by default,
 using the same credentials.
 
 You can create the required database and credentials using the following Postgres
 commands:
 
-    CREATE DATABASE algoneer_development;
-    CREATE USER algoneer WITH ENCRYPTED PASSWORD 'algoneer';
-    GRANT ALL PRIVILEGES ON DATABASE algoneer TO algoneer;
+    CREATE DATABASE algonaut_development;
+    CREATE USER algonaut WITH ENCRYPTED PASSWORD 'algonaut';
+    GRANT ALL PRIVILEGES ON DATABASE algonaut_development TO algonaut;
 
 ## Migrations
 
