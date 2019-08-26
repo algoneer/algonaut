@@ -747,7 +747,7 @@ ALTER TABLE ONLY object_role ALTER COLUMN id SET DEFAULT nextval('object_role_id
 ALTER TABLE ONLY object_role
     ADD CONSTRAINT object_role_ext_id_key UNIQUE (ext_id);
 
-CREATE UNIQUE INDEX ix_object_role_unique ON object_role (object_id, organization_id, organization_role);
+CREATE UNIQUE INDEX ix_object_role_unique ON object_role (object_type, object_id, organization_id, organization_role, object_role);
 CREATE INDEX ix_object_role_created_at ON object_role USING BTREE (created_at);
 CREATE INDEX ix_object_role_updated_at ON object_role USING BTREE (updated_at);
 CREATE INDEX ix_object_role_deleted_at ON object_role USING BTREE (deleted_at);
