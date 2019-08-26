@@ -17,7 +17,9 @@ class AlgorithmVersion(Base):
     algorithm_id = Column(PkType, ForeignKey("algorithm.id"), nullable=False)
     hash = Column(BYTEA, nullable=False)
     algorithm = relationship(
-        "Algorithm", backref=backref("versions", cascade="all,delete,delete-orphan")
+        "Algorithm",
+        backref=backref("versions", cascade="all,delete,delete-orphan"),
+        innerjoin=True,
     )
     tags = Column(ARRAY(Unicode, dimensions=1))
 

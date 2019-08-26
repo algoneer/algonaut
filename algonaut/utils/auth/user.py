@@ -1,11 +1,11 @@
-from typing import Iterable
+from typing import List
 
 from .access_token import AccessToken
 from .organization import Organization
 
 
 class OrganizationRoles:
-    def __init__(self, organization: Organization, roles: Iterable[str]):
+    def __init__(self, organization: Organization, roles: List[str]):
         self._organization = organization
         self._roles = roles
 
@@ -14,19 +14,19 @@ class OrganizationRoles:
         return self._organization
 
     @property
-    def roles(self) -> Iterable[str]:
+    def roles(self) -> List[str]:
         return self._roles
 
 
 class User:
     def __init__(
-        self, access_token: AccessToken, organization_roles: OrganizationRoles
+        self, access_token: AccessToken, organization_roles: List[OrganizationRoles]
     ) -> None:
         self._access_token = access_token
         self._organization_roles = organization_roles
 
     @property
-    def roles(self) -> OrganizationRoles:
+    def roles(self) -> List[OrganizationRoles]:
         return self._organization_roles
 
     @property

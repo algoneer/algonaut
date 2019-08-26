@@ -23,15 +23,25 @@ class TestDatasets(MockApiTest, ObjectTest):
         "tags": ["one", "two"],
     }
 
+    @property
+    def create_url(self):
+        self.session.add(self.organization)
+        return "{}/{}".format(self.base_url, self.organization.source_id.hex())
+
     fixtures = [
         {"auth_client": auth_client},
         {"organization": organization},
+        {
+            "another_organization": lambda test, fixtures: organization(
+                test, fixtures, name="another one"
+            )
+        },
         {"user": user},
         {"dataset": lambda test, fixtures: dataset(test, fixtures, "example")},
         # the next algorithm is not visible to the user
         {
             "another_dataset": lambda test, fixtures: dataset(
-                test, fixtures, "another_example"
+                test, fixtures, "another_example", "another_organization"
             )
         },
         {

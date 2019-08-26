@@ -15,6 +15,7 @@ def valid_object(
     id_field: str = "object_id",
     dependent_id_field: str = "dependent_id",
     DependentTypes: Optional[List[Type[Base]]] = None,
+    Joins: Optional[List[List[Type[Base]]]] = None,
     JoinBy: Optional[Type[Base]] = None,
 ) -> Callable[[Callable[..., ResponseType]], Callable[..., ResponseType]]:
 
@@ -42,11 +43,23 @@ def valid_object(
                 assert Type is not None
 
                 # we retrieve the requested object from the database
-                obj = (
-                    session.query(Type)
-                    .filter(Type.ext_id == object_id, Type.deleted_at == None)
-                    .one_or_none()
+                query = session.query(Type).filter(
+                    Type.ext_id == object_id, Type.deleted_at == None
                 )
+
+                if Joins:
+                    for j in Joins:
+                        joinedloads = None
+                        for Join in j:
+                            if joinedloads is None:
+                                joinedloads = joinedload(Join, innerjoin=True)
+                            else:
+                                joinedloads = joinedloads.joinedload(
+                                    Join, innerjoin=True
+                                )
+                        query = query.options(joinedloads)
+
+                obj = query.one_or_none()
 
                 if not obj:
                     return not_found
@@ -107,13 +120,21 @@ def valid_object(
                                 nt = NextType().type
                                 query = query.filter(NextType.deleted_at == None)
                                 if joinedloads is None:
-                                    joinedloads = joinedload(getattr(DependentType, nt))
+                                    joinedloads = joinedload(
+                                        getattr(DependentType, nt), innerjoin=True
+                                    )
                                 else:
                                     joinedloads = joinedloads.joinedload(
-                                        getattr(DependentType, nt)
+                                        getattr(DependentType, nt), innerjoin=True
                                     )
                                 DependentType = NextType
-                            query.options(joinedloads)
+                                # if the dependent type has an organization
+                                # we also load it...
+                                if hasattr(DependentType, "organization"):
+                                    joinedloads = joinedloads.joinedload(
+                                        DependentType.organization, innerjoin=True
+                                    )
+                            query = query.options(joinedloads)
 
                         dependent_obj = query.one_or_none()
 
@@ -134,20 +155,46 @@ def valid_object(
                         role_obj = dependent_obj
                     else:
                         role_obj = obj
+
+                    role_found = False
+                    # this object is owned by an organization, so we check the roles of
+                    # the currently logged in user in the organization and see if the
+                    # the user is an admin or superuser, in which case he/she has access
+                    # to the object regardless of explicitly set object roles.
+                    if (
+                        hasattr(role_obj, "organization")
+                        and not role_obj.organization.deleted_at
+                    ):
+                        for org_roles in request.user.roles:
+                            if (
+                                org_roles.organization.id
+                                == role_obj.organization.source_id
+                                and org_roles.organization.source
+                                == role_obj.organization.source
+                            ):
+                                for role in ["admin", "superuser"]:
+                                    if role in org_roles.roles:
+                                        role_found = True
+                                        break
+                                else:
+                                    continue
+                                break
                     # we retrieve the roles for the role object and the currently logged in user
                     obj_roles = ObjectRole.roles_for(session, request.user, role_obj)
                     obj_roles_set = set([role.object_role for role in obj_roles])
                     # we check the roles against the required ones to see if the user has one of the
                     # requested roles on the object, otherwise we return "not found"
                     if roles is None:
-                        if not obj_roles:
-                            return not_found
+                        if obj_roles:
+                            role_found = True
                     else:
                         for role in roles:
                             if role in obj_roles_set:
+                                role_found = True
                                 break
-                        else:
-                            return not_found
+                    if not role_found:
+                        return not_found
+                    # we add the roles to the object as a context information
                     obj._roles = obj_roles
                 setattr(request, obj.type, obj)
                 return f(*args, **kwargs)

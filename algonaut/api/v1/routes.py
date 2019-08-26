@@ -17,6 +17,7 @@ from .resources.result import (
 from .resources.dataset import Datasets, DatasetDetails
 from .resources.datasetversion import DatasetVersions, DatasetVersionDetails
 from .resources.datapoint import Datapoints, DatapointDetails
+from .resources.organization import Organizations
 from .resources.model import (
     CreateModel,
     AlgorithmModels,
@@ -27,7 +28,9 @@ from .resources.object_role import ObjectRoles, ObjectRoleDetails
 from .resources.dataschema import DataSchemas, DataSchemaDetails
 
 routes: List[Dict[str, Tuple[Type[Resource], Dict[str, Any]]]] = [
-    {"/algorithms": (Algorithms, {"methods": ["GET", "POST"]})},
+    {"/organizations": (Organizations, {"methods": ["GET"]})},
+    {"/algorithms": (Algorithms, {"methods": ["GET"]})},
+    {"/algorithms/<organization_id>": (Algorithms, {"methods": ["POST"]})},
     {
         "/algorithms/<object_id>": (
             AlgorithmDetails,
@@ -101,7 +104,8 @@ routes: List[Dict[str, Tuple[Type[Resource], Dict[str, Any]]]] = [
             {"methods": ["GET", "PATCH", "DELETE"]},
         )
     },
-    {"/datasets": (Datasets, {"methods": ["GET", "POST"]})},
+    {"/datasets": (Datasets, {"methods": ["GET"]})},
+    {"/datasets/<organization_id>": (Datasets, {"methods": ["POST"]})},
     {
         "/datasets/<object_id>": (
             DatasetDetails,

@@ -14,6 +14,7 @@ from .helpers import ObjectTest
 class TestAlgorithms(MockApiTest, ObjectTest):
 
     base_url = "/v1/algorithms"
+
     obj_key = "algorithm"
     obj_create_data = {
         "path": "example/algo",
@@ -28,15 +29,25 @@ class TestAlgorithms(MockApiTest, ObjectTest):
         "tags": ["one", "two"],
     }
 
+    @property
+    def create_url(self):
+        self.session.add(self.organization)
+        return "{}/{}".format(self.base_url, self.organization.source_id.hex())
+
     fixtures = [
         {"auth_client": auth_client},
         {"organization": organization},
+        {
+            "another_organization": lambda test, fixtures: organization(
+                test, fixtures, name="another one"
+            )
+        },
         {"user": user},
         {"algorithm": lambda test, fixtures: algorithm(test, fixtures, "example")},
         # the next algorithm is not visible to the user
         {
             "another_algorithm": lambda test, fixtures: algorithm(
-                test, fixtures, "another_example"
+                test, fixtures, "another_example", "another_organization"
             )
         },
         {

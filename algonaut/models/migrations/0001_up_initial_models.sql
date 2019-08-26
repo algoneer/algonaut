@@ -30,45 +30,52 @@ A given dataset version always belongs to a given dataset. A specific datapoint
 always belongs to one or more datasets.
 */
 
--- represents a model
-CREATE TABLE model (
+
+-- Stores data about external organizations (e.g. their name) so we don't need
+-- to fetch this data every time we want to access organization details
+
+CREATE TABLE organization (
     id bigint NOT NULL,
     ext_id uuid NOT NULL,
-    hash BYTEA NOT NULL,
-    algorithmversion_id bigint NOT NULL,
-    datasetversion_id bigint NOT NULL,
-    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
-    updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
-    deleted_at timestamp without time zone,
+    source_id BYTEA NOT NULL,
+    source CHARACTER VARYING NOT NULL,
+    name CHARACTER VARYING NOT NULL,
+    title CHARACTER VARYING NOT NULL,
+    description CHARACTER VARYING NOT NULL DEFAULT '',
+    created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP WITHOUT TIME ZONE,
     data json
 );
 
-ALTER TABLE ONLY model
-    ADD CONSTRAINT model_ext_id_key UNIQUE (ext_id);
+ALTER TABLE ONLY organization
+    ADD CONSTRAINT organization_pkey PRIMARY KEY (id);
 
-ALTER TABLE ONLY model
-    ADD CONSTRAINT model_pkey PRIMARY KEY (id);
-
-CREATE SEQUENCE model_id_seq
+CREATE SEQUENCE organization_id_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
     NO MAXVALUE
     CACHE 1;
 
-ALTER SEQUENCE model_id_seq OWNED BY model.id;
+ALTER SEQUENCE organization_id_seq OWNED BY organization.id;
 
-ALTER TABLE ONLY model ALTER COLUMN id SET DEFAULT nextval('model_id_seq'::regclass);
+ALTER TABLE ONLY organization ALTER COLUMN id SET DEFAULT nextval('organization_id_seq'::regclass);
 
-CREATE INDEX ix_model_hash ON model USING BTREE (hash);
-CREATE INDEX ix_model_created_at ON model USING BTREE (created_at);
-CREATE INDEX ix_model_updated_at ON model USING BTREE (updated_at);
-CREATE INDEX ix_model_deleted_at ON model USING BTREE (deleted_at);
+ALTER TABLE ONLY organization
+    ADD CONSTRAINT organization_ext_id_key UNIQUE (ext_id);
+
+CREATE UNIQUE INDEX ix_organization_name_unique ON organization (name);
+CREATE UNIQUE INDEX ix_organization_unique ON organization (source, source_id);
+CREATE INDEX ix_organization_created_at ON organization USING BTREE (created_at);
+CREATE INDEX ix_organization_updated_at ON organization USING BTREE (updated_at);
+CREATE INDEX ix_organization_deleted_at ON organization USING BTREE (deleted_at);
 
 -- represents a dataset
 CREATE TABLE dataset (
     id bigint NOT NULL,
     ext_id uuid NOT NULL,
+    organization_id bigint NOT NULL,
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     deleted_at timestamp without time zone,
@@ -94,6 +101,11 @@ CREATE SEQUENCE dataset_id_seq
 ALTER SEQUENCE dataset_id_seq OWNED BY dataset.id;
 
 ALTER TABLE ONLY dataset ALTER COLUMN id SET DEFAULT nextval('dataset_id_seq'::regclass);
+
+ALTER TABLE ONLY dataset
+    ADD CONSTRAINT dataset_organization_id_fkey FOREIGN KEY (organization_id) REFERENCES organization(id);
+
+CREATE INDEX ix_dataset_organization_id ON dataset USING BTREE (organization_id);
 
 CREATE INDEX ix_dataset_tags ON dataset USING GIN (tags);
 CREATE INDEX ix_dataset_path ON dataset USING BTREE (path);
@@ -164,9 +176,6 @@ ALTER SEQUENCE datasetversion_id_seq OWNED BY datasetversion.id;
 
 ALTER TABLE ONLY datasetversion ALTER COLUMN id SET DEFAULT nextval('datasetversion_id_seq'::regclass);
 
-ALTER TABLE ONLY model
-    ADD CONSTRAINT model_datasetversion_id_fkey FOREIGN KEY (datasetversion_id) REFERENCES datasetversion(id);
-
 ALTER TABLE ONLY datasetversion
     ADD CONSTRAINT datasetversion_dataset_id_fkey FOREIGN KEY (dataset_id) REFERENCES dataset(id);
 
@@ -214,10 +223,12 @@ CREATE INDEX ix_dataschema_deleted_at ON dataschema USING BTREE (deleted_at);
 CREATE TABLE algorithm (
     id bigint NOT NULL,
     ext_id uuid NOT NULL,
+    organization_id bigint NOT NULL,
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     deleted_at timestamp without time zone,
     path CHARACTER VARYING NOT NULL,
+    name CHARACTER VARYING NOT NULL,
     description CHARACTER VARYING NOT NULL DEFAULT '',
     tags CHARACTER VARYING[],
     data json
@@ -240,8 +251,13 @@ ALTER SEQUENCE algorithm_id_seq OWNED BY algorithm.id;
 
 ALTER TABLE ONLY algorithm ALTER COLUMN id SET DEFAULT nextval('algorithm_id_seq'::regclass);
 
+ALTER TABLE ONLY algorithm
+    ADD CONSTRAINT algorithm_organization_id_fkey FOREIGN KEY (organization_id) REFERENCES organization(id);
+
+CREATE INDEX ix_algorithm_organization_id ON algorithm USING BTREE (organization_id);
 CREATE INDEX ix_algorithm_tags ON algorithm USING GIN (tags);
 CREATE INDEX ix_algorithm_path ON algorithm USING BTREE (path);
+CREATE INDEX ix_algorithm_name ON algorithm USING BTREE (name);
 CREATE INDEX ix_algorithm_created_at ON algorithm USING BTREE (created_at);
 CREATE INDEX ix_algorithm_updated_at ON algorithm USING BTREE (updated_at);
 CREATE INDEX ix_algorithm_deleted_at ON algorithm USING BTREE (deleted_at);
@@ -269,9 +285,6 @@ ALTER TABLE ONLY algorithmversion
 ALTER TABLE ONLY algorithmversion
     ADD CONSTRAINT algorithmversion_algorithm_id_fkey FOREIGN KEY (algorithm_id) REFERENCES algorithm(id);
 
-ALTER TABLE ONLY model
-    ADD CONSTRAINT model_algorithmversion_id_fkey FOREIGN KEY (algorithmversion_id) REFERENCES algorithmversion(id);
-
 CREATE SEQUENCE algorithmversion_id_seq
     START WITH 1
     INCREMENT BY 1
@@ -289,6 +302,47 @@ CREATE INDEX ix_algorithmversion_updated_at ON algorithmversion USING BTREE (upd
 CREATE INDEX ix_algorithmversion_deleted_at ON algorithmversion USING BTREE (deleted_at);
 CREATE INDEX ix_algorithmversion_tags ON algorithmversion USING GIN (tags);
 CREATE INDEX ix_algorithmversion_name ON algorithmversion USING BTREE (name);
+
+-- represents a model
+CREATE TABLE model (
+    id bigint NOT NULL,
+    ext_id uuid NOT NULL,
+    hash BYTEA NOT NULL,
+    algorithmversion_id bigint NOT NULL,
+    datasetversion_id bigint NOT NULL,
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    deleted_at timestamp without time zone,
+    data json
+);
+
+ALTER TABLE ONLY model
+    ADD CONSTRAINT model_ext_id_key UNIQUE (ext_id);
+
+ALTER TABLE ONLY model
+    ADD CONSTRAINT model_pkey PRIMARY KEY (id);
+
+CREATE SEQUENCE model_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE model_id_seq OWNED BY model.id;
+
+ALTER TABLE ONLY model ALTER COLUMN id SET DEFAULT nextval('model_id_seq'::regclass);
+
+CREATE INDEX ix_model_hash ON model USING BTREE (hash);
+CREATE INDEX ix_model_created_at ON model USING BTREE (created_at);
+CREATE INDEX ix_model_updated_at ON model USING BTREE (updated_at);
+CREATE INDEX ix_model_deleted_at ON model USING BTREE (deleted_at);
+
+ALTER TABLE ONLY model
+    ADD CONSTRAINT model_datasetversion_id_fkey FOREIGN KEY (datasetversion_id) REFERENCES datasetversion(id);
+
+ALTER TABLE ONLY model
+    ADD CONSTRAINT model_algorithmversion_id_fkey FOREIGN KEY (algorithmversion_id) REFERENCES algorithmversion(id);
 
 -- represents an algorithm schema
 CREATE TABLE algorithmschema (
@@ -663,18 +717,21 @@ CREATE TYPE obj_role AS ENUM ('superuser', 'admin', 'developer', 'viewer', 'audi
 CREATE TABLE object_role (
     id bigint NOT NULL,
     ext_id uuid NOT NULL,
-    object_id uuid NOT NULL,
-    organization_id uuid NOT NULL,
+    object_id bigint NOT NULL,
+    organization_id bigint NOT NULL,
     organization_role CHARACTER VARYING NOT NULL, --the role in the organization
     object_type CHARACTER VARYING NOT NULL,
     object_role obj_role NOT NULL,
-    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc', now()),
-    updated_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc', now()),
-    deleted_at TIMESTAMP WITH TIME ZONE
+    created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP WITHOUT TIME ZONE
 );
 
 ALTER TABLE ONLY object_role
     ADD CONSTRAINT object_role_pkey PRIMARY KEY (id);
+
+ALTER TABLE ONLY object_role
+    ADD CONSTRAINT object_role_organization_id_fkey FOREIGN KEY (organization_id) REFERENCES organization(id);
 
 CREATE SEQUENCE object_role_id_seq
     START WITH 1

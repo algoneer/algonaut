@@ -37,12 +37,31 @@ class AuthClient(BaseAuthClient):
             return None
         data = response.json()
         access_token = AccessToken(token=data["access_token"])
-        organization = Organization(
-            name=data["organization"]["name"], id=data["organization"]["id"]
+        # Each user has a "personal" organization that is linked to his/her user ID.
+        personal_organization = Organization(
+            name=data["user"]["display_name"],
+            title=data["user"]["display_name"],
+            source="worf_user",
+            id=data["user"]["id"],
         )
-        roles = []
-        for role in data["organization"]["roles"]:
-            if role["confirmed"]:
-                roles.append(role["role"])
-        org_roles = OrganizationRoles(organization=organization, roles=roles)
+        org_roles = [
+            OrganizationRoles(
+                organization=personal_organization, roles=["admin", "superuser"]
+            )
+        ]
+        if data.get("organization"):
+            # If the user is associated with a real organization, we also add it.
+            organization = Organization(
+                name=data["organization"]["name"],
+                description=data["organization"].get("description", ""),
+                title=data["organization"].get("title"),
+                source="worf",
+                id=data["organization"]["id"],
+            )
+            roles = []
+            for role in data["organization"]["roles"]:
+                if role["confirmed"]:
+                    roles.append(role["role"])
+            org_roles.append(OrganizationRoles(organization=organization, roles=roles))
+
         return User(access_token=access_token, organization_roles=org_roles)

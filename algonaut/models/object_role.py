@@ -1,7 +1,9 @@
-from .base import Base, ExtPkType
+from .base import Base, PkType
+from .organization import Organization
 
-from sqlalchemy import Column, Unicode
-from algonaut.utils.auth import User, Organization
+from sqlalchemy import Column, Unicode, ForeignKey
+from sqlalchemy.orm import backref, relationship
+from algonaut.utils.auth import User
 from typing import Iterable, Any, Optional
 import sqlalchemy
 
@@ -23,11 +25,17 @@ class ObjectRole(Base):
         viewer = "viewer"
         auditor = "auditor"
 
-    organization_id = Column(ExtPkType, nullable=False)
-    object_id = Column(ExtPkType, nullable=False)
+    object_id = Column(PkType, nullable=False)
     object_type = Column(Unicode)
     organization_role = Column(Unicode)
     object_role = Column(Unicode)
+
+    organization_id = Column(PkType, ForeignKey("organization.id"), nullable=False)
+    organization = relationship(
+        "Organization",
+        backref=backref("roles", cascade="all,delete,delete-orphan"),
+        innerjoin=True,
+    )
 
     # we unset the data field...
     data = None
@@ -48,7 +56,7 @@ class ObjectRole(Base):
             session.query(ObjectRole)
             .filter(
                 ObjectRole.organization_id == organization.id,
-                ObjectRole.object_id == object.ext_id,
+                ObjectRole.object_id == object.id,
                 ObjectRole.object_type == object.type,
                 ObjectRole.object_role == object_role,
                 ObjectRole.organization_role == organization_role,
@@ -59,12 +67,14 @@ class ObjectRole(Base):
         if obj_role is None:
             obj_role = ObjectRole(
                 organization_id=organization.id,
-                object_id=object.ext_id,
+                object_id=object.id,
                 object_type=object.type,
                 object_role=object_role,
                 organization_role=organization_role,
             )
             session.add(obj_role)
+
+        obj_role.deleted_at = None
 
         return obj_role
 
@@ -72,16 +82,20 @@ class ObjectRole(Base):
     def roles_for(
         cls, session: sqlalchemy.orm.session.Session, user: User, object: Base
     ):
-        return (
-            session.query(ObjectRole)
-            .filter(
-                ObjectRole.organization_id == user.roles.organization.id,
-                ObjectRole.organization_role.in_(user.roles.roles),
-                ObjectRole.object_id == object.ext_id,
-                ObjectRole.object_type == object.type,
+        filters = [
+            ObjectRole.object_id == object.id,
+            ObjectRole.object_type == object.type,
+            ObjectRole.deleted_at == None,
+        ]
+        for org_roles in user.roles:
+            filters.extend(
+                [
+                    ObjectRole.organization_role.in_(org_roles.roles),
+                    Organization.source_id == org_roles.organization.id,
+                    Organization.source == org_roles.organization.source,
+                ]
             )
-            .all()
-        )
+        return session.query(ObjectRole).join(Organization).filter(*filters).all()
 
     @classmethod
     def select_for(
@@ -93,9 +107,17 @@ class ObjectRole(Base):
     ) -> Any:
         if object_roles is None:
             object_roles = [r.value for r in ObjectRole.Roles]
-        return session.query(ObjectRole.object_id).filter(
-            ObjectRole.organization_id == user.roles.organization.id,
-            ObjectRole.organization_role.in_(user.roles.roles),
-            ObjectRole.object_role.in_(object_roles),
+        filters = [
             ObjectRole.deleted_at == None,
-        )
+            ObjectRole.object_type == object_type,
+            ObjectRole.object_role.in_(object_roles),
+        ]
+        for org_roles in user.roles:
+            filters.extend(
+                [
+                    Organization.source_id == org_roles.organization.id,
+                    Organization.source == org_roles.organization.source,
+                    ObjectRole.organization_role.in_(org_roles.roles),
+                ]
+            )
+        return session.query(ObjectRole.object_id).join(Organization).filter(*filters)

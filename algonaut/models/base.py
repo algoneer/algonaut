@@ -50,13 +50,19 @@ class Base(DeclarativeBase):  # type: ignore
         return self.__class__.__name__.lower()
 
     def export(self):
-        return {
+        d = {
             "id": self.ext_id,
             "created_at": self.created_at,
             "updated_at": self.updated_at,
             "deleted_at": self.deleted_at,
             "data": self.data,
         }
+        # decorators might set role context for the object and given user, if such a context
+        # exists we return it as well...
+        if hasattr(self, "_roles"):
+            d["roles"] = [role.export() for role in self._roles]
+            print(d["roles"])
+        return d
 
     def delete(
         self, session: sqlalchemy.orm.session.Session, context: Optional["Base"] = None

@@ -13,9 +13,15 @@ from typing import Any, Dict, Type
 import unittest
 
 
-def dataset(test: Type[unittest.TestCase], fixtures: Dict[str, Any], path: str) -> Any:
+def dataset(
+    test: Type[unittest.TestCase],
+    fixtures: Dict[str, Any],
+    path: str,
+    organization: str = "organization",
+) -> Any:
     assert issubclass(test, DatabaseTest)
-    dataset = Dataset(path=path)
+    org = fixtures[organization]
+    dataset = Dataset(path=path, organization=org)
     test.session.add(dataset)
     test.session.commit()
     return dataset

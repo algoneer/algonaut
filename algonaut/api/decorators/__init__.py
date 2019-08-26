@@ -1,2 +1,2 @@
-from .authorized import authorized
-from .object import valid_object
+from .authorized import authorized  # noqa
+from .object import valid_object  # noqa

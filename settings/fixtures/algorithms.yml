@@ -1,0 +1,11 @@
+algorithms:
+  - path: example/algorithm
+    data:
+      foo: bar
+    versions:
+      - hash: asdsadadsadasdfdgdgf
+        models:
+          - hash: sdfdsfsdfssdfdsfsf
+            data:
+              type: sklearn
+        

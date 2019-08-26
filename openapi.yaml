@@ -434,6 +434,28 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /models/{id}/datapointresults/{dependent_id}:
+    get:
+      description: |
+        Returns details for a given result of a given datapoint and model.
+      operationId: getDatapointModelResultDetails
+      parameters:
+        - $ref: '#/components/parameters/ID'
+        - $ref: "#/components/parameters/DependentID"
+      responses:
+        '200':
+          description: result response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Result'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
   /datasets:
     get:
       description: |

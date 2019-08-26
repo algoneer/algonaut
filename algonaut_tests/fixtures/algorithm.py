@@ -13,10 +13,14 @@ import unittest
 
 
 def algorithm(
-    test: Type[unittest.TestCase], fixtures: Dict[str, Any], path: str
+    test: Type[unittest.TestCase],
+    fixtures: Dict[str, Any],
+    path: str,
+    organization: str = "organization",
 ) -> Any:
     assert issubclass(test, DatabaseTest)
-    algorithm = Algorithm(path=path)
+    org = fixtures[organization]
+    algorithm = Algorithm(path=path, organization=org)
     test.session.add(algorithm)
     test.session.commit()
     return algorithm

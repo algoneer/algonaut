@@ -1,8 +1,28 @@
 import abc
-import base64
 import datetime
 
 from typing import Dict, Any
+
+from algonaut.models import Base
+
+
+def assert_equal(obj, orig_obj):
+    for key, value in obj.items():
+        if key == "id":
+            orig_value = str(orig_obj.ext_id)
+        else:
+            orig_value = getattr(orig_obj, key)
+        if key in ("created_at", "updated_at", "deleted_at"):
+            if orig_value is not None:
+                orig_value = datetime.datetime.strftime(
+                    orig_value, "%Y-%m-%dT%H:%M:%SZ"
+                )
+        if isinstance(orig_value, bytes):
+            orig_value = orig_value.hex()
+        elif isinstance(orig_value, Base):
+            assert_equal(value, orig_value)
+            continue
+        assert value == orig_value
 
 
 class ObjectTest(abc.ABC):
@@ -34,19 +54,7 @@ class ObjectTest(abc.ABC):
         assert len(l) == 1
         obj = l[0]
         orig_obj = self.fixture_objs[self.obj_key]
-        for key, value in obj.items():
-            if key == "id":
-                orig_value = str(orig_obj.ext_id)
-            else:
-                orig_value = getattr(orig_obj, key)
-            if key in ("created_at", "updated_at", "deleted_at"):
-                if orig_value is not None:
-                    orig_value = datetime.datetime.strftime(
-                        orig_value, "%Y-%m-%dT%H:%M:%SZ"
-                    )
-            if isinstance(orig_value, bytes):
-                orig_value = base64.b64encode(orig_value).decode("utf-8")
-            assert value == orig_value
+        assert_equal(obj, orig_obj)
 
     def test_get(self):
         result = self.app.get(

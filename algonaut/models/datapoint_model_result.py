@@ -19,11 +19,15 @@ class DatapointModelResult(Base):
     model = relationship(
         "Model",
         backref=backref("datapoint_results", cascade="all,delete,delete-orphan"),
+        innerjoin=True,
     )
     datapoint = relationship(
-        "Datapoint", backref=backref("results", cascade="all,delete,delete-orphan")
+        "Datapoint",
+        backref=backref("results", cascade="all,delete,delete-orphan"),
+        innerjoin=True,
     )
     result = relationship(
         "Result",
         backref=backref("datapoint_models", cascade="all,delete,delete-orphan"),
+        innerjoin=True,
     )

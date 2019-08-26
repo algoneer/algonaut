@@ -22,8 +22,10 @@ class AlgorithmVersionAlgorithmSchema(Base):
     algorithmversion = relationship(
         "AlgorithmVersion",
         backref=backref("schemas", cascade="all,delete,delete-orphan"),
+        innerjoin=True,
     )
     algorithmschema = relationship(
         "AlgorithmSchema",
         backref=backref("versions", cascade="all,delete,delete-orphan"),
+        innerjoin=True,
     )

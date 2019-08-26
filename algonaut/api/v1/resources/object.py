@@ -1,11 +1,36 @@
 from ...resource import Resource, ResponseType
-from algonaut.models import ObjectRole, Base
+from algonaut.models import ObjectRole, Base, Organization
 from algonaut.settings import settings
 from algonaut.utils.forms import Form
+from algonaut.utils.auth import User
 from flask import request
 from ...decorators import authorized, valid_object
 
+import sqlalchemy
+from sqlalchemy.sql import and_, or_
+from sqlalchemy.orm import joinedload
 from typing import Type, Optional, List
+
+
+def admin_orgs_id_query(session: sqlalchemy.orm.session.Session, user: User):
+    """
+    Returns all organizations in which the user is either admin or superuser.
+    Used to retrieve objects for which the user doesn't have a specific role
+    but which he/she can nevertheless see as an admin/superuser.
+    """
+    filters = []
+    for org_roles in user.roles:
+        if "admin" in org_roles.roles or "superuser" in org_roles.roles:
+            filters.extend(
+                [
+                    and_(
+                        Organization.source_id == org_roles.organization.id,
+                        Organization.source == org_roles.organization.source,
+                        Organization.deleted_at == None,
+                    )
+                ]
+            )
+    return session.query(Organization.id).filter(or_(*filters))
 
 
 def Objects(
@@ -13,6 +38,7 @@ def Objects(
     Form: Type[Form],
     DependentTypes: Optional[List[Type[Base]]] = None,
     JoinBy: Optional[Type[Base]] = None,
+    Joins: Optional[List[List[Type[Base]]]] = None,
 ) -> Type[Resource]:
     """
     Returns a resource that retrieves a list of objects and creates new objects.
@@ -22,6 +48,8 @@ def Objects(
     :param DependentTypes: Models that this model depends on for access rights.
     :param         JoinBy: A M2M model to use for joining the given model to the dependent
                            models, in case the relationship is not one-to-many.
+    :param          Joins: An optional list of lists of models to join to the result set.
+                           Useful to load dependent object in a single database query.
     :             returns: A resource that can be used for listing and creating objects of the
                            given type.
     """
@@ -51,30 +79,55 @@ def Objects(
                         )
                     else:
                         filters.append(getattr(Type, dependent_type) == dependent_obj)
-                    objs = session.query(Type).filter(*filters).join(*joins).all()
+                    query = session.query(Type).filter(*filters).join(*joins)
                 else:
                     visible_objs = ObjectRole.select_for(
                         session, request.user, Type().type
                     )
-                    objs = (
-                        session.query(Type)
-                        .filter(Type.ext_id.in_(visible_objs), Type.deleted_at == None)
-                        .all()
+                    # to do: add objects visible via the users organizations
+                    org_ids = admin_orgs_id_query(session, request.user)
+                    query = session.query(Type).filter(
+                        or_(
+                            Type.id.in_(visible_objs), Type.organization_id.in_(org_ids)
+                        ),
+                        Type.deleted_at == None,
                     )
+
+                # If requested, we join dependent objects for faster response times...
+                if Joins:
+                    for j in Joins:
+                        joinedloads = None
+                        for Join in j:
+                            if joinedloads is None:
+                                joinedloads = joinedload(Join, innerjoin=True)
+                            else:
+                                joinedloads = joinedloads.joinedload(
+                                    Join, innerjoin=True
+                                )
+                        query = query.options(joinedloads)
+                objs = query.all()
+
                 return {"data": [obj.export() for obj in objs]}, 200
 
-        @authorized(roles=["admin", "superuser"])
+        @authorized(
+            roles=["admin", "superuser", "creator"] if not DependentTypes else None
+        )
         @valid_object(
             DependentTypes[0] if DependentTypes else None,
-            roles=["view", "admin"],
+            roles=["admin"],
             DependentTypes=DependentTypes[1:] if DependentTypes else None,
         )
-        def post(self, object_id: Optional[str] = None) -> ResponseType:
+        def post(
+            self, object_id: Optional[str] = None, organization_id: Optional[str] = None
+        ) -> ResponseType:
             form = Form(self.t, request.get_json() or {})
             if not form.validate():
                 return {"message": "invalid data", "errors": form.errors}, 400
             with settings.session() as session:
                 obj = Type(**form.valid_data)
+                if organization_id is not None:
+                    org = Organization.get_or_create(session, request.organization)
+                    obj.organization = org
                 if DependentTypes:
                     dependent_type = DependentTypes[0]().type
                     dependent_obj = getattr(request, dependent_type)
@@ -88,18 +141,12 @@ def Objects(
                     else:
                         setattr(obj, dependent_type, dependent_obj)
                 session.add(obj)
-                session.commit()
                 if not DependentTypes:
                     # we create an object role for the newly created object
                     # only if it does not depends on another object
                     for org_role in ["admin", "superuser"]:
-                        ObjectRole.get_or_create(
-                            session,
-                            obj,
-                            request.user.roles.organization,
-                            "admin",
-                            org_role,
-                        )
+                        ObjectRole.get_or_create(session, obj, org, "admin", org_role)
+                session.commit()
                 return obj.export(), 201
 
     return Objects
@@ -110,6 +157,7 @@ def ObjectDetails(
     Form: Type[Form],
     DependentTypes: Optional[List[Type[Base]]] = None,
     JoinBy: Optional[Type[Base]] = None,
+    Joins: Optional[List[List[Type[Base]]]] = None,
 ) -> Type[Resource]:
     """
     Returns a resource that gets, updates and deletes objects of a given type.
@@ -117,6 +165,8 @@ def ObjectDetails(
     :param           Type: The model for which to get, update or delete objects.
     :param           Form: The form to use for validating data when updating objects.
     :param DependentTypes: Models that this model depends on for access rights.
+    :param          Joins: An optional list of lists of models to join to the result set.
+                           Useful to load dependent object in a single database query.
     :             returns: A resource that can be used for getting, updating and deleting
                            objects of the given type.
     """
@@ -124,7 +174,11 @@ def ObjectDetails(
     class ObjectDetails(Resource):
         @authorized()
         @valid_object(
-            Type, roles=["admin", "view"], DependentTypes=DependentTypes, JoinBy=JoinBy
+            Type,
+            roles=["admin", "view"],
+            DependentTypes=DependentTypes,
+            JoinBy=JoinBy,
+            Joins=Joins,
         )
         def get(
             self, object_id: str, dependent_id: Optional[str] = None
@@ -147,7 +201,7 @@ def ObjectDetails(
             request.session.commit()
             return obj.export(), 200
 
-        @authorized(roles=["admin", "superuser"])
+        @authorized()
         @valid_object(
             Type, roles=["admin"], DependentTypes=DependentTypes, JoinBy=JoinBy
         )

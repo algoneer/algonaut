@@ -1,6 +1,6 @@
 from algonaut.settings import settings
-from algonaut.models import ObjectRole, Base
-from algonaut.utils.auth import Organization
+from algonaut.models import ObjectRole, Base, Organization
+from algonaut.utils.auth import Organization as AuthOrganization
 from ..helpers import DatabaseTest
 
 import unittest
@@ -25,7 +25,7 @@ def object_role(
         organization_id=org.id,
         object_role=object_role,
         organization_role=organization_role,
-        object_id=obj.ext_id,
+        object_id=obj.id,
         object_type=obj.type,
     )
     test.session.add(object_role)

@@ -3,8 +3,6 @@ from .base import Base
 from sqlalchemy import Column, Unicode
 from sqlalchemy.dialects.postgresql import BYTEA
 
-import base64
-
 
 class Result(Base):
 
@@ -24,7 +22,5 @@ class Result(Base):
 
     def export(self):
         d = super().export()
-        d.update(
-            {"name": self.name, "hash": base64.b64encode(self.hash).decode("utf-8")}
-        )
+        d.update({"name": self.name, "hash": self.hash.hex()})
         return d

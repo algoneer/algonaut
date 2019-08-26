@@ -13,25 +13,32 @@ from .object import Objects, ObjectDetails
 from flask import request
 from algonaut.settings import settings
 
+joins = [
+    [Model.algorithmversion, AlgorithmVersion.algorithm, Algorithm.organization],
+    [Model.datasetversion, DatasetVersion.dataset, Dataset.organization],
+]
+
 # Returns models for a given dataset version
-DatasetVersionModels = Objects(Model, ModelForm, [DatasetVersion, Dataset])
+DatasetVersionModels = Objects(Model, ModelForm, [DatasetVersion, Dataset], Joins=joins)
 
 # Returns models for a given algorithm version
-AlgorithmModels = Objects(Model, ModelForm, [AlgorithmVersion, Algorithm])
-ModelDetails = ObjectDetails(Model, ModelForm, [AlgorithmVersion, Algorithm])
+AlgorithmModels = Objects(Model, ModelForm, [AlgorithmVersion, Algorithm], Joins=joins)
+ModelDetails = ObjectDetails(
+    Model, ModelForm, [AlgorithmVersion, Algorithm], Joins=joins
+)
 
 
 class CreateModel(Resource):
-    @authorized(roles=["admin", "superuser"])
+    @authorized()
     @valid_object(
         AlgorithmVersion,
-        roles=["view", "admin"],
+        roles=["admin"],
         DependentTypes=[Algorithm],
         id_field="algorithmversion_id",
     )
     @valid_object(
         DatasetVersion,
-        roles=["view", "admin"],
+        roles=["admin"],
         DependentTypes=[Dataset],
         id_field="datasetversion_id",
     )

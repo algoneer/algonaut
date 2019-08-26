@@ -20,7 +20,10 @@ class AlgorithmVersionResult(Base):
     algorithmversion = relationship(
         "AlgorithmVersion",
         backref=backref("results", cascade="all,delete,delete-orphan"),
+        innerjoin=True,
     )
     result = relationship(
-        "Result", backref=backref("algorithms", cascade="all,delete,delete-orphan")
+        "Result",
+        backref=backref("algorithms", cascade="all,delete,delete-orphan"),
+        innerjoin=True,
     )

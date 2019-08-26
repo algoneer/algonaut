@@ -2,7 +2,11 @@ from algonaut.models import AlgorithmVersion, Algorithm
 from ..forms import AlgorithmVersionForm
 from .object import Objects, ObjectDetails
 
-AlgorithmVersions = Objects(AlgorithmVersion, AlgorithmVersionForm, [Algorithm])
+joins = [[AlgorithmVersion.algorithm, Algorithm.organization]]
+
+AlgorithmVersions = Objects(
+    AlgorithmVersion, AlgorithmVersionForm, [Algorithm], Joins=joins
+)
 AlgorithmVersionDetails = ObjectDetails(
-    AlgorithmVersion, AlgorithmVersionForm, [Algorithm]
+    AlgorithmVersion, AlgorithmVersionForm, [Algorithm], Joins=joins
 )

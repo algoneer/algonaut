@@ -52,7 +52,7 @@ DatapointModelResultDetails = ObjectDetails(
 
 
 class DatapointModelResults(Resource):
-    @authorized(roles=["admin"])
+    @authorized()
     @valid_object(
         Datapoint,
         roles=["view", "admin"],
@@ -82,17 +82,17 @@ class DatapointModelResults(Resource):
             )
             return {"data": [obj.export() for obj in objs]}, 200
 
-    @authorized(roles=["admin"])
+    @authorized()
     @valid_object(
         Datapoint,
-        roles=["view", "admin"],
+        roles=["admin"],
         DependentTypes=[DatasetVersion, Dataset],
         JoinBy=DatasetVersionDatapoint,
         id_field="datapoint_id",
     )
     @valid_object(
         Model,
-        roles=["view", "admin"],
+        roles=["admin"],
         DependentTypes=[AlgorithmVersion, Algorithm],
         id_field="model_id",
     )

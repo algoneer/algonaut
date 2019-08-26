@@ -17,5 +17,6 @@ DROP TABLE dataschema;
 DROP TABLE datapoint;
 DROP TABLE datasetversion;
 DROP TABLE dataset;
+DROP TABLE organization;
 
 DROP TABLE algonaut_version;
