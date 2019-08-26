@@ -1,11 +1,10 @@
 from algonaut.settings import settings
 from algonaut.models import (
     Dataset,
-    DatasetVersion,
     DataSchema,
     Datapoint,
-    DatasetVersionDatapoint,
-    DatasetVersionDataSchema,
+    DatasetDatapoint,
+    DatasetDataSchema,
 )
 from ..helpers import DatabaseTest
 
@@ -16,26 +15,15 @@ import unittest
 def dataset(
     test: Type[unittest.TestCase],
     fixtures: Dict[str, Any],
-    path: str,
-    organization: str = "organization",
+    name: str = "dataset",
+    project: str = "project",
 ) -> Any:
     assert issubclass(test, DatabaseTest)
-    org = fixtures[organization]
-    dataset = Dataset(path=path, organization=org)
+    proj = fixtures[project]
+    dataset = Dataset(name=name, project=proj)
     test.session.add(dataset)
     test.session.commit()
     return dataset
-
-
-def datasetversion(
-    test: Type[unittest.TestCase], fixtures: Dict[str, Any], algo: str = "dataset"
-) -> Any:
-    assert issubclass(test, DatabaseTest)
-    dataset = fixtures[algo]
-    datasetversion = DatasetVersion(dataset=dataset, hash=b"foo")
-    test.session.add(datasetversion)
-    test.session.commit()
-    return datasetversion
 
 
 def dataschema(test: Type[unittest.TestCase], fixtures: Dict[str, Any]) -> Any:
@@ -46,21 +34,19 @@ def dataschema(test: Type[unittest.TestCase], fixtures: Dict[str, Any]) -> Any:
     return dataschema
 
 
-def datasetversion_dataschema(
+def dataset_dataschema(
     test: Type[unittest.TestCase],
     fixtures: Dict[str, Any],
-    dsschema: str = "dataschema",
-    dsversion: str = "datasetversion",
+    datasetschema: str = "dataschema",
+    dataset: str = "dataset",
 ) -> Any:
     assert issubclass(test, DatabaseTest)
-    dataschema = fixtures[dsschema]
-    datasetversion = fixtures[dsversion]
-    datasetversion_dataschema = DatasetVersionDataSchema(
-        dataschema=dataschema, datasetversion=datasetversion
-    )
-    test.session.add(datasetversion_dataschema)
+    dschema = fixtures[datasetschema]
+    ds = fixtures[dataset]
+    dataset_dataschema = DatasetDataSchema(dataschema=dschema, dataset=ds)
+    test.session.add(dataset_dataschema)
     test.session.commit()
-    return datasetversion_dataschema
+    return dataset_dataschema
 
 
 def datapoint(test: Type[unittest.TestCase], fixtures: Dict[str, Any]) -> Any:
@@ -71,16 +57,16 @@ def datapoint(test: Type[unittest.TestCase], fixtures: Dict[str, Any]) -> Any:
     return datapoint
 
 
-def datasetversion_datapoint(
+def dataset_datapoint(
     test: Type[unittest.TestCase],
     fixtures: Dict[str, Any],
-    datasetversion: str = "datasetversion",
+    dataset: str = "dataset",
     datapoint: str = "datapoint",
 ) -> Any:
     assert issubclass(test, DatabaseTest)
     dp = fixtures[datapoint]
-    dsv = fixtures[datasetversion]
-    datasetversion_datapoint = DatasetVersionDatapoint(datapoint=dp, datasetversion=dsv)
-    test.session.add(datasetversion_datapoint)
+    ds = fixtures[dataset]
+    dataset_datapoint = DatasetDatapoint(datapoint=dp, dataset=ds)
+    test.session.add(dataset_datapoint)
     test.session.commit()
-    return datasetversion_datapoint
+    return dataset_datapoint

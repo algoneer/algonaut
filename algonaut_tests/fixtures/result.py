@@ -2,7 +2,7 @@ from algonaut.models import (
     Result,
     ModelResult,
     DatapointModelResult,
-    DatasetVersionResult,
+    DatasetResult,
     AlgorithmResult,
 )
 from ..helpers import DatabaseTest
@@ -51,19 +51,19 @@ def model_result(
     return model_result
 
 
-def datasetversion_result(
+def dataset_result(
     test: Type[unittest.TestCase],
     fixtures: Dict[str, Any],
-    datasetversion: str = "datasetversion",
+    dataset: str = "dataset",
     result: str = "result",
 ) -> Any:
     assert issubclass(test, DatabaseTest)
-    dsv = fixtures[datasetversion]
+    ds = fixtures[dataset]
     rs = fixtures[result]
-    datasetversion_result = DatasetVersionResult(datasetversion=dsv, result=rs)
-    test.session.add(datasetversion_result)
+    dataset_result = DatasetResult(dataset=ds, result=rs)
+    test.session.add(dataset_result)
     test.session.commit()
-    return datasetversion_result
+    return dataset_result
 
 
 def algorithm_result(

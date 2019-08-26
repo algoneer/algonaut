@@ -4,7 +4,7 @@ from algonaut_tests.fixtures.object_role import object_role
 import datetime
 from algonaut_tests.fixtures.algorithm import project, algorithm
 from algonaut_tests.fixtures.model import model
-from algonaut_tests.fixtures.dataset import dataset, datasetversion
+from algonaut_tests.fixtures.dataset import dataset
 from algonaut_tests.fixtures.result import result, model_result
 
 from .helpers import ObjectTest
@@ -31,8 +31,7 @@ class TestAlgorithmModels(MockApiTest, ObjectTest):
         {"user": user},
         {"project": lambda test, fixtures: project(test, fixtures, "example")},
         {"algorithm": lambda test, fixtures: algorithm(test, fixtures, "project")},
-        {"dataset": lambda test, fixtures: dataset(test, fixtures, path="foo/bar")},
-        {"datasetversion": datasetversion},
+        {"dataset": lambda test, fixtures: dataset(test, fixtures, name="foo/bar")},
         {"model": model},
         {"result": lambda t, f: result(t, f, name="test")},
         {"model_result": model_result},
@@ -41,24 +40,19 @@ class TestAlgorithmModels(MockApiTest, ObjectTest):
                 test, fixtures, "admin", "admin", "organization", "project"
             )
         },
-        {
-            "object_role": lambda test, fixtures: object_role(
-                test, fixtures, "admin", "admin", "organization", "dataset"
-            )
-        },
     ]
 
     def test_create(self):
         """
         We overwrite the create test since models require two dependent
-        objects (an algorithm and a dataset version) to be created,
+        objects (an algorithm and a dataset) to be created,
         so we need to pass both things in explicitly.
         """
         data = self.obj_create_data
-        dsv = self.datasetversion
+        ds = self.dataset
         av = self.algorithm
         result = self.app.post(
-            "/v1/datasetversions/{}/algorithms/{}/models".format(dsv.ext_id, av.ext_id),
+            "/v1/datasets/{}/algorithms/{}/models".format(ds.ext_id, av.ext_id),
             headers={"Authorization": "bearer test"},
             json=data,
         )
@@ -81,7 +75,7 @@ class TestDatasetModels(TestAlgorithmModels):
 
     @property
     def list_url(self):
-        return "/v1/datasetversions/{}/models".format(self.datasetversion.ext_id)
+        return "/v1/datasets/{}/models".format(self.dataset.ext_id)
 
     @property
     def create_url(self):

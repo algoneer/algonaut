@@ -7,4 +7,4 @@ db:
   password: algonaut
   host: localhost
   port: 5432
-  echo: true
+  echo: false

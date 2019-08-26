@@ -10,12 +10,12 @@ def model(
     test: Type[unittest.TestCase],
     fixtures: Dict[str, Any],
     algorithm: str = "algorithm",
-    datasetversion: str = "datasetversion",
+    dataset: str = "dataset",
 ) -> Any:
     assert issubclass(test, DatabaseTest)
     algo = fixtures[algorithm]
-    dsversion = fixtures[datasetversion]
-    model = Model(algorithm=algo, datasetversion=dsversion)
+    ds = fixtures[dataset]
+    model = Model(algorithm=algo, dataset=ds)
     test.session.add(model)
     test.session.commit()
     return model

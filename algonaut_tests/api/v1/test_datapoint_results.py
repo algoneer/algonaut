@@ -4,12 +4,7 @@ from algonaut_tests.fixtures.object_role import object_role
 import datetime
 from algonaut_tests.fixtures.algorithm import project, algorithm
 from algonaut_tests.fixtures.model import model
-from algonaut_tests.fixtures.dataset import (
-    dataset,
-    datasetversion,
-    datapoint,
-    datasetversion_datapoint,
-)
+from algonaut_tests.fixtures.dataset import dataset, datapoint, dataset_datapoint
 from algonaut_tests.fixtures.result import result, datapoint_model_result
 
 from .helpers import ObjectTest
@@ -28,21 +23,15 @@ class TestDatapointResults(MockApiTest, ObjectTest):
         {"user": user},
         {"project": lambda test, fixtures: project(test, fixtures, "example")},
         {"algorithm": lambda test, fixtures: algorithm(test, fixtures, "project")},
-        {"dataset": lambda test, fixtures: dataset(test, fixtures, path="foo/bar")},
-        {"datasetversion": datasetversion},
+        {"dataset": lambda test, fixtures: dataset(test, fixtures, name="foo/bar")},
         {"datapoint": datapoint},
-        {"datasetversion_datapoint": datasetversion_datapoint},
+        {"dataset_datapoint": dataset_datapoint},
         {"model": model},
         {"result": lambda t, f: result(t, f, name="test")},
         {"datapoint_model_result": datapoint_model_result},
         {
             "object_role": lambda test, fixtures: object_role(
                 test, fixtures, "admin", "admin", "organization", "project"
-            )
-        },
-        {
-            "object_role": lambda test, fixtures: object_role(
-                test, fixtures, "admin", "admin", "organization", "dataset"
             )
         },
     ]

@@ -8,6 +8,8 @@ from algonaut.models import Base
 
 def assert_equal(obj, orig_obj):
     for key, value in obj.items():
+        if key == "roles":
+            continue
         if key == "id":
             orig_value = str(orig_obj.ext_id)
         else:

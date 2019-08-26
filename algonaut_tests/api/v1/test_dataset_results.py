@@ -2,17 +2,16 @@ from algonaut_tests.helpers import MockApiTest
 from algonaut_tests.fixtures.user import user, auth_client, organization
 from algonaut_tests.fixtures.object_role import object_role
 import datetime
-from algonaut_tests.fixtures.algorithm import project, algorithm
-from algonaut_tests.fixtures.model import model
+from algonaut_tests.fixtures.algorithm import project
 from algonaut_tests.fixtures.dataset import dataset
-from algonaut_tests.fixtures.result import result, algorithm_result
+from algonaut_tests.fixtures.result import result, dataset_result
 
 from .helpers import ObjectTest
 
 
-class TestAlgorithmResults(MockApiTest, ObjectTest):
+class TestDatasetResults(MockApiTest, ObjectTest):
 
-    base_url = "/v1/algorithms/{algorithm.ext_id}/results"
+    base_url = "/v1/datasets/{dataset.ext_id}/results"
     obj_key = "result"
     obj_create_data = {"data": {"foo": "bar"}, "name": "test"}
     obj_update_data = {"data": {"bar": "bam"}, "name": "bar"}
@@ -22,11 +21,9 @@ class TestAlgorithmResults(MockApiTest, ObjectTest):
         {"organization": organization},
         {"user": user},
         {"project": lambda test, fixtures: project(test, fixtures, "example")},
-        {"algorithm": lambda test, fixtures: algorithm(test, fixtures, "project")},
         {"dataset": lambda test, fixtures: dataset(test, fixtures, name="foo/bar")},
-        {"model": model},
         {"result": lambda t, f: result(t, f, name="test")},
-        {"algorithm_result": algorithm_result},
+        {"dataset_result": dataset_result},
         {
             "object_role": lambda test, fixtures: object_role(
                 test, fixtures, "admin", "admin", "organization", "project"

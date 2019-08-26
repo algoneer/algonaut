@@ -455,13 +455,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-
-  /datasets:
+  /projects/{id}/dataset:
     get:
       description: |
         Returns all datasets that you can see.
       operationId: listDatasets
-      parameters: []
+      parameters:
+        - $ref: '#/components/parameters/ID'
       responses:
         '200':
           description: datasets response
@@ -483,6 +483,8 @@ paths:
     post:
       description: Creates a new dataset.
       operationId: createDataset
+      parameters:
+        - $ref: '#/components/parameters/ID'
       requestBody:
         description: Dataset to create.
         required: true
@@ -509,7 +511,7 @@ paths:
         Returns details for a particular dataset.
       operationId: getDatasetDetails
       parameters:
-        - $ref: '#/components/parameters/ID'
+       - $ref: '#/components/parameters/ID'
       responses:
         '200':
           description: dataset response
@@ -523,81 +525,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /datasets/{id}/versions:
+  /datasets/{id}/results:
     get:
       description: |
-        Returns all versions of a dataset that you can see.
-      operationId: listDatasetVersions
-      parameters:
-        - $ref: '#/components/parameters/ID'
-      responses:
-        '200':
-          description: dataset versions response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/DatasetVersion'
-        default:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-    post:
-      description: Creates a new dataset version.
-      operationId: createDatasetVersion
-      parameters:
-        - $ref: '#/components/parameters/ID'
-      requestBody:
-        description: Dataset version to create.
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/BaseDatasetVersion'
-      responses:
-        '201':
-          description: dataset version response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/DatasetVersion'
-        default:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-  /datasetversions/{id}:
-    get:
-      description: |
-        Returns details for a particular dataset version.
-      operationId: getDatasetVersionDetails
-      parameters:
-       - $ref: '#/components/parameters/ID'
-      responses:
-        '200':
-          description: dataset version response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/DatasetVersion'
-        default:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-  /datasetversions/{id}/results:
-    get:
-      description: |
-        Returns all results for a given dataset version.
-      operationId: listDatasetVersionResults
+        Returns all results for a given dataset.
+      operationId: listDatasetResults
       parameters:
         - $ref: '#/components/parameters/ID'
       responses:
@@ -619,8 +551,8 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
     post:
-      description: Creates a new result for a given dataset version.
-      operationId: createDatasetVersionResult
+      description: Creates a new result for a given dataset.
+      operationId: createDatasetResult
       parameters:
         - $ref: '#/components/parameters/ID'
       requestBody:
@@ -643,11 +575,11 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /datasetversions/{id}/results/{dependent_id}:
+  /datasets/{id}/results/{dependent_id}:
     get:
       description: |
-        Returns details for a given result of a given datasetversion.
-      operationId: getDatasetVersionResultDetails
+        Returns details for a given result of a given dataset.
+      operationId: getDatasetResultDetails
       parameters:
         - $ref: '#/components/parameters/ID'
         - $ref: "#/components/parameters/DependentID"
@@ -664,10 +596,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /datasetversions/{id}/schemas:
+  /datasets/{id}/schemas:
     get:
       description: |
-        Returns all schemas of a given dataset version.
+        Returns all schemas of a given dataset.
       operationId: listDataSchemas
       parameters:
         - $ref: '#/components/parameters/ID'
@@ -690,7 +622,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Error'
     post:
-      description: Creates a new data schema and associate it with a dataset version.
+      description: Creates a new data schema and associate it with a dataset.
       operationId: createDataSchema
       parameters:
         - $ref: '#/components/parameters/ID'
@@ -714,7 +646,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /datasetversions/{id}/schemas/{dependent_id}:
+  /datasets/{id}/schemas/{dependent_id}:
     get:
       description: |
         Returns details for a particular data schema.
@@ -735,10 +667,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /datasetversions/{id}/datapoints:
+  /datasets/{id}/datapoints:
     get:
       description: |
-        Returns all datapoints of a dataset version that you can see.
+        Returns all datapoints of a dataset that you can see.
       operationId: listDatapoints
       parameters:
         - $ref: '#/components/parameters/ID'
@@ -785,7 +717,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /datasetversions/{id}/datapoints/{dependent_id}:
+  /datasets/{id}/datapoints/{dependent_id}:
     get:
       description: |
         Returns details for a particular datapoints.
@@ -1039,11 +971,11 @@ components:
           example: hr/candidate-selection
         data:
           type: object
-    DatasetVersion:
+    Dataset:
       allOf:
-        - $ref: '#/components/schemas/BaseDatasetVersion'
+        - $ref: '#/components/schemas/BaseDataset'
         - $ref: '#/components/schemas/Base'
-    BaseDatasetVersion:
+    BaseDataset:
       type: object
       required:
         - data

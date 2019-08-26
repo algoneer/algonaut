@@ -4,19 +4,19 @@ from sqlalchemy import Column, ForeignKey
 from sqlalchemy.orm import relationship, backref
 
 
-class DatasetVersionResult(Base):
+class DatasetResult(Base):
 
-    __tablename__ = "datasetversion_result"
+    __tablename__ = "dataset_result"
 
     """
     Describes a data set version mapped to a result.
     """
 
-    datasetversion_id = Column(PkType, ForeignKey("datasetversion.id"), nullable=False)
+    dataset_id = Column(PkType, ForeignKey("dataset.id"), nullable=False)
     result_id = Column(PkType, ForeignKey("result.id"), nullable=False)
 
-    datasetversion = relationship(
-        "DatasetVersion",
+    dataset = relationship(
+        "Dataset",
         backref=backref("results", cascade="all,delete,delete-orphan"),
         innerjoin=True,
     )

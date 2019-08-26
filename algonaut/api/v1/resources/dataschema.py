@@ -1,15 +1,8 @@
-from algonaut.models import (
-    DataSchema,
-    DatasetVersionDataSchema,
-    DatasetVersion,
-    Dataset,
-)
+from algonaut.models import DataSchema, DatasetDataSchema, Dataset, Project
 from ..forms import DataSchemaForm
 from .object import Objects, ObjectDetails
 
-DataSchemas = Objects(
-    DataSchema, DataSchemaForm, [DatasetVersion, Dataset], DatasetVersionDataSchema
-)
+DataSchemas = Objects(DataSchema, DataSchemaForm, [Dataset, Project], DatasetDataSchema)
 DataSchemaDetails = ObjectDetails(
-    DataSchema, DataSchemaForm, [DatasetVersion, Dataset], DatasetVersionDataSchema
+    DataSchema, DataSchemaForm, [Dataset, Project], DatasetDataSchema
 )

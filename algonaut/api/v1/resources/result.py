@@ -3,12 +3,11 @@ from algonaut.models import (
     Model,
     ModelResult,
     Datapoint,
-    DatasetVersionDatapoint,
+    DatasetDatapoint,
     DatapointModelResult,
     AlgorithmResult,
-    DatasetVersionResult,
+    DatasetResult,
     Algorithm,
-    DatasetVersion,
     Dataset,
     Project,
 )
@@ -23,11 +22,9 @@ from flask import request
 from typing import Optional
 
 # Returns results for a given dataset version
-DatasetVersionResults = Objects(
-    Result, ResultForm, [DatasetVersion, Dataset], DatasetVersionResult
-)
-DatasetVersionResultDetails = ObjectDetails(
-    Result, ResultForm, [DatasetVersion, Dataset], DatasetVersionResult
+DatasetResults = Objects(Result, ResultForm, [Dataset, Project], DatasetResult)
+DatasetResultDetails = ObjectDetails(
+    Result, ResultForm, [Dataset, Project], DatasetResult
 )
 
 # Returns results for a given algorithm version
@@ -52,8 +49,8 @@ class DatapointModelResults(Resource):
     @valid_object(
         Datapoint,
         roles=["view", "admin"],
-        DependentTypes=[DatasetVersion, Dataset],
-        JoinBy=DatasetVersionDatapoint,
+        DependentTypes=[Dataset, Project],
+        JoinBy=DatasetDatapoint,
         id_field="datapoint_id",
     )
     @valid_object(
@@ -82,8 +79,8 @@ class DatapointModelResults(Resource):
     @valid_object(
         Datapoint,
         roles=["admin"],
-        DependentTypes=[DatasetVersion, Dataset],
-        JoinBy=DatasetVersionDatapoint,
+        DependentTypes=[Dataset, Project],
+        JoinBy=DatasetDatapoint,
         id_field="datapoint_id",
     )
     @valid_object(

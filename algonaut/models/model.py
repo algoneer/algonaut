@@ -16,15 +16,15 @@ class Model(Base):
     hash = Column(BYTEA, nullable=False)
 
     algorithm_id = Column(PkType, ForeignKey("algorithm.id"), nullable=False)
-    datasetversion_id = Column(PkType, ForeignKey("datasetversion.id"), nullable=False)
+    dataset_id = Column(PkType, ForeignKey("dataset.id"), nullable=False)
 
     algorithm = relationship(
         "Algorithm",
         backref=backref("models", cascade="all,delete,delete-orphan"),
         innerjoin=True,
     )
-    datasetversion = relationship(
-        "DatasetVersion",
+    dataset = relationship(
+        "Dataset",
         backref=backref("models", cascade="all,delete,delete-orphan"),
         innerjoin=True,
     )

@@ -1,11 +1,4 @@
-from algonaut.models import (
-    Model,
-    Algorithm,
-    DatasetVersion,
-    Dataset,
-    Project,
-    ObjectRole,
-)
+from algonaut.models import Model, Algorithm, Dataset, Project, ObjectRole
 from algonaut.api.resource import Resource, ResponseType
 from algonaut.api.decorators import valid_object, authorized
 from ..forms import ModelForm
@@ -15,11 +8,11 @@ from algonaut.settings import settings
 
 joins = [
     [Model.algorithm, Algorithm.project, Project.organization],
-    [Model.datasetversion, DatasetVersion.dataset, Dataset.organization],
+    [Model.dataset, Dataset.project, Project.organization],
 ]
 
 # Returns models for a given dataset version
-DatasetVersionModels = Objects(Model, ModelForm, [DatasetVersion, Dataset], Joins=joins)
+DatasetModels = Objects(Model, ModelForm, [Dataset, Project], Joins=joins)
 
 # Returns models for a given algorithm version
 AlgorithmModels = Objects(Model, ModelForm, [Algorithm, Project], Joins=joins)
@@ -32,19 +25,16 @@ class CreateModel(Resource):
         Algorithm, roles=["admin"], DependentTypes=[Project], id_field="algorithm_id"
     )
     @valid_object(
-        DatasetVersion,
-        roles=["admin"],
-        DependentTypes=[Dataset],
-        id_field="datasetversion_id",
+        Dataset, roles=["admin"], DependentTypes=[Project], id_field="dataset_id"
     )
-    def post(self, algorithm_id: str, datasetversion_id: str) -> ResponseType:
+    def post(self, algorithm_id: str, dataset_id: str) -> ResponseType:
         form = ModelForm(self.t, request.get_json() or {})
         if not form.validate():
             return {"message": "invalid data", "errors": form.errors}, 400
         with settings.session() as session:
             obj = Model(**form.valid_data)
             obj.algorithm = request.algorithm
-            obj.datasetversion = request.datasetversion
+            obj.dataset = request.dataset
             session.add(obj)
             session.commit()
             return obj.export(), 201

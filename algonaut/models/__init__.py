@@ -8,10 +8,10 @@ from .algorithm_result import AlgorithmResult  # noqa
 from .datapoint import Datapoint  # noqa
 from .dataschema import DataSchema  # noqa
 from .dataset import Dataset  # noqa
-from .datasetversion_dataschema import DatasetVersionDataSchema  # noqa
-from .datasetversion_datapoint import DatasetVersionDatapoint  # noqa
-from .datasetversion_result import DatasetVersionResult  # noqa
-from .datasetversion import DatasetVersion  # noqa
+from .dataset_dataschema import DatasetDataSchema  # noqa
+from .dataset_datapoint import DatasetDatapoint  # noqa
+from .dataset_result import DatasetResult  # noqa
+from .dataset import Dataset  # noqa
 from .datapoint_model_result import DatapointModelResult  # noqa
 from .model_result import ModelResult  # noqa
 from .model import Model  # noqa
@@ -31,16 +31,15 @@ def clean_db(session):
         Model,
         Algorithm,
         AlgorithmSchema,
-        Project,
-        DatasetVersionDatapoint,
-        DatasetVersionResult,
-        DatasetVersionDataSchema,
-        DatasetVersion,
+        DatasetDatapoint,
+        DatasetResult,
+        DatasetDataSchema,
         DataSchema,
         Datapoint,
         Dataset,
         Result,
         ObjectRole,
+        Project,
         Organization,
     ]:
         engine.execute(model.__table__.delete())

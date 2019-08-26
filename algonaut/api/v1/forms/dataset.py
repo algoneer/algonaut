@@ -6,13 +6,14 @@ from algonaut.utils.forms.validators import (
     Length,
     Dict,
     List,
+    Binary,
 )
 from .validators import Path
 
 
 class DatasetForm(Form):
 
-    path = Field([Required(), String(), Path()])
+    hash = Field([Optional(), Binary()])
+    name = Field([Required(), String()])
     tags = Field([Optional(), List([String()])])
-    description = Field([Optional(default=""), String(), Length(min=1, max=200)])
     data = Field([Optional(), Dict()])

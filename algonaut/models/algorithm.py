@@ -15,10 +15,11 @@ class Algorithm(Base):
     """
 
     project_id = Column(PkType, ForeignKey("project.id"), nullable=False)
+    name = Column(Unicode, nullable=False, default="")
     hash = Column(BYTEA, nullable=False)
     project = relationship(
         "Project",
-        backref=backref("versions", cascade="all,delete,delete-orphan"),
+        backref=backref("algorithms", cascade="all,delete,delete-orphan"),
         innerjoin=True,
     )
     tags = Column(ARRAY(Unicode, dimensions=1))

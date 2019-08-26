@@ -1,6 +1,7 @@
 from algonaut_tests.helpers import MockApiTest
 from algonaut_tests.fixtures.user import user, auth_client, organization
 from algonaut_tests.fixtures.object_role import object_role
+from algonaut_tests.fixtures.algorithm import project
 from algonaut_tests.fixtures.dataset import dataset
 
 from .helpers import ObjectTest
@@ -11,22 +12,23 @@ class TestDatasets(MockApiTest, ObjectTest):
     base_url = "/v1/datasets"
     obj_key = "dataset"
     obj_create_data = {
-        "path": "example/algo",
+        "name": "example/algo",
         "data": {"foo": "bar"},
-        "description": "",
         "tags": ["my", "tags"],
     }
     obj_update_data = {
-        "path": "another/path",
+        "name": "another/path",
         "data": {"bar": "baz"},
-        "description": "foo",
         "tags": ["one", "two"],
     }
 
     @property
+    def list_url(self):
+        return "/v1/projects/{}/datasets".format(self.project.ext_id)
+
+    @property
     def create_url(self):
-        self.session.add(self.organization)
-        return "{}/{}".format(self.base_url, self.organization.source_id.hex())
+        return self.list_url
 
     fixtures = [
         {"auth_client": auth_client},
@@ -37,16 +39,22 @@ class TestDatasets(MockApiTest, ObjectTest):
             )
         },
         {"user": user},
+        {"project": project},
+        {
+            "another_project": lambda test, fixtures: project(
+                test, fixtures, "another/project", "another_organization"
+            )
+        },
         {"dataset": lambda test, fixtures: dataset(test, fixtures, "example")},
-        # the next algorithm is not visible to the user
+        # the next dataset is not visible to the user
         {
             "another_dataset": lambda test, fixtures: dataset(
-                test, fixtures, "another_example", "another_organization"
+                test, fixtures, "another_example", "another_project"
             )
         },
         {
             "object_role": lambda test, fixtures: object_role(
-                test, fixtures, "admin", "admin", "organization", "dataset"
+                test, fixtures, "admin", "admin", "organization", "project"
             )
         },
     ]

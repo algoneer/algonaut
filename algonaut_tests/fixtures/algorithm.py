@@ -15,7 +15,7 @@ import unittest
 def project(
     test: Type[unittest.TestCase],
     fixtures: Dict[str, Any],
-    path: str,
+    path: str = "project",
     organization: str = "organization",
 ) -> Any:
     assert issubclass(test, DatabaseTest)
