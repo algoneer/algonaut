@@ -10,6 +10,10 @@ from . import AuthClient as BaseAuthClient, get_access_token
 from typing import Callable, Optional
 
 
+def binary_id(uuid: str) -> bytes:
+    return bytearray.fromhex(uuid.replace("-", ""))
+
+
 class AuthClient(BaseAuthClient):
     def __init__(self, settings: "algonaut.settings.Settings") -> None:
         self.base_url = settings.get("worf.url")
@@ -42,7 +46,7 @@ class AuthClient(BaseAuthClient):
             name=data["user"]["display_name"],
             title=data["user"]["display_name"],
             source="worf_user",
-            id=data["user"]["id"],
+            id=binary_id(data["user"]["id"]),  # we create a binary ID
         )
         org_roles = [
             OrganizationRoles(
@@ -56,7 +60,7 @@ class AuthClient(BaseAuthClient):
                 description=data["organization"].get("description", ""),
                 title=data["organization"].get("title"),
                 source="worf",
-                id=data["organization"]["id"],
+                id=binary_id(data["organization"]["id"]),  # we create a binary ID
             )
             roles = []
             for role in data["organization"]["roles"]:
