@@ -1,4 +1,5 @@
 from .base import Base, PkType
+from .hashable import Hashable
 
 from sqlalchemy import Column, ForeignKey, Unicode
 from sqlalchemy.orm import relationship, backref
@@ -6,7 +7,7 @@ from sqlalchemy.dialects.postgresql import BYTEA
 from sqlalchemy.dialects.postgresql import ARRAY
 
 
-class Algorithm(Base):
+class Algorithm(Hashable, Base):
 
     __tablename__ = "algorithm"
 
@@ -23,8 +24,3 @@ class Algorithm(Base):
         innerjoin=True,
     )
     tags = Column(ARRAY(Unicode, dimensions=1))
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        if self.hash is None:
-            self.hash = b"foo"

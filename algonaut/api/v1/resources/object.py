@@ -1,11 +1,12 @@
 from ...resource import Resource, ResponseType
-from algonaut.models import ObjectRole, Base, Organization
+from algonaut.models import ObjectRole, Base, Organization, Hashable
 from algonaut.settings import settings
 from algonaut.utils.forms import Form
 from algonaut.utils.auth import User
 from flask import request
 from ...decorators import authorized, valid_object
 
+import datetime
 import sqlalchemy
 from sqlalchemy.sql import and_, or_
 from sqlalchemy.orm import joinedload
@@ -159,6 +160,20 @@ def Objects(
                         session.expunge(org)
                     return {"message": "unique check failed"}, 400
 
+                if isinstance(obj, Hashable):
+                    extra_args = []
+                    if dependent_obj and not JoinBy:
+                        extra_args = [getattr(Type, dependent_type) == dependent_obj]
+                    existing_obj = (
+                        session.query(Type)
+                        .filter(
+                            Type.hash == obj.hash, Type.deleted_at == None, *extra_args
+                        )
+                        .one_or_none()
+                    )
+                    if existing_obj:
+                        return existing_obj.export(), 201
+
                 if join_by:
                     session.add(join_by)
 
@@ -235,7 +250,7 @@ def ObjectDetails(
             self, object_id: str, dependent_id: Optional[str] = None
         ) -> ResponseType:
             obj = getattr(request, Type().type)
-            obj.delete(request.session)
+            obj.deleted_at = datetime.datetime.utcnow()
             request.session.commit()
             return {"message": "success"}, 200
 

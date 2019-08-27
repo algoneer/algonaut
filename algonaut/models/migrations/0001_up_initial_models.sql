@@ -65,8 +65,8 @@ ALTER TABLE ONLY organization ALTER COLUMN id SET DEFAULT nextval('organization_
 ALTER TABLE ONLY organization
     ADD CONSTRAINT organization_ext_id_key UNIQUE (ext_id);
 
-CREATE UNIQUE INDEX ix_organization_name_unique ON organization (name);
-CREATE UNIQUE INDEX ix_organization_unique ON organization (source, source_id);
+CREATE UNIQUE INDEX ix_organization_name_unique ON organization (name) WHERE (deleted_at IS NULL);
+CREATE UNIQUE INDEX ix_organization_unique ON organization (source, source_id) WHERE (deleted_at IS NULL);
 CREATE INDEX ix_organization_created_at ON organization USING BTREE (created_at);
 CREATE INDEX ix_organization_updated_at ON organization USING BTREE (updated_at);
 CREATE INDEX ix_organization_deleted_at ON organization USING BTREE (deleted_at);
@@ -106,7 +106,7 @@ ALTER TABLE ONLY project ALTER COLUMN id SET DEFAULT nextval('project_id_seq'::r
 ALTER TABLE ONLY project
     ADD CONSTRAINT project_organization_id_fkey FOREIGN KEY (organization_id) REFERENCES organization(id);
 
-CREATE UNIQUE INDEX ix_project_organization_path ON project USING BTREE (organization_id, path);
+CREATE UNIQUE INDEX ix_project_organization_path ON project USING BTREE (organization_id, path) WHERE (deleted_at IS NULL);
 CREATE INDEX ix_project_organization_id ON project USING BTREE (organization_id);
 CREATE INDEX ix_project_tags ON project USING GIN (tags);
 CREATE INDEX ix_project_path ON project USING BTREE (path);
@@ -142,7 +142,7 @@ CREATE SEQUENCE datapoint_id_seq
 ALTER SEQUENCE datapoint_id_seq OWNED BY datapoint.id;
 
 ALTER TABLE ONLY datapoint ALTER COLUMN id SET DEFAULT nextval('datapoint_id_seq'::regclass);
-
+CREATE UNIQUE INDEX ix_datapoint_unique_hash ON datapoint USING BTREE (hash) WHERE (deleted_at IS NULL);
 CREATE INDEX ix_datapoint_created_at ON datapoint USING BTREE (created_at);
 CREATE INDEX ix_datapoint_updated_at ON datapoint USING BTREE (updated_at);
 CREATE INDEX ix_datapoint_deleted_at ON datapoint USING BTREE (deleted_at);
@@ -181,7 +181,7 @@ ALTER TABLE ONLY dataset ALTER COLUMN id SET DEFAULT nextval('dataset_id_seq'::r
 ALTER TABLE ONLY dataset
     ADD CONSTRAINT dataset_project_id_fkey FOREIGN KEY (project_id) REFERENCES project(id);
 
-CREATE INDEX ix_dataset_hash ON dataset USING BTREE (hash);
+CREATE UNIQUE INDEX ix_dataset_unique_hash ON dataset USING BTREE (hash, project_id) WHERE (deleted_at IS NULL);
 CREATE INDEX ix_dataset_tags ON dataset USING GIN (tags);
 CREATE INDEX ix_dataset_name ON dataset USING BTREE (name);
 CREATE INDEX ix_dataset_created_at ON dataset USING BTREE (created_at);
@@ -216,7 +216,7 @@ ALTER SEQUENCE dataschema_id_seq OWNED BY dataschema.id;
 
 ALTER TABLE ONLY dataschema ALTER COLUMN id SET DEFAULT nextval('dataschema_id_seq'::regclass);
 
-CREATE INDEX ix_dataschema_hash ON dataschema USING BTREE (hash);
+CREATE UNIQUE INDEX ix_dataschema_unique_hash ON dataschema USING BTREE (hash) WHERE (deleted_at IS NULL);
 CREATE INDEX ix_dataschema_created_at ON dataschema USING BTREE (created_at);
 CREATE INDEX ix_dataschema_updated_at ON dataschema USING BTREE (updated_at);
 CREATE INDEX ix_dataschema_deleted_at ON dataschema USING BTREE (deleted_at);
@@ -255,7 +255,7 @@ ALTER SEQUENCE algorithm_id_seq OWNED BY algorithm.id;
 
 ALTER TABLE ONLY algorithm ALTER COLUMN id SET DEFAULT nextval('algorithm_id_seq'::regclass);
 
-CREATE INDEX ix_algorithm_hash ON algorithm USING BTREE (hash);
+CREATE UNIQUE INDEX ix_algorithm_unique_hash ON algorithm USING BTREE (hash, project_id) WHERE (deleted_at IS NULL);
 CREATE INDEX ix_algorithm_created_at ON algorithm USING BTREE (created_at);
 CREATE INDEX ix_algorithm_updated_at ON algorithm USING BTREE (updated_at);
 CREATE INDEX ix_algorithm_deleted_at ON algorithm USING BTREE (deleted_at);
@@ -292,6 +292,7 @@ ALTER SEQUENCE model_id_seq OWNED BY model.id;
 
 ALTER TABLE ONLY model ALTER COLUMN id SET DEFAULT nextval('model_id_seq'::regclass);
 
+CREATE UNIQUE INDEX ix_model_unique_hash ON model USING BTREE (algorithm_id, dataset_id, hash) WHERE (deleted_at IS NULL);
 CREATE INDEX ix_model_hash ON model USING BTREE (hash);
 CREATE INDEX ix_model_created_at ON model USING BTREE (created_at);
 CREATE INDEX ix_model_updated_at ON model USING BTREE (updated_at);
@@ -332,7 +333,7 @@ ALTER SEQUENCE algorithmschema_id_seq OWNED BY algorithmschema.id;
 
 ALTER TABLE ONLY algorithmschema ALTER COLUMN id SET DEFAULT nextval('algorithmschema_id_seq'::regclass);
 
-CREATE INDEX ix_algorithmschema_hash ON algorithmschema USING BTREE (hash);
+CREATE UNIQUE INDEX ix_algorithmschema_unique_hash ON algorithmschema USING BTREE (hash) WHERE (deleted_at IS NULL);
 CREATE INDEX ix_algorithmschema_created_at ON algorithmschema USING BTREE (created_at);
 CREATE INDEX ix_algorithmschema_updated_at ON algorithmschema USING BTREE (updated_at);
 CREATE INDEX ix_algorithmschema_deleted_at ON algorithmschema USING BTREE (deleted_at);
@@ -367,7 +368,7 @@ ALTER SEQUENCE result_id_seq OWNED BY result.id;
 
 ALTER TABLE ONLY result ALTER COLUMN id SET DEFAULT nextval('result_id_seq'::regclass);
 
-CREATE INDEX ix_result_hash ON result USING BTREE (hash);
+CREATE UNIQUE INDEX ix_result_unique_hash ON result USING BTREE (hash) WHERE (deleted_at IS NULL);
 CREATE INDEX ix_result_name ON result USING BTREE (name);
 CREATE INDEX ix_result_created_at ON result USING BTREE (created_at);
 CREATE INDEX ix_result_updated_at ON result USING BTREE (updated_at);
@@ -413,7 +414,7 @@ ALTER TABLE ONLY algorithm_result
     ADD CONSTRAINT algorithm_result_result_id_fkey FOREIGN KEY (result_id) REFERENCES result(id);
 
 -- an algorithm version can only be mapped to a result once
-CREATE UNIQUE INDEX ix_algorithm_result_unique ON algorithm_result USING BTREE (algorithm_id, result_id);
+CREATE UNIQUE INDEX ix_algorithm_result_unique ON algorithm_result USING BTREE (algorithm_id, result_id) WHERE (deleted_at IS NULL);
 CREATE INDEX ix_algorithm_result_created_at ON algorithm_result USING BTREE (created_at);
 CREATE INDEX ix_algorithm_result_updated_at ON algorithm_result USING BTREE (updated_at);
 CREATE INDEX ix_algorithm_result_deleted_at ON algorithm_result USING BTREE (deleted_at);
@@ -454,7 +455,7 @@ ALTER TABLE ONLY dataset_result
     ADD CONSTRAINT dataset_result_result_id_fkey FOREIGN KEY (result_id) REFERENCES result(id);
 
 -- a dataset version can only be mapped to a result once
-CREATE UNIQUE INDEX ix_dataset_result_unique ON dataset_result USING BTREE (dataset_id, result_id);
+CREATE UNIQUE INDEX ix_dataset_result_unique ON dataset_result USING BTREE (dataset_id, result_id) WHERE (deleted_at IS NULL);
 CREATE INDEX ix_dataset_result_created_at ON dataset_result USING BTREE (created_at);
 CREATE INDEX ix_dataset_result_updated_at ON dataset_result USING BTREE (updated_at);
 CREATE INDEX ix_dataset_result_deleted_at ON dataset_result USING BTREE (deleted_at);
@@ -495,7 +496,7 @@ ALTER TABLE ONLY model_result
     ADD CONSTRAINT model_result_result_id_fkey FOREIGN KEY (result_id) REFERENCES result(id);
 
 -- a result can only be mapped to a model once
-CREATE UNIQUE INDEX ix_model_result_unique ON model_result USING BTREE (model_id, result_id);
+CREATE UNIQUE INDEX ix_model_result_unique ON model_result USING BTREE (model_id, result_id) WHERE (deleted_at IS NULL);
 CREATE INDEX ix_model_result_created_at ON model_result USING BTREE (created_at);
 CREATE INDEX ix_model_result_updated_at ON model_result USING BTREE (updated_at);
 CREATE INDEX ix_model_result_deleted_at ON model_result USING BTREE (deleted_at);
@@ -540,7 +541,7 @@ ALTER TABLE ONLY datapoint_model_result
     ADD CONSTRAINT datapoint_model_result_result_id_fkey FOREIGN KEY (result_id) REFERENCES result(id);
 
 -- a result can only be mapped to a model once
-CREATE UNIQUE INDEX ix_datapoint_model_result_unique ON datapoint_model_result USING BTREE (datapoint_id, model_id, result_id);
+CREATE UNIQUE INDEX ix_datapoint_model_result_unique ON datapoint_model_result USING BTREE (datapoint_id, model_id, result_id) WHERE (deleted_at IS NULL);
 CREATE INDEX ix_datapoint_model_result_created_at ON datapoint_model_result USING BTREE (created_at);
 CREATE INDEX ix_datapoint_model_result_updated_at ON datapoint_model_result USING BTREE (updated_at);
 CREATE INDEX ix_datapoint_model_result_deleted_at ON datapoint_model_result USING BTREE (deleted_at);
@@ -581,7 +582,7 @@ ALTER TABLE ONLY dataset_dataschema
     ADD CONSTRAINT dataset_dataschema_dataschema_id_fkey FOREIGN KEY (dataschema_id) REFERENCES dataschema(id);
 
 -- a dataset schema can only be mapped to a dataset version once
-CREATE UNIQUE INDEX ix_dataset_dataschema_unique ON dataset_dataschema USING BTREE (dataset_id, dataschema_id);
+CREATE UNIQUE INDEX ix_dataset_dataschema_unique ON dataset_dataschema USING BTREE (dataset_id, dataschema_id) WHERE (deleted_at IS NULL);
 CREATE INDEX ix_dataset_dataschema_created_at ON dataset_dataschema USING BTREE (created_at);
 CREATE INDEX ix_dataset_dataschema_updated_at ON dataset_dataschema USING BTREE (updated_at);
 CREATE INDEX ix_dataset_dataschema_deleted_at ON dataset_dataschema USING BTREE (deleted_at);
@@ -622,7 +623,7 @@ ALTER TABLE ONLY algorithm_algorithmschema
     ADD CONSTRAINT algorithm_algorithmschema_algorithmschema_id_fkey FOREIGN KEY (algorithmschema_id) REFERENCES algorithmschema(id);
 
 -- an algorithm schema can only be mapped to an algorithm version once
-CREATE UNIQUE INDEX ix_algorithm_algorithmschema_unique ON algorithm_algorithmschema USING BTREE (algorithm_id, algorithmschema_id);
+CREATE UNIQUE INDEX ix_algorithm_algorithmschema_unique ON algorithm_algorithmschema USING BTREE (algorithm_id, algorithmschema_id) WHERE (deleted_at IS NULL);
 CREATE INDEX ix_algorithm_algorithmschema_created_at ON algorithm_algorithmschema USING BTREE (created_at);
 CREATE INDEX ix_algorithm_algorithmschema_updated_at ON algorithm_algorithmschema USING BTREE (updated_at);
 CREATE INDEX ix_algorithm_algorithmschema_deleted_at ON algorithm_algorithmschema USING BTREE (deleted_at);
@@ -663,7 +664,7 @@ ALTER TABLE ONLY dataset_datapoint
     ADD CONSTRAINT dataset_datapoint_datapoint_id_fkey FOREIGN KEY (datapoint_id) REFERENCES datapoint(id);
 
 -- a datapoint can only be mapped to a dataset version once
-CREATE UNIQUE INDEX ix_dataset_datapoint_unique ON dataset_datapoint USING BTREE (dataset_id, datapoint_id);
+CREATE UNIQUE INDEX ix_dataset_datapoint_unique ON dataset_datapoint USING BTREE (dataset_id, datapoint_id) WHERE (deleted_at IS NULL);
 CREATE INDEX ix_dataset_datapoint_created_at ON dataset_datapoint USING BTREE (created_at);
 CREATE INDEX ix_dataset_datapoint_updated_at ON dataset_datapoint USING BTREE (updated_at);
 CREATE INDEX ix_dataset_datapoint_deleted_at ON dataset_datapoint USING BTREE (deleted_at);
@@ -706,7 +707,7 @@ ALTER TABLE ONLY object_role ALTER COLUMN id SET DEFAULT nextval('object_role_id
 ALTER TABLE ONLY object_role
     ADD CONSTRAINT object_role_ext_id_key UNIQUE (ext_id);
 
-CREATE UNIQUE INDEX ix_object_role_unique ON object_role (object_type, object_id, organization_id, organization_role, object_role);
+CREATE UNIQUE INDEX ix_object_role_unique ON object_role (object_type, object_id, organization_id, organization_role, object_role) WHERE (deleted_at IS NULL);
 CREATE INDEX ix_object_role_created_at ON object_role USING BTREE (created_at);
 CREATE INDEX ix_object_role_updated_at ON object_role USING BTREE (updated_at);
 CREATE INDEX ix_object_role_deleted_at ON object_role USING BTREE (deleted_at);

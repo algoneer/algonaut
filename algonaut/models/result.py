@@ -1,24 +1,22 @@
 from .base import Base
+from .hashable import Hashable
 
-from sqlalchemy import Column, Unicode
+from sqlalchemy import Column, Unicode, UniqueConstraint
 from sqlalchemy.dialects.postgresql import BYTEA
 
 
-class Result(Base):
-
-    __tablename__ = "result"
+class Result(Hashable, Base):
 
     """
     Describes a result.
     """
 
+    __tablename__ = "result"
+
+    __table_args__ = (UniqueConstraint("hash"),)
+
     hash = Column(BYTEA, nullable=False)
     name = Column(Unicode, nullable=False)
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        if self.hash is None:
-            self.hash = b"foo"
 
     def export(self):
         d = super().export()

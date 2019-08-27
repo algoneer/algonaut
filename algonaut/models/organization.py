@@ -25,6 +25,7 @@ class Organization(Base):
             .filter(
                 Organization.source == auth_org.source,
                 Organization.source_id == auth_org.id,
+                Organization.deleted_at == None,
             )
             .one_or_none()
         )
@@ -37,8 +38,6 @@ class Organization(Base):
                 description=auth_org.description,
             )
             session.add(org)
-
-        org.deleted_at = None
 
         return org
 

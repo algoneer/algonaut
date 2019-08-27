@@ -42,31 +42,14 @@ class TestAlgorithmModels(MockApiTest, ObjectTest):
         },
     ]
 
-    def test_create(self):
-        """
-        We overwrite the create test since models require two dependent
-        objects (an algorithm and a dataset) to be created,
-        so we need to pass both things in explicitly.
-        """
-        data = self.obj_create_data
+    def _create(self, data):
         ds = self.dataset
         av = self.algorithm
-        result = self.app.post(
+        return self.app.post(
             "/v1/datasets/{}/algorithms/{}/models".format(ds.ext_id, av.ext_id),
             headers={"Authorization": "bearer test"},
             json=data,
         )
-        assert result.status_code == 201
-        obj = result.json
-        assert "id" in obj
-
-        for key, value in data.items():
-            assert obj[key] == value
-        result = self.app.get(
-            "{}/{}".format(self.url, obj["id"]),
-            headers={"Authorization": "bearer test"},
-        )
-        assert result.status_code == 200
 
 
 class TestDatasetModels(TestAlgorithmModels):

@@ -35,6 +35,20 @@ class CreateModel(Resource):
             obj = Model(**form.valid_data)
             obj.algorithm = request.algorithm
             obj.dataset = request.dataset
+
+            existing_obj = (
+                session.query(Model)
+                .filter(
+                    Model.algorithm_id == request.algorithm.id,
+                    Model.dataset_id == request.dataset.id,
+                    Model.deleted_at == None,
+                    Model.hash == obj.hash,
+                )
+                .one_or_none()
+            )
+            if existing_obj:
+                return existing_obj.export(), 201
+
             session.add(obj)
             session.commit()
             return obj.export(), 201

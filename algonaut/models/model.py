@@ -1,11 +1,12 @@
 from .base import Base, PkType
+from .hashable import Hashable
 
 from sqlalchemy import Column, ForeignKey
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.dialects.postgresql import BYTEA
 
 
-class Model(Base):
+class Model(Hashable, Base):
 
     __tablename__ = "model"
 
@@ -28,8 +29,3 @@ class Model(Base):
         backref=backref("models", cascade="all,delete,delete-orphan"),
         innerjoin=True,
     )
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        if self.hash is None:
-            self.hash = b"foo"

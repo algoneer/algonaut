@@ -1,9 +1,10 @@
 from .base import Base
+from .hashable import Hashable
 from sqlalchemy import Column
 from sqlalchemy.dialects.postgresql import BYTEA
 
 
-class Datapoint(Base):
+class Datapoint(Hashable, Base):
 
     __tablename__ = "datapoint"
 
@@ -12,8 +13,3 @@ class Datapoint(Base):
     """
 
     hash = Column(BYTEA, nullable=False)
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        if self.hash is None:
-            self.hash = b"foo"

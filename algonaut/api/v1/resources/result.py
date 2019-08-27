@@ -92,10 +92,38 @@ class DatapointModelResults(Resource):
             return {"message": "invalid data", "errors": form.errors}, 400
         with settings.session() as session:
             obj = Result(**form.valid_data)
+            existing_obj = (
+                session.query(Result)
+                .filter(Result.hash == obj.hash, Result.deleted_at == None)
+                .one_or_none()
+            )
+
+            # if a matching result already exists we do not create a new one
+            if existing_obj:
+                obj = existing_obj
+            else:
+                session.add(obj)
+                session.commit()
+
+            # we check if an existing entry already exists
+            existing_obj = (
+                session.query(DatapointModelResult)
+                .filter(
+                    DatapointModelResult.model_id == request.model.id,
+                    DatapointModelResult.datapoint_id == request.datapoint.id,
+                    DatapointModelResult.result_id == obj.id,
+                    DatapointModelResult.deleted_at == None,
+                )
+                .one_or_none()
+            )
+
+            # we return the existing object without adding a M2M entry
+            if existing_obj:
+                return obj.export(), 201
+
             dpmr = DatapointModelResult(
                 datapoint=request.datapoint, model=request.model, result=obj
             )
             session.add(dpmr)
-            session.add(obj)
             session.commit()
             return obj.export(), 201

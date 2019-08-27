@@ -49,6 +49,9 @@ class Base(DeclarativeBase):  # type: ignore
     def type(self):
         return self.__class__.__name__.lower()
 
+    def hash_data(self):
+        return self.data
+
     def export(self):
         d = {
             "id": self.ext_id,

@@ -31,7 +31,7 @@ def algorithm(
 ) -> Any:
     assert issubclass(test, DatabaseTest)
     project = fixtures[proj]
-    algorithm = Algorithm(project=project, hash=b"foo")
+    algorithm = Algorithm(project=project)
     test.session.add(algorithm)
     test.session.commit()
     return algorithm
@@ -39,7 +39,7 @@ def algorithm(
 
 def algorithmschema(test: Type[unittest.TestCase], fixtures: Dict[str, Any]) -> Any:
     assert issubclass(test, DatabaseTest)
-    algorithmschema = AlgorithmSchema(hash=b"foo")
+    algorithmschema = AlgorithmSchema()
     test.session.add(algorithmschema)
     test.session.commit()
     return algorithmschema

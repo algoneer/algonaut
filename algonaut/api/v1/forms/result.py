@@ -5,5 +5,4 @@ from algonaut.utils.forms.validators import String, Required, Optional, Binary, 
 class ResultForm(Form):
 
     name = Field([Required(), String()])
-    hash = Field([Optional(), Binary()])
     data = Field([Optional(), Dict()])

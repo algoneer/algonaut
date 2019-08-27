@@ -19,6 +19,7 @@ from .result import Result  # noqa
 from .object_role import ObjectRole  # noqa
 from .organization import Organization  # noqa
 from .base import Base  # noqa
+from .hashable import Hashable  # noqa
 
 
 def clean_db(session):

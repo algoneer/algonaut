@@ -13,7 +13,7 @@ import unittest
 
 def result(test: Type[unittest.TestCase], fixtures: Dict[str, Any], name: str) -> Any:
     assert issubclass(test, DatabaseTest)
-    result = Result(name=name)
+    result = Result(name=name, data={})
     test.session.add(result)
     test.session.commit()
     return result

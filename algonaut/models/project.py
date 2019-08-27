@@ -25,7 +25,9 @@ class Project(Base):
 
     def unique_check(self, session):
         existing_projects = session.query(Project).filter(
-            Project.organization == self.organization, Project.path == self.path
+            Project.organization == self.organization,
+            Project.path == self.path,
+            Project.deleted_at == None,
         )
         if existing_projects.count() > 0:
             return False

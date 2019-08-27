@@ -60,6 +60,7 @@ class ObjectRole(Base):
                 ObjectRole.object_type == object.type,
                 ObjectRole.object_role == object_role,
                 ObjectRole.organization_role == organization_role,
+                ObjectRole.deleted_at == None,
             )
             .one_or_none()
         )
@@ -73,8 +74,6 @@ class ObjectRole(Base):
                 organization_role=organization_role,
             )
             session.add(obj_role)
-
-        obj_role.deleted_at = None
 
         return obj_role
 

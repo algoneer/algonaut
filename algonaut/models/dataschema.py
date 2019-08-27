@@ -1,10 +1,11 @@
 from .base import Base
+from .hashable import Hashable
 
 from sqlalchemy import Column
 from sqlalchemy.dialects.postgresql import BYTEA
 
 
-class DataSchema(Base):
+class DataSchema(Hashable, Base):
 
     __tablename__ = "dataschema"
 
@@ -13,8 +14,3 @@ class DataSchema(Base):
     """
 
     hash = Column(BYTEA, nullable=False)
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        if self.hash is None:
-            self.hash = b"foo"

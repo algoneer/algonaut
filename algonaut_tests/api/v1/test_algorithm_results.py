@@ -14,7 +14,7 @@ class TestAlgorithmResults(MockApiTest, ObjectTest):
 
     base_url = "/v1/algorithms/{algorithm.ext_id}/results"
     obj_key = "result"
-    obj_create_data = {"data": {"foo": "bar"}, "name": "test"}
+    obj_create_data = {"data": {"foo": "bars"}, "name": "another test"}
     obj_update_data = {"data": {"bar": "bam"}, "name": "bar"}
 
     fixtures = [

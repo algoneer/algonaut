@@ -12,11 +12,10 @@ DROP TABLE result;
 DROP TABLE model CASCADE;
 DROP TABLE algorithmschema;
 DROP TABLE algorithm;
-DROP TABLE project;
 DROP TABLE dataschema;
 DROP TABLE datapoint;
 DROP TABLE dataset;
-DROP TABLE dataset;
+DROP TABLE project;
 DROP TABLE organization;
 
 DROP TABLE algonaut_version;

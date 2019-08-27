@@ -67,14 +67,26 @@ class ObjectTest(abc.ABC):
         obj = result.json
         assert isinstance(obj, dict)
 
-    def test_create(self):
-        data = self.obj_create_data
-        result = self.app.post(
+    def _create(self, data):
+        return self.app.post(
             self.create_url, headers={"Authorization": "bearer test"}, json=data
         )
+
+    def test_create(self):
+        data = self.obj_create_data
+        result = self._create(data)
         assert result.status_code == 201
         obj = result.json
         assert "id" in obj
+
+        if "hash" in obj:
+            # we make sure we can't create the same object twice if the object has
+            # a unique hash. Instead we should get a copy of the existing object.
+            duplicate_result = self.app.post(
+                self.create_url, headers={"Authorization": "bearer test"}, json=data
+            )
+            assert duplicate_result.status_code == 201
+            assert duplicate_result.json["id"] == obj["id"]
 
         for key, value in data.items():
             assert obj[key] == value
@@ -103,6 +115,26 @@ class ObjectTest(abc.ABC):
             headers={"Authorization": "bearer test"},
         )
         assert result.status_code == 404
+
+    def test_create_and_delete(self):
+        data = self.obj_create_data
+        result = self._create(data)
+        assert result.status_code == 201
+        obj = result.json
+        result = self.app.delete(
+            "{}/{}".format(self.url, obj["id"]),
+            headers={"Authorization": "bearer test"},
+        )
+        assert result.status_code == 200
+        data = self.obj_create_data
+        result = self._create(data)
+        assert result.status_code == 201
+        obj = result.json
+        result = self.app.get(
+            "{}/{}".format(self.url, obj["id"]),
+            headers={"Authorization": "bearer test"},
+        )
+        assert result.status_code == 200
 
     def test_update(self):
 

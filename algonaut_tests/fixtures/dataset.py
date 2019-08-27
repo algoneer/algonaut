@@ -28,7 +28,7 @@ def dataset(
 
 def dataschema(test: Type[unittest.TestCase], fixtures: Dict[str, Any]) -> Any:
     assert issubclass(test, DatabaseTest)
-    dataschema = DataSchema(hash=b"foo")
+    dataschema = DataSchema()
     test.session.add(dataschema)
     test.session.commit()
     return dataschema
@@ -51,7 +51,7 @@ def dataset_dataschema(
 
 def datapoint(test: Type[unittest.TestCase], fixtures: Dict[str, Any]) -> Any:
     assert issubclass(test, DatabaseTest)
-    datapoint = Datapoint(hash=b"foo")
+    datapoint = Datapoint()
     test.session.add(datapoint)
     test.session.commit()
     return datapoint
