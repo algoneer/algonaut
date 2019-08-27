@@ -108,6 +108,56 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /projects/{id}/datasets:
+    get:
+      description: |
+        Returns all datasets that you can see.
+      operationId: listDatasets
+      parameters:
+        - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: datasets response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Dataset'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      description: Creates a new dataset.
+      operationId: createDataset
+      parameters:
+        - $ref: '#/components/parameters/ID'
+      requestBody:
+        description: Dataset to create.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BaseDataset'
+      responses:
+        '201':
+          description: dataset response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Dataset'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /projects/{id}/algorithms:
     get:
       description: |
@@ -476,56 +526,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Result'
-        default:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-  /projects/{id}/datasets:
-    get:
-      description: |
-        Returns all datasets that you can see.
-      operationId: listDatasets
-      parameters:
-        - $ref: '#/components/parameters/ID'
-      responses:
-        '200':
-          description: datasets response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/Dataset'
-        default:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-    post:
-      description: Creates a new dataset.
-      operationId: createDataset
-      parameters:
-        - $ref: '#/components/parameters/ID'
-      requestBody:
-        description: Dataset to create.
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/BaseDataset'
-      responses:
-        '201':
-          description: dataset response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Dataset'
         default:
           description: unexpected error
           content:
