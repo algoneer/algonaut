@@ -84,7 +84,7 @@ def Objects(
                     visible_objs = ObjectRole.select_for(
                         session, request.user, Type().type
                     )
-                    # to do: add objects visible via the users organizations
+                    # we add objects visible via the users organizations
                     org_ids = admin_orgs_id_query(session, request.user)
                     query = session.query(Type).filter(
                         or_(

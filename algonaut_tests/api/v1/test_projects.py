@@ -27,7 +27,7 @@ class TestProjects(MockApiTest, ObjectTest):
     @property
     def create_url(self):
         self.session.add(self.organization)
-        return "{}/{}".format(self.base_url, self.organization.source_id.hex())
+        return "v1/organizations/{}/projects".format(self.organization.source_id.hex())
 
     fixtures = [
         {"auth_client": auth_client},

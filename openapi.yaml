@@ -14,6 +14,56 @@ info:
 servers:
   - url: https://app.algoneer.org
 paths:
+  /organizations:
+    get:
+      description: |
+        Returns all of the current users organization.
+      operationId: listOrganizations
+      parameters: []
+      responses:
+        '200':
+          description: organization roles response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Organization'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /organizations/{id}/projects:
+    post:
+      description: Creates a new project for the given organization.
+      operationId: createProject
+      parameters: 
+        - $ref: '#/components/parameters/OrganizationID'
+      requestBody:
+        description: Project to create.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BaseProject'
+      responses:
+        '201':
+          description: project response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /projects:
     get:
       description: |
@@ -32,29 +82,6 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/Project'
-        default:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
-    post:
-      description: Creates a new project.
-      operationId: createProject
-      requestBody:
-        description: Project to create.
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/BaseProject'
-      responses:
-        '201':
-          description: project response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Project'
         default:
           description: unexpected error
           content:
@@ -790,30 +817,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-  /organization_roles:
-    get:
-      description: |
-        Returns all of the current users organization roles.
-      operationId: listOrganizationRoles
-      parameters: []
-      responses:
-        '200':
-          description: organization roles response
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  data:
-                    type: array
-                    items:
-                      $ref: '#/components/schemas/OrganizationRole'
-        default:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
   /object_roles:
     get:
       description: |
@@ -899,6 +902,14 @@ components:
       schema:
         type: string
         format: uuid
+    OrganizationID:
+      name: id
+      in: path
+      description: ID of the organization
+      required: true
+      schema:
+        type: string
+        format: uuid
   schemas:
     Base:
       type: object
@@ -953,7 +964,7 @@ components:
       properties:
         data:
           type: object
-    OrganizationRole:
+    Organization:
       type: object
       properties:
         roles:
@@ -961,25 +972,22 @@ components:
           items:
             type: string
             example: admin
-        organization:
-          type: object
-          properties:
-            id:
-              type: string
-              format: hex
-              example: fa43f7fafcd832483dfca
-            name:
-              type: string
-              example: acme
-            title:
-              type: string
-              example: ACME!
-            description:
-              type: string
-              example: The mighty ACME corporation.
-            source:
-              type: string
-              example: worf
+        id:
+          type: string
+          format: hex
+          example: fa43f7fafcd832483dfca
+        name:
+          type: string
+          example: acme
+        title:
+          type: string
+          example: ACME!
+        description:
+          type: string
+          example: The mighty ACME corporation.
+        source:
+          type: string
+          example: worf
     ObjectRole:
       allOf:
         - $ref: '#/components/schemas/BaseObjectRole'
