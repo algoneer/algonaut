@@ -16,7 +16,7 @@ class JSON:
             d = json.loads(value)
             return [], d, False
         except:
-            return [form.t("form.json.invalid")], None, True
+            return ["invalid json"], None, True
 
 
 class Regex:
@@ -25,7 +25,7 @@ class Regex:
 
     def __call__(self, name, value, form):
         if not self.regex.match(value):
-            return [form.t("form.regex-does-not-match")], None, True
+            return ["regex does not match"], None, True
 
 
 class Optional:
@@ -46,7 +46,7 @@ class List:
 
     def __call__(self, name, value, form):
         if not isinstance(value, (list, tuple)):
-            return [form.t("form.not-a-list")], None, True
+            return ["not a list"], None, True
         if not self.validators:
             return [], value, False
         l = []
@@ -66,7 +66,7 @@ class List:
 class Required:
     def __call__(self, name, value, form):
         if value is None:
-            return [form.t("form.is-required")], None, True
+            return ["is required"], None, True
 
 
 class EMail:
@@ -75,7 +75,7 @@ class EMail:
 
     def __call__(self, name, value, form):
         if not value or not self.regex.match(value):
-            return [form.t("form.invalid-email")], None, True
+            return ["invalid e-mail"], None, True
 
 
 class Length:
@@ -91,7 +91,11 @@ class Length:
             and len(value) > self.max
         ):
             return (
-                [form.t("form.invalid-length", min=self.min, max=self.max)],
+                [
+                    "invalid length (min: {min}, max: {max})".format(
+                        min=self.min, max=self.max
+                    )
+                ],
                 None,
                 True,
             )
@@ -102,11 +106,7 @@ class Binary:
         try:
             return [], base64.b64decode(value), False
         except:
-            return (
-                [form.t("form.invalid-encoding")],
-                None,
-                True,  # continue validation
-            )
+            return (["invalid encoding"], None, True)  # continue validation
 
 
 class Type:
@@ -117,7 +117,11 @@ class Type:
         self.convert = convert
 
     def __call__(self, name, value, form):
-        err = [form.t("form.not-of-type", type=self.type.__name__.lower())], None, True
+        err = (
+            ["not of type: {type}".format(type=self.type.__name__.lower())],
+            None,
+            True,
+        )
         if self.convert:
             try:
                 value = self.type(value)
@@ -166,8 +170,7 @@ class Integer(Type):
         ):
             return (
                 [
-                    form.t(
-                        "form.integer-out-of-bounds",
+                    "out of bounds (min: {min}, max: {max})".format(
                         min=self.min if self.min is not None else "",
                         max=self.max if self.max is not None else "",
                     )
@@ -182,7 +185,7 @@ class UUID:
         try:
             value = uuid.UUID(value)
         except ValueError:
-            return [form.t("form.not-a-uuid")], None, True
+            return ["not a UUID"], None, True
         return [], value, False
 
 
@@ -195,7 +198,7 @@ class DateTime:
             value = datetime.datetime.strptime(value, self.format)
         except ValueError:
             return (
-                [form.t("form.datetime-not-well-formatted", format=self.format)],
+                ["does not match format '{format}'".format(format=self.format)],
                 None,
                 True,
             )
@@ -207,14 +210,12 @@ class Choices:
 
     def __call__(self, name, value, form):
         if not value in self.choices:
-            return [form.t("form.not-a-valid-choice", choices=self.choices)], None, True
-
-
-class Equal:
-    def __init__(self, value, message=None):
-        self.value = value
-        self.message = message or "form.not-equal"
-
-    def __call__(self, name, value, form):
-        if value != self.value:
-            return [form.t(self.message)], None, True
+            return (
+                [
+                    "not a valid choice (choices: {choices})".format(
+                        choices=self.choices
+                    )
+                ],
+                None,
+                True,
+            )

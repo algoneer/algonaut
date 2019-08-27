@@ -87,7 +87,7 @@ class DatapointModelResults(Resource):
         Model, roles=["admin"], DependentTypes=[Algorithm, Project], id_field="model_id"
     )
     def post(self, datapoint_id: str, model_id: str) -> ResponseType:
-        form = ResultForm(self.t, request.get_json() or {})
+        form = ResultForm(request.get_json() or {})
         if not form.validate():
             return {"message": "invalid data", "errors": form.errors}, 400
         with settings.session() as session:

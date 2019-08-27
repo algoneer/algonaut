@@ -43,8 +43,7 @@ class FormMeta(type):
 
 
 class Form(metaclass=FormMeta):
-    def __init__(self, t, data, is_update=False):
-        self.t = t
+    def __init__(self, data, is_update=False):
         self.is_update = is_update
         self._raw_data = data
 

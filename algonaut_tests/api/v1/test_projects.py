@@ -12,13 +12,15 @@ class TestProjects(MockApiTest, ObjectTest):
 
     obj_key = "project"
     obj_create_data = {
-        "path": "example/algo",
+        "path": "example/project",
+        "name": "test",
         "data": {"foo": "bar"},
         "description": "",
         "tags": ["my", "tags"],
     }
     obj_update_data = {
         "path": "another/path",
+        "name": "another test",
         "data": {"bar": "baz"},
         "description": "foo",
         "tags": ["one", "two"],

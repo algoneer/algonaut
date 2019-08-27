@@ -61,7 +61,6 @@ class Base(DeclarativeBase):  # type: ignore
         # exists we return it as well...
         if hasattr(self, "_roles"):
             d["roles"] = [role.export() for role in self._roles]
-            print(d["roles"])
         return d
 
     def delete(
@@ -78,3 +77,6 @@ class Base(DeclarativeBase):  # type: ignore
                         default deletion behavior.
         """
         session.delete(self)
+
+    def unique_check(self, session):
+        return True

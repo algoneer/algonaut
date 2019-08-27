@@ -42,16 +42,18 @@ class AuthClient(BaseAuthClient):
         data = response.json()
         access_token = AccessToken(token=data["access_token"])
         # Each user has a "personal" organization that is linked to his/her user ID.
+        org_name = data["user"]["display_name"]
+        if not org_name:
+            org_name = data["user"]["email"].split("@")[0]
+        org_name = org_name.lower()
         personal_organization = Organization(
-            name=data["user"]["display_name"],
-            title=data["user"]["display_name"],
+            name=org_name,
+            title=org_name,
             source="worf_user",
             id=binary_id(data["user"]["id"]),  # we create a binary ID
         )
         org_roles = [
-            OrganizationRoles(
-                organization=personal_organization, roles=["admin", "superuser"]
-            )
+            OrganizationRoles(organization=personal_organization, roles=["superuser"])
         ]
         if data.get("organization"):
             # If the user is associated with a real organization, we also add it.

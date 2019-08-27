@@ -46,9 +46,6 @@ class Resource(View):
     def language(self):
         return "en"
 
-    def t(self, key, *args, **kwargs):
-        return settings.translate(self.language, key, *args, **kwargs)
-
     def add_cache_headers(self, response):
         digest = hashlib.sha1()
         digest.update(response.get_data())

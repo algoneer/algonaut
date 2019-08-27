@@ -120,33 +120,59 @@ def Objects(
         def post(
             self, object_id: Optional[str] = None, organization_id: Optional[str] = None
         ) -> ResponseType:
-            form = Form(self.t, request.get_json() or {})
+            form = Form(request.get_json() or {})
             if not form.validate():
                 return {"message": "invalid data", "errors": form.errors}, 400
+
+            dependent_obj: Optional[Base] = None
+            org: Optional[Organization] = None
+            join_by: Optional[Base] = None
+
+            if DependentTypes:
+                dependent_type = DependentTypes[0]().type
+                dependent_obj = getattr(request, dependent_type)
+
             with settings.session() as session:
+
                 obj = Type(**form.valid_data)
+
                 if organization_id is not None:
                     org = Organization.get_or_create(session, request.organization)
                     obj.organization = org
-                if DependentTypes:
-                    dependent_type = DependentTypes[0]().type
-                    dependent_obj = getattr(request, dependent_type)
+
+                if dependent_obj:
                     if JoinBy:
                         # if this object has a M2M table, we create a row in
                         # the table for the newly created object
                         join_by = JoinBy()
                         setattr(join_by, dependent_type, dependent_obj)
                         setattr(join_by, obj.type, obj)
-                        session.add(join_by)
                     else:
                         setattr(obj, dependent_type, dependent_obj)
+
+                # we expunge the object from the session, as it might have been added
+                # when we associated the dependent properties with it...
+                session.expunge(obj)
+
+                if not obj.unique_check(session):
+                    if org:
+                        session.expunge(org)
+                    return {"message": "unique check failed"}, 400
+
+                if join_by:
+                    session.add(join_by)
+
                 session.add(obj)
+
                 if not DependentTypes:
                     # we create an object role for the newly created object
                     # only if it does not depends on another object
+                    assert isinstance(org, Organization)
                     for org_role in ["admin", "superuser"]:
                         ObjectRole.get_or_create(session, obj, org, "admin", org_role)
+
                 session.commit()
+
                 return obj.export(), 201
 
     return Objects
@@ -192,7 +218,7 @@ def ObjectDetails(
         def patch(
             self, object_id: str, dependent_id: Optional[str] = None
         ) -> ResponseType:
-            form = Form(self.t, request.get_json() or {}, is_update=True)
+            form = Form(request.get_json() or {}, is_update=True)
             if not form.validate():
                 return {"message": "invalid data", "errors": form.errors}, 400
             obj = getattr(request, Type().type)

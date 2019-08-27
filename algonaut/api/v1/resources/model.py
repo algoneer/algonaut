@@ -28,7 +28,7 @@ class CreateModel(Resource):
         Dataset, roles=["admin"], DependentTypes=[Project], id_field="dataset_id"
     )
     def post(self, algorithm_id: str, dataset_id: str) -> ResponseType:
-        form = ModelForm(self.t, request.get_json() or {})
+        form = ModelForm(request.get_json() or {})
         if not form.validate():
             return {"message": "invalid data", "errors": form.errors}, 400
         with settings.session() as session:

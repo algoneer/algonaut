@@ -10,6 +10,6 @@ class Organizations(Resource):
         organizations = []
         for org_roles in request.user.roles:
             organization = org_roles.organization.export()
-            organization["roles"] = org_roles.export(with_org=False)
+            organization["roles"] = org_roles.export(with_org=False)["roles"]
             organizations.append(organization)
         return {"data": organizations}, 200

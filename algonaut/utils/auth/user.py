@@ -21,6 +21,7 @@ class OrganizationRoles:
         d = {"roles": self.roles}
         if with_org:
             d["organization"] = self.organization.export()
+        return d
 
 
 class User:

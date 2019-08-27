@@ -23,11 +23,20 @@ class Project(Base):
         innerjoin=True,
     )
 
+    def unique_check(self, session):
+        existing_projects = session.query(Project).filter(
+            Project.organization == self.organization, Project.path == self.path
+        )
+        if existing_projects.count() > 0:
+            return False
+        return True
+
     def export(self):
         d = super().export()
         d.update(
             {
                 "path": self.path,
+                "name": self.name,
                 "description": self.description,
                 "tags": [tag for tag in self.tags] if self.tags else None,
                 "organization": self.organization.export(),

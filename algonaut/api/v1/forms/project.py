@@ -13,6 +13,7 @@ from .validators import Path
 class ProjectForm(Form):
 
     path = Field([Required(), String(), Path()])
+    name = Field([Required(), String()])
     tags = Field([Optional(), List([String()])])
     description = Field([Optional(default=""), String(), Length(min=1, max=200)])
     data = Field([Optional(), Dict()])

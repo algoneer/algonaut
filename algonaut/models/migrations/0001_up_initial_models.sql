@@ -106,6 +106,7 @@ ALTER TABLE ONLY project ALTER COLUMN id SET DEFAULT nextval('project_id_seq'::r
 ALTER TABLE ONLY project
     ADD CONSTRAINT project_organization_id_fkey FOREIGN KEY (organization_id) REFERENCES organization(id);
 
+CREATE UNIQUE INDEX ix_project_organization_path ON project USING BTREE (organization_id, path);
 CREATE INDEX ix_project_organization_id ON project USING BTREE (organization_id);
 CREATE INDEX ix_project_tags ON project USING GIN (tags);
 CREATE INDEX ix_project_path ON project USING BTREE (path);

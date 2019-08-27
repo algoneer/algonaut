@@ -925,10 +925,14 @@ components:
       type: object
       required:
         - path
+        - name
       properties:
         path:
           type: string
           example: hr/candidate-selection
+        name:
+          type: string
+          example: HR - Candidate Selection
         data:
           type: object
     Algorithm:
