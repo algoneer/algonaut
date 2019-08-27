@@ -24,3 +24,11 @@ class Algorithm(Hashable, Base):
         innerjoin=True,
     )
     tags = Column(ARRAY(Unicode, dimensions=1))
+
+    def export_fields(self):
+        return {
+            "name": self.name,
+            "hash": self.hash.hex(),
+            "tags": [tag for tag in self.tags] if self.tags else None,
+            "project": self.project.export(),
+        }

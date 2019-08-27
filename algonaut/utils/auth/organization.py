@@ -3,19 +3,11 @@ from typing import Iterable, Optional
 
 class Organization:
     def __init__(
-        self,
-        name: str,
-        source: str,
-        id: bytes,
-        description: str = "",
-        title: Optional[str] = None,
+        self, name: str, source: str, id: bytes, description: str = ""
     ) -> None:
         self._name = name
         self._source = source
         self._id = id
-        if title is None:
-            title = name
-        self._title = title
         self._description = description
 
     @property
@@ -34,13 +26,8 @@ class Organization:
     def description(self) -> str:
         return self._description
 
-    @property
-    def title(self) -> str:
-        return self._title
-
     def export(self):
         return {
-            "title": self.title,
             "description": self.description,
             "source": self.source,
             "id": self.id.hex(),

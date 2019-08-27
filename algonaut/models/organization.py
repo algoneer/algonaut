@@ -13,7 +13,6 @@ class Organization(Base):
     Describes an organization.
     """
     name = Column(Unicode, nullable=False)
-    title = Column(Unicode, nullable=False, default="")
     source = Column(Unicode, nullable=False)
     source_id = Column(BYTEA, nullable=False)
     description = Column(Unicode, nullable=False, default="")
@@ -34,22 +33,16 @@ class Organization(Base):
                 source=auth_org.source,
                 source_id=auth_org.id,
                 name=auth_org.name,
-                title=auth_org.title,
                 description=auth_org.description,
             )
             session.add(org)
 
         return org
 
-    def export(self):
-        d = super().export()
-        d.update(
-            {
-                "title": self.title,
-                "name": self.name,
-                "source": self.source,
-                "source_id": self.source_id.hex(),
-                "description": self.description,
-            }
-        )
-        return d
+    def export_fields(self):
+        return {
+            "name": self.name,
+            "source": self.source,
+            "source_id": self.source_id.hex(),
+            "description": self.description,
+        }

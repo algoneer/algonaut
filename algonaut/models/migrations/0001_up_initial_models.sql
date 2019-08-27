@@ -40,7 +40,6 @@ CREATE TABLE organization (
     source_id BYTEA NOT NULL,
     source CHARACTER VARYING NOT NULL,
     name CHARACTER VARYING NOT NULL,
-    title CHARACTER VARYING NOT NULL,
     description CHARACTER VARYING NOT NULL DEFAULT '',
     created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
@@ -65,7 +64,6 @@ ALTER TABLE ONLY organization ALTER COLUMN id SET DEFAULT nextval('organization_
 ALTER TABLE ONLY organization
     ADD CONSTRAINT organization_ext_id_key UNIQUE (ext_id);
 
-CREATE UNIQUE INDEX ix_organization_name_unique ON organization (name) WHERE (deleted_at IS NULL);
 CREATE UNIQUE INDEX ix_organization_unique ON organization (source, source_id) WHERE (deleted_at IS NULL);
 CREATE INDEX ix_organization_created_at ON organization USING BTREE (created_at);
 CREATE INDEX ix_organization_updated_at ON organization USING BTREE (updated_at);

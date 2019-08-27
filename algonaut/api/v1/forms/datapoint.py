@@ -1,15 +1,7 @@
 from algonaut.utils.forms import Form, Field
-from algonaut.utils.forms.validators import (
-    String,
-    Required,
-    Optional,
-    Dict,
-    List,
-    Binary,
-)
+from algonaut.utils.forms.validators import Dict
 
 
 class DatapointForm(Form):
 
-    hash = Field([Optional(), Binary()])
-    data = Field([Optional(), Dict()])
+    data = Field([Dict()])

@@ -48,7 +48,6 @@ class AuthClient(BaseAuthClient):
         org_name = org_name.lower()
         personal_organization = Organization(
             name=org_name,
-            title=org_name,
             source="worf_user",
             id=binary_id(data["user"]["id"]),  # we create a binary ID
         )
@@ -60,7 +59,6 @@ class AuthClient(BaseAuthClient):
             organization = Organization(
                 name=data["organization"]["name"],
                 description=data["organization"].get("description", ""),
-                title=data["organization"].get("title"),
                 source="worf",
                 id=binary_id(data["organization"]["id"]),  # we create a binary ID
             )

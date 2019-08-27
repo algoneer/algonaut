@@ -1,8 +1,9 @@
 from algonaut.utils.forms import Form, Field
-from algonaut.utils.forms.validators import String, Required, Optional, Dict, Binary
+from algonaut.utils.forms.validators import Dict, String, List, Optional
 
 
 class AlgorithmForm(Form):
 
-    hash = Field([Optional(), Binary()])
-    data = Field([Optional(), Dict()])
+    name = Field([String()])
+    tags = Field([Optional(default=[]), List([String()])])
+    data = Field([Dict()])

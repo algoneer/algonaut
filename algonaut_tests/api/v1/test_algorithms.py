@@ -16,8 +16,8 @@ class Tests(MockApiTest, ObjectTest):
 
     base_url = "/v1/algorithms"
     obj_key = "algorithm"
-    obj_create_data = {"data": {"foo": "bar"}}
-    obj_update_data = {"data": {"bar": "bam"}}
+    obj_create_data = {"data": {"foo": "bar"}, "name": "test"}
+    obj_update_data = {"data": {"bar": "bam"}, "name": "foo"}
 
     @property
     def list_url(self):

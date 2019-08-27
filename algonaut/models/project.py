@@ -33,15 +33,11 @@ class Project(Base):
             return False
         return True
 
-    def export(self):
-        d = super().export()
-        d.update(
-            {
-                "path": self.path,
-                "name": self.name,
-                "description": self.description,
-                "tags": [tag for tag in self.tags] if self.tags else None,
-                "organization": self.organization.export(),
-            }
-        )
-        return d
+    def export_fields(self):
+        return {
+            "path": self.path,
+            "name": self.name,
+            "description": self.description,
+            "tags": [tag for tag in self.tags] if self.tags else None,
+            "organization": self.organization.export(),
+        }

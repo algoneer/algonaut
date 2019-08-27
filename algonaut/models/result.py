@@ -1,7 +1,7 @@
 from .base import Base
 from .hashable import Hashable
 
-from sqlalchemy import Column, Unicode, UniqueConstraint
+from sqlalchemy import Column, Unicode
 from sqlalchemy.dialects.postgresql import BYTEA
 
 
@@ -13,12 +13,8 @@ class Result(Hashable, Base):
 
     __tablename__ = "result"
 
-    __table_args__ = (UniqueConstraint("hash"),)
-
     hash = Column(BYTEA, nullable=False)
-    name = Column(Unicode, nullable=False)
+    name = Column(Unicode, nullable=False, default="")
 
-    def export(self):
-        d = super().export()
-        d.update({"name": self.name, "hash": self.hash.hex()})
-        return d
+    def export_fields(self):
+        return {"name": self.name, "hash": self.hash.hex()}

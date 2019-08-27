@@ -15,7 +15,7 @@ class Dataset(Hashable, Base):
     """
 
     project_id = Column(PkType, ForeignKey("project.id"), nullable=False)
-    name = Column(Unicode, nullable=True, default="")
+    name = Column(Unicode, nullable=False, default="")
     hash = Column(BYTEA, nullable=False)
     project = relationship(
         "Project",
@@ -24,14 +24,10 @@ class Dataset(Hashable, Base):
     )
     tags = Column(ARRAY(Unicode, dimensions=1))
 
-    def export(self):
-        d = super().export()
-        d.update(
-            {
-                "name": self.name,
-                "hash": self.hash.hex(),
-                "tags": [tag for tag in self.tags] if self.tags else None,
-                "project": self.project.export(),
-            }
-        )
-        return d
+    def export_fields(self):
+        return {
+            "name": self.name,
+            "hash": self.hash.hex(),
+            "tags": [tag for tag in self.tags] if self.tags else None,
+            "project": self.project.export(),
+        }

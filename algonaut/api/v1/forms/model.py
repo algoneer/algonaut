@@ -1,8 +1,7 @@
 from algonaut.utils.forms import Form, Field
-from algonaut.utils.forms.validators import Required, Optional, Dict, Binary
+from algonaut.utils.forms.validators import Dict
 
 
 class ModelForm(Form):
 
-    hash = Field([Optional(), Binary()])
-    data = Field([Required(), Dict()])
+    data = Field([Dict()])

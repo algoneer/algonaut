@@ -52,6 +52,9 @@ class Base(DeclarativeBase):  # type: ignore
     def hash_data(self):
         return self.data
 
+    def export_fields(self):
+        return {}
+
     def export(self):
         d = {
             "id": self.ext_id,
@@ -60,6 +63,7 @@ class Base(DeclarativeBase):  # type: ignore
             "deleted_at": self.deleted_at,
             "data": self.data,
         }
+        d.update(self.export_fields())
         # decorators might set role context for the object and given user, if such a context
         # exists we return it as well...
         if hasattr(self, "_roles"):
