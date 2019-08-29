@@ -67,9 +67,6 @@ def get_hash(node, fields=None, exclude=[]):
 
 
 class Hashable:
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.generate_hash()
-
-    def generate_hash(self):
-        self.hash = get_hash(self.hash_data())
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.hash = get_hash(self.hash_data(kwargs))

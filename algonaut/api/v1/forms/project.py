@@ -8,5 +8,5 @@ class ProjectForm(Form):
     path = Field([String(), Path()])
     name = Field([String()])
     tags = Field([Optional(default=[]), List([String()])])
-    description = Field([Optional(default=""), String(), Length(min=1, max=200)])
+    description = Field([Optional(default=""), String(), Length(min=1, max=400)])
     data = Field([Optional(), Dict()])
