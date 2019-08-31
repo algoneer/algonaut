@@ -75,4 +75,6 @@ class CustomJSONEncoder(JSONEncoder):
             if obj.utcoffset() is not None:
                 raise ValueError("Expected a UTC datetime!")
             return obj.strftime("%Y-%m-%dT%H:%M:%SZ")
+        elif isinstance(obj, bytes):
+            return obj.hex()
         return JSONEncoder.default(self, obj)

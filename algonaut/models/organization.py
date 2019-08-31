@@ -43,6 +43,6 @@ class Organization(Base):
         return {
             "name": self.name,
             "source": self.source,
-            "source_id": self.source_id.hex(),
+            "source_id": self.source_id,
             "description": self.description,
         }

@@ -15,6 +15,7 @@ class Result(Hashable, Base):
 
     hash = Column(BYTEA, nullable=False)
     name = Column(Unicode, nullable=False, default="")
+    version = Column(Unicode, nullable=False, default="")
 
     def export_fields(self):
-        return {"name": self.name, "hash": self.hash.hex()}
+        return {"name": self.name, "hash": self.hash, "version": self.version}

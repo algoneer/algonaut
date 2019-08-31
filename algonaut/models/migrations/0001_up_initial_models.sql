@@ -8,29 +8,6 @@ INSERT INTO algonaut_version (version) VALUES (1);
 SET statement_timeout = 0;
 SET client_encoding = 'UTF8';
 
-/*
-we need tables for dataset, datapoint, dataschema, algorithm, model,
-algorithmschema and result.
-
-We should be able to efficiently manage different versions of algorithms
-as well as datasets, and to associate them with a given schema:
-
-- algorithm_version -> (algorithm, algorithmschema)
-- model -> (algorithm_version, dataset_version)
-- datapoint -> datapoint_dataset_version -> dataset_version -> (dataset, dataschema)
-- model a result for a given algorithm version
-- result -> algorithm_version_result -> algorithm_version
-- result -> dataset_version_result -> dataset_version
-
-A given model always corresponds to a given algorithm version that was trained
-with a given dataset version. There might be more than one model trained for
-a given algorithm and dataset, e.g. trained with different hyper-parameters.
-
-A given dataset version always belongs to a given dataset. A specific datapoint
-always belongs to one or more datasets.
-*/
-
-
 -- Stores data about external organizations (e.g. their name) so we don't need
 -- to fetch this data every time we want to access organization details
 
@@ -341,6 +318,7 @@ CREATE TABLE result (
     id bigint NOT NULL,
     ext_id uuid NOT NULL,
     name CHARACTER VARYING NOT NULL,
+    version CHARACTER VARYING NOT NULL,
     hash BYTEA NOT NULL,
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
@@ -368,6 +346,7 @@ ALTER TABLE ONLY result ALTER COLUMN id SET DEFAULT nextval('result_id_seq'::reg
 
 CREATE UNIQUE INDEX ix_result_unique_hash ON result USING BTREE (hash) WHERE (deleted_at IS NULL);
 CREATE INDEX ix_result_name ON result USING BTREE (name);
+CREATE INDEX ix_result_version ON result USING BTREE (version);
 CREATE INDEX ix_result_created_at ON result USING BTREE (created_at);
 CREATE INDEX ix_result_updated_at ON result USING BTREE (updated_at);
 CREATE INDEX ix_result_deleted_at ON result USING BTREE (deleted_at);

@@ -28,7 +28,7 @@ class Algorithm(Hashable, Base):
     def export_fields(self):
         return {
             "name": self.name,
-            "hash": self.hash.hex(),
+            "hash": self.hash,
             "tags": [tag for tag in self.tags] if self.tags else None,
             "project": self.project.export(),
         }
