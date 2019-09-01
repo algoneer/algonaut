@@ -1,5 +1,5 @@
 from algonaut.utils.settings import Settings as BaseSettings, load_settings
-import algonaut.utils.auth.worf as worf
+from algonaut.utils.auth import auth_clients
 from algonaut.utils.auth import AuthClient
 import os
 
@@ -27,7 +27,10 @@ class Settings(BaseSettings):
         self._auth_client: Optional[AuthClient] = None
 
     def _get_auth_client(self):
-        self._auth_client = worf.AuthClient(self)
+        client_type = settings.get("auth.type")
+        client_config = settings.get("auth.config")
+        ClientClass = auth_clients[client_type]
+        self._auth_client = ClientClass(client_config)
 
     @property
     def auth_client(self):

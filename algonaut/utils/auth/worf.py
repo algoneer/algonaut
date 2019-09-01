@@ -1,5 +1,4 @@
 import requests
-import algonaut.settings
 from .user import User, OrganizationRoles
 from .organization import Organization
 from .access_token import AccessToken
@@ -7,7 +6,7 @@ import flask
 
 from . import AuthClient as BaseAuthClient, get_access_token
 
-from typing import Callable, Optional
+from typing import Callable, Optional, Dict, Any
 
 
 def binary_id(uuid: str) -> bytes:
@@ -15,9 +14,9 @@ def binary_id(uuid: str) -> bytes:
 
 
 class AuthClient(BaseAuthClient):
-    def __init__(self, settings: "algonaut.settings.Settings") -> None:
-        self.base_url = settings.get("worf.url")
-        self.version = settings.get("worf.version")
+    def __init__(self, config: Dict[str, Any]) -> None:
+        self.base_url = config["urlf"]
+        self.version = config["version"]
 
     def _request(
         self, method: Callable, access_token: str, url: str, **kwargs

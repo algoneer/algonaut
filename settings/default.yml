@@ -1,46 +1,28 @@
-api: {}
-encryption:
-  key: please-change-me
+# Debug and test config
 debug: true
 test: false
-date_format: '%Y-%m-%d'
+# DB config
 db:
   url: postgresql://algonaut:algonaut@localhost/algonaut_development
+# CORS config
 crossdomain:
   enabled: true
   max-age: 86400 #1 day
   origins: ["http://localhost:8080"] # overwrite for your production version
   allowed-headers: ['*']
+# Plugin config
 plugins: {}
-worf:
-  url: http://localhost:5000
-  version: v1
+# Authentication config
+auth:
+  type: worf
+  config:
+    url: http://localhost:5000
+    version: v1
+# Worker config
 worker:
   type: thread
   config: {}
   schedule: {}
-smtp:
-  from: algonaut@enterprise.fed
+# API bind URL
 url: http://localhost:5001
-email:
-  url: http://localhost:8080 #this is the frontend base URL (e.g. for e-mail change etc.)
-  paths:
-    v1: {}
-  template_paths: 
-    0001_base: "{cwd}/templates"
-  context:
-    security_officer:
-      email: Security Officer E-Mail [email.context.security_officer.email]
-    service:
-      name: Service Name [email.context.service.name]
-      url: Service URL [email.context.service.url]
-    company:
-      team: Team Name
-      name: Company Name [email.context.company.name]
-      city: Company City [email.context.company.city]
-      street: Company Street [email.context.company.street]
-      zip_code: Company Zip Code [email.context.company.zip_code]
-      email:  Company E-Mail [email.context.company.email]
-      url: Company URL [email.context.company.url]
-      phone: Company Phone [email.context.company.phone]
 languages: [en]
