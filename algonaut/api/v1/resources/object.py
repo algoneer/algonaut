@@ -155,10 +155,10 @@ def Objects(
                 # when we associated the dependent properties with it...
                 session.expunge(obj)
 
-                if not obj.unique_check(session):
-                    if org:
-                        session.expunge(org)
-                    return {"message": "unique check failed"}, 400
+                existing_obj = obj.get_existing(session)
+
+                if existing_obj:
+                    return existing_obj.export(), 201
 
                 if isinstance(obj, Hashable):
                     extra_args = []

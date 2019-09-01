@@ -28,9 +28,12 @@ def authorized(
                 org_id = kwargs.get(org_id_field)
                 if not isinstance(org_id, str):
                     return
-                if not re.match(r"^[a-f0-9]+$", org_id):
-                    return
-                binary_org_id = bytearray.fromhex(org_id)
+                if org_id == "default":
+                    binary_org_id = b""
+                else:
+                    if not re.match(r"^[a-f0-9]+$", org_id):
+                        return
+                    binary_org_id = bytearray.fromhex(org_id)
                 for org_roles in user.roles:
                     if org_roles.organization.id == binary_org_id or (
                         org_id == "default" and org_roles.organization.default

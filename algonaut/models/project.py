@@ -23,15 +23,12 @@ class Project(Base):
         innerjoin=True,
     )
 
-    def unique_check(self, session):
-        existing_projects = session.query(Project).filter(
+    def get_existing(self, session):
+        return session.query(Project).filter(
             Project.organization == self.organization,
             Project.path == self.path,
             Project.deleted_at == None,
-        )
-        if existing_projects.count() > 0:
-            return False
-        return True
+        ).one_or_none()
 
     def export_fields(self):
         return {

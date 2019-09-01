@@ -33,22 +33,23 @@ class CreateModel(Resource):
             return {"message": "invalid data", "errors": form.errors}, 400
         with settings.session() as session:
             obj = Model(**form.valid_data)
-            obj.algorithm = request.algorithm
-            obj.dataset = request.dataset
 
             existing_obj = (
                 session.query(Model)
                 .filter(
                     Model.algorithm_id == request.algorithm.id,
                     Model.dataset_id == request.dataset.id,
-                    Model.deleted_at == None,
                     Model.hash == obj.hash,
+                    Model.deleted_at == None,
                 )
                 .one_or_none()
             )
             if existing_obj:
                 return existing_obj.export(), 201
 
+            obj.algorithm = request.algorithm
+            obj.dataset = request.dataset
             session.add(obj)
+
             session.commit()
             return obj.export(), 201

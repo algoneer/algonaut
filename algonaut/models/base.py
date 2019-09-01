@@ -86,5 +86,5 @@ class Base(DeclarativeBase):  # type: ignore
         """
         session.delete(self)
 
-    def unique_check(self, session):
-        return True
+    def get_existing(self, session):
+        return None

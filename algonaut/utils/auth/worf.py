@@ -3,6 +3,9 @@ from .user import User, OrganizationRoles
 from .organization import Organization
 from .access_token import AccessToken
 import flask
+import logging
+
+logger = logging.getLogger(__name__)
 
 from . import AuthClient as BaseAuthClient, get_access_token
 
@@ -15,7 +18,7 @@ def binary_id(uuid: str) -> bytes:
 
 class AuthClient(BaseAuthClient):
     def __init__(self, config: Dict[str, Any]) -> None:
-        self.base_url = config["urlf"]
+        self.base_url = config["url"]
         self.version = config["version"]
 
     def _request(
@@ -35,7 +38,11 @@ class AuthClient(BaseAuthClient):
         token = get_access_token(request)
         if not token:
             return None
-        response = self._get(token, "user")
+        try:
+            response = self._get(token, "user")
+        except requests.ConnectionError:
+            logger.error("Cannot connect to authentication backend...")
+            return None
         if response.status_code != 200:
             return None
         data = response.json()

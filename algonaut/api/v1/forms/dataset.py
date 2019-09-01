@@ -1,9 +1,10 @@
 from algonaut.utils.forms import Form, Field
-from algonaut.utils.forms.validators import String, Dict, List, Optional
+from algonaut.utils.forms.validators import String, Dict, List, Optional, Binary
 
 
 class DatasetForm(Form):
 
-    name = Field([String()])
+    name = Field([Optional(default=""), String()])
+    hash = Field([Optional(), Binary()])
     tags = Field([Optional(default=[]), List([String()])])
-    data = Field([Dict()])
+    data = Field([Optional(default={}), Dict()])
