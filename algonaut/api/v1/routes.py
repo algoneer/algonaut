@@ -13,6 +13,8 @@ from .resources.result import (
     DatasetResultDetails,
     DatapointModelResults,
     DatapointModelResultDetails,
+    DatasetModelResults,
+    DatasetModelResultDetails,
 )
 from .resources.dataset import Datasets, DatasetDetails
 from .resources.datapoint import Datapoints, DatapointDetails
@@ -59,6 +61,18 @@ routes: List[Dict[str, Tuple[Type[Resource], Dict[str, Any]]]] = [
     {
         "/models/<dependent_id>/datapointresults/<object_id>": (
             DatapointModelResultDetails,
+            {"methods": ["GET", "PATCH", "DELETE"]},
+        )
+    },
+    {
+        "/datasets/<dataset_id>/models/<model_id>/results": (
+            DatasetModelResults,
+            {"methods": ["GET", "POST"]},
+        )
+    },
+    {
+        "/models/<dependent_id>/datasetresults/<object_id>": (
+            DatasetModelResultDetails,
             {"methods": ["GET", "PATCH", "DELETE"]},
         )
     },

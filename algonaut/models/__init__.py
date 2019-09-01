@@ -13,6 +13,7 @@ from .dataset_datapoint import DatasetDatapoint  # noqa
 from .dataset_result import DatasetResult  # noqa
 from .dataset import Dataset  # noqa
 from .datapoint_model_result import DatapointModelResult  # noqa
+from .dataset_model_result import DatasetModelResult  # noqa
 from .model_result import ModelResult  # noqa
 from .model import Model  # noqa
 from .result import Result  # noqa
@@ -28,6 +29,7 @@ def clean_db(session):
         AlgorithmAlgorithmSchema,
         AlgorithmResult,
         DatapointModelResult,
+        DatasetModelResult,
         ModelResult,
         Model,
         Algorithm,

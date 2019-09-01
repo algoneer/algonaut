@@ -4,6 +4,7 @@ from algonaut.models import (
     ModelResult,
     Datapoint,
     DatasetDatapoint,
+    DatasetModelResult,
     DatapointModelResult,
     AlgorithmResult,
     DatasetResult,
@@ -123,6 +124,89 @@ class DatapointModelResults(Resource):
 
             dpmr = DatapointModelResult(
                 datapoint=request.datapoint, model=request.model, result=obj
+            )
+            session.add(dpmr)
+            session.commit()
+            return obj.export(), 201
+
+
+DatasetModelResultDetails = ObjectDetails(
+    Result, ResultForm, [Model, Algorithm, Project], DatasetModelResult
+)
+
+
+class DatasetModelResults(Resource):
+    @authorized()
+    @valid_object(
+        Dataset,
+        roles=["view", "admin"],
+        DependentTypes=[Project],
+        id_field="dataset_id",
+    )
+    @valid_object(
+        Model,
+        roles=["view", "admin"],
+        DependentTypes=[Algorithm, Project],
+        id_field="model_id",
+    )
+    def get(self, dataset_id: str, model_id: str) -> ResponseType:
+        """
+        Return all objects that match the given criteria and that the user is
+        allowed to see.
+        """
+        with settings.session() as session:
+            filters = [
+                Result.deleted_at == None,
+                DatasetModelResult.dataset == request.dataset,
+                DatasetModelResult.model == request.model,
+            ]
+            objs = session.query(Result).filter(*filters).join(DatasetModelResult).all()
+            return {"data": [obj.export() for obj in objs]}, 200
+
+    @authorized()
+    @valid_object(
+        Dataset, roles=["admin"], DependentTypes=[Project], id_field="dataset_id"
+    )
+    @valid_object(
+        Model, roles=["admin"], DependentTypes=[Algorithm, Project], id_field="model_id"
+    )
+    def post(self, dataset_id: str, model_id: str) -> ResponseType:
+        form = ResultForm(request.get_json() or {})
+        if not form.validate():
+            return {"message": "invalid data", "errors": form.errors}, 400
+        with settings.session() as session:
+            obj = Result(**form.valid_data)
+            existing_obj = (
+                session.query(Result)
+                .filter(Result.hash == obj.hash, Result.deleted_at == None)
+                .one_or_none()
+            )
+
+            # if a matching result already exists we do not create a new one
+            if existing_obj:
+                obj = existing_obj
+            else:
+                session.add(obj)
+                session.commit()
+
+            # we check if an existing entry already exists
+            existing_obj = (
+                session.query(DatasetModelResult)
+                .filter(
+                    DatasetModelResult.model_id == request.model.id,
+                    DatasetModelResult.dataset_id == request.dataset.id,
+                    DatasetModelResult.result_id == obj.id,
+                    DatasetModelResult.deleted_at == None,
+                )
+                .one_or_none()
+            )
+
+            # we return the existing object without adding a M2M entry
+            if existing_obj:
+                return obj.export(), 201
+
+            dpmr = DatasetModelResult(
+                dataset=request.dataset, model=request.model, result=obj
             )
             session.add(dpmr)
             session.commit()

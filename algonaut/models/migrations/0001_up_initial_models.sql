@@ -523,6 +523,52 @@ CREATE INDEX ix_datapoint_model_result_created_at ON datapoint_model_result USIN
 CREATE INDEX ix_datapoint_model_result_updated_at ON datapoint_model_result USING BTREE (updated_at);
 CREATE INDEX ix_datapoint_model_result_deleted_at ON datapoint_model_result USING BTREE (deleted_at);
 
+
+-- maps a result to a given dataset and model
+CREATE TABLE dataset_model_result (
+    id bigint NOT NULL,
+    ext_id uuid NOT NULL,
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    deleted_at timestamp without time zone,
+    data json,
+    dataset_id bigint NOT NULL,
+    model_id bigint NOT NULL,
+    result_id bigint NOT NULL
+);
+
+ALTER TABLE ONLY dataset_model_result
+    ADD CONSTRAINT dataset_model_result_ext_id_key UNIQUE (ext_id);
+
+ALTER TABLE ONLY dataset_model_result
+    ADD CONSTRAINT dataset_model_result_pkey PRIMARY KEY (id);
+
+CREATE SEQUENCE dataset_model_result_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER SEQUENCE dataset_model_result_id_seq OWNED BY dataset_model_result.id;
+
+ALTER TABLE ONLY dataset_model_result ALTER COLUMN id SET DEFAULT nextval('dataset_model_result_id_seq'::regclass);
+
+ALTER TABLE ONLY dataset_model_result
+    ADD CONSTRAINT dataset_model_result_model_id_fkey FOREIGN KEY (model_id) REFERENCES model(id);
+
+ALTER TABLE ONLY dataset_model_result
+    ADD CONSTRAINT dataset_model_result_dataset_id_fkey FOREIGN KEY (dataset_id) REFERENCES dataset(id);
+
+ALTER TABLE ONLY dataset_model_result
+    ADD CONSTRAINT dataset_model_result_result_id_fkey FOREIGN KEY (result_id) REFERENCES result(id);
+
+-- a result can only be mapped to a model once
+CREATE UNIQUE INDEX ix_dataset_model_result_unique ON dataset_model_result USING BTREE (dataset_id, model_id, result_id) WHERE (deleted_at IS NULL);
+CREATE INDEX ix_dataset_model_result_created_at ON dataset_model_result USING BTREE (created_at);
+CREATE INDEX ix_dataset_model_result_updated_at ON dataset_model_result USING BTREE (updated_at);
+CREATE INDEX ix_dataset_model_result_deleted_at ON dataset_model_result USING BTREE (deleted_at);
+
 -- maps a dataset version to a data schema
 CREATE TABLE dataset_dataschema (
     id bigint NOT NULL,

@@ -5,6 +5,7 @@ DROP TABLE dataset_datapoint;
 DROP TABLE algorithm_algorithmschema;
 DROP TABLE dataset_dataschema;
 DROP TABLE datapoint_model_result;
+DROP TABLE dataset_model_result;
 DROP TABLE model_result;
 DROP TABLE dataset_result;
 DROP TABLE algorithm_result;

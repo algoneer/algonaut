@@ -1,6 +1,7 @@
 from algonaut.models import (
     Result,
     ModelResult,
+    DatasetModelResult,
     DatapointModelResult,
     DatasetResult,
     AlgorithmResult,
@@ -34,6 +35,23 @@ def datapoint_model_result(
     test.session.add(datapoint_model_result)
     test.session.commit()
     return datapoint_model_result
+
+
+def dataset_model_result(
+    test: Type[unittest.TestCase],
+    fixtures: Dict[str, Any],
+    model: str = "model",
+    dataset: str = "dataset",
+    result: str = "result",
+) -> Any:
+    assert issubclass(test, DatabaseTest)
+    md = fixtures[model]
+    rs = fixtures[result]
+    ds = fixtures[dataset]
+    dataset_model_result = DatasetModelResult(dataset=ds, model=md, result=rs)
+    test.session.add(dataset_model_result)
+    test.session.commit()
+    return dataset_model_result
 
 
 def model_result(

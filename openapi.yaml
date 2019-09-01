@@ -511,6 +511,27 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /models/{id}/datasetresults/{dependent_id}:
+    get:
+      description: |
+        Returns details for a given result of a given dataset and model.
+      operationId: getDatasetModelResultDetails
+      parameters:
+        - $ref: '#/components/parameters/ID'
+        - $ref: "#/components/parameters/DependentID"
+      responses:
+        '200':
+          description: result response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Result'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /models/{id}/datapointresults/{dependent_id}:
     get:
       description: |
@@ -688,6 +709,58 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/DataSchema'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /datasets/{id}/models/{dependent_id}/results:
+    get:
+      description: |
+        Returns all results for a given dataset and model.
+      operationId: listDatasetModelResults
+      parameters:
+        - $ref: '#/components/parameters/ID'
+        - $ref: "#/components/parameters/DependentID"
+      responses:
+        '200':
+          description: results response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Result'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      description: Creates a new result for a given dataset and model.
+      operationId: createDatasetModelResult
+      parameters:
+        - $ref: '#/components/parameters/ID'
+        - $ref: "#/components/parameters/DependentID"
+      requestBody:
+        description: Result to create.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Result'
+      responses:
+        '201':
+          description: result response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Result'
         default:
           description: unexpected error
           content:
