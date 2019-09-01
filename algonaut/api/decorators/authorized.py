@@ -32,7 +32,9 @@ def authorized(
                     return
                 binary_org_id = bytearray.fromhex(org_id)
                 for org_roles in user.roles:
-                    if org_roles.organization.id == binary_org_id:
+                    if org_roles.organization.id == binary_org_id or (
+                        org_id == "default" and org_roles.organization.default
+                    ):
                         break
                 else:
                     return

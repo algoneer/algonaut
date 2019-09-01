@@ -395,31 +395,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-    post:
-      description: Creates a new model for a given algorithm.
-      operationId: createModel
-      parameters:
-        - $ref: '#/components/parameters/ID'
-      requestBody:
-        description: Model to create.
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/BaseModel'
-      responses:
-        '201':
-          description: model response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Model'
-        default:
-          description: unexpected error
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Error'
   /models/{id}:
     get:
       description: |
@@ -573,6 +548,31 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
+  /datasets/{id}/models:
+    get:
+      description: |
+        Returns all models for a given dataset.
+      operationId: listDatasetModels
+      parameters:
+        - $ref: '#/components/parameters/ID'
+      responses:
+        '200':
+          description: models response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Model'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
   /datasets/{id}/results:
     get:
       description: |
@@ -709,6 +709,33 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/DataSchema'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /datasets/{id}/algorithms/{dependent_id}/models:
+    post:
+      description: Creates a new model for a given algorithm.
+      operationId: createModel
+      parameters:
+        - $ref: '#/components/parameters/ID'
+        - $ref: "#/components/parameters/DependentID"
+      requestBody:
+        description: Model to create.
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BaseModel'
+      responses:
+        '201':
+          description: model response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Model'
         default:
           description: unexpected error
           content:

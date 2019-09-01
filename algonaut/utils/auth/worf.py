@@ -48,6 +48,7 @@ class AuthClient(BaseAuthClient):
         personal_organization = Organization(
             name=org_name,
             source="worf_user",
+            default=True,
             id=binary_id(data["user"]["id"]),  # we create a binary ID
         )
         org_roles = [

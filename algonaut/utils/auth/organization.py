@@ -3,16 +3,26 @@ from typing import Iterable, Optional
 
 class Organization:
     def __init__(
-        self, name: str, source: str, id: bytes, description: str = ""
+        self,
+        name: str,
+        source: str,
+        id: bytes,
+        default: bool = False,
+        description: str = "",
     ) -> None:
         self._name = name
         self._source = source
+        self._default = default
         self._id = id
         self._description = description
 
     @property
     def name(self) -> str:
         return self._name
+
+    @property
+    def default(self) -> bool:
+        return self._default
 
     @property
     def id(self) -> bytes:
