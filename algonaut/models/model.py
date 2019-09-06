@@ -29,3 +29,11 @@ class Model(Hashable, Base):
         backref=backref("models", cascade="all,delete,delete-orphan"),
         innerjoin=True,
     )
+
+
+    def export_fields(self):
+        return {
+            "hash": self.hash,
+            "algorithm": self.algorithm.export(),
+            "dataset": self.dataset.export(),
+        }

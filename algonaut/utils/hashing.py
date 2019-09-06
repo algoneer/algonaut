@@ -12,7 +12,7 @@ class Hasher(object):
     def add(self, value):
         if isinstance(value, str):
             v = value.encode("utf-8", "ignore")
-        elif isinstance(value, (bytes)):
+        elif isinstance(value, bytes):
             v = str(value, errors="replace").encode("utf-8", "ignore")
         elif isinstance(value, (int, float, complex, bool)):
             v = bytes(str(value).encode("utf-8"))
@@ -29,7 +29,6 @@ class Hasher(object):
             v = b"1bcdadabdf0de99dbdb747e951e967c5"
         else:
             raise AttributeError("Unhashable type: %s" % str(type(value)))
-
         self.digest.update(v)
 
     def digest(self):

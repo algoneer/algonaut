@@ -2,7 +2,6 @@ import re
 import uuid
 import json
 import base64
-from algonaut.settings import settings as settings
 
 
 class ToLower:

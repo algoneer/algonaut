@@ -51,7 +51,7 @@ class Base(DeclarativeBase):  # type: ignore
 
     @classmethod
     def hash_data(cls, data):
-        return {"data": data.get("data", {})}
+        return {"data": data}
 
     def export_fields(self):
         return {}
