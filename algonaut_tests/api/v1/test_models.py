@@ -5,7 +5,7 @@ import datetime
 from algonaut_tests.fixtures.algorithm import project, algorithm
 from algonaut_tests.fixtures.model import model
 from algonaut_tests.fixtures.dataset import dataset
-from algonaut_tests.fixtures.result import result, model_result
+from algonaut_tests.fixtures.result import model_result
 
 from .helpers import ObjectTest
 
@@ -23,7 +23,9 @@ class TestAlgorithmModels(MockApiTest, ObjectTest):
 
     @property
     def create_url(self):
-        return self.list_url
+        return "/v1/datasets/{}/algorithms/{}/models".format(
+            self.dataset.ext_id, self.algorithm.ext_id
+        )
 
     fixtures = [
         {"auth_client": auth_client},
@@ -33,7 +35,6 @@ class TestAlgorithmModels(MockApiTest, ObjectTest):
         {"algorithm": lambda test, fixtures: algorithm(test, fixtures, "project")},
         {"dataset": lambda test, fixtures: dataset(test, fixtures, name="foo/bar")},
         {"model": model},
-        {"result": lambda t, f: result(t, f, name="test")},
         {"model_result": model_result},
         {
             "object_role": lambda test, fixtures: object_role(
@@ -62,4 +63,6 @@ class TestDatasetModels(TestAlgorithmModels):
 
     @property
     def create_url(self):
-        return self.list_url
+        return "/v1/datasets/{}/algorithms/{}/models".format(
+            self.dataset.ext_id, self.algorithm.ext_id
+        )

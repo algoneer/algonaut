@@ -313,58 +313,21 @@ CREATE INDEX ix_algorithmschema_created_at ON algorithmschema USING BTREE (creat
 CREATE INDEX ix_algorithmschema_updated_at ON algorithmschema USING BTREE (updated_at);
 CREATE INDEX ix_algorithmschema_deleted_at ON algorithmschema USING BTREE (deleted_at);
 
--- represents a test result
-CREATE TABLE result (
-    id bigint NOT NULL,
-    ext_id uuid NOT NULL,
-    name CHARACTER VARYING NOT NULL,
-    version CHARACTER VARYING NOT NULL,
-    hash BYTEA NOT NULL,
-    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
-    updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
-    deleted_at timestamp without time zone,
-    -- contains the actual result data (can be deeply nested)
-    data json
-);
-
-ALTER TABLE ONLY result
-    ADD CONSTRAINT result_ext_id_key UNIQUE (ext_id);
-
-ALTER TABLE ONLY result
-    ADD CONSTRAINT result_pkey PRIMARY KEY (id);
-
-CREATE SEQUENCE result_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-ALTER SEQUENCE result_id_seq OWNED BY result.id;
-
-ALTER TABLE ONLY result ALTER COLUMN id SET DEFAULT nextval('result_id_seq'::regclass);
-
-CREATE UNIQUE INDEX ix_result_unique_hash ON result USING BTREE (hash) WHERE (deleted_at IS NULL);
-CREATE INDEX ix_result_name ON result USING BTREE (name);
-CREATE INDEX ix_result_version ON result USING BTREE (version);
-CREATE INDEX ix_result_created_at ON result USING BTREE (created_at);
-CREATE INDEX ix_result_updated_at ON result USING BTREE (updated_at);
-CREATE INDEX ix_result_deleted_at ON result USING BTREE (deleted_at);
-
 /*
-Association tables
+Result tables
 */
 
 -- maps a result to a given algorithn version
 CREATE TABLE algorithm_result (
     id bigint NOT NULL,
     ext_id uuid NOT NULL,
+    name CHARACTER VARYING NOT NULL,
+    version CHARACTER VARYING NOT NULL,
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     deleted_at timestamp without time zone,
     data json,
-    algorithm_id bigint NOT NULL,
-    result_id bigint NOT NULL
+    algorithm_id bigint NOT NULL
 );
 
 ALTER TABLE ONLY algorithm_result
@@ -387,11 +350,10 @@ ALTER TABLE ONLY algorithm_result ALTER COLUMN id SET DEFAULT nextval('algorithm
 ALTER TABLE ONLY algorithm_result
     ADD CONSTRAINT algorithm_result_algorithm_id_fkey FOREIGN KEY (algorithm_id) REFERENCES algorithm(id);
 
-ALTER TABLE ONLY algorithm_result
-    ADD CONSTRAINT algorithm_result_result_id_fkey FOREIGN KEY (result_id) REFERENCES result(id);
-
 -- an algorithm version can only be mapped to a result once
-CREATE UNIQUE INDEX ix_algorithm_result_unique ON algorithm_result USING BTREE (algorithm_id, result_id) WHERE (deleted_at IS NULL);
+CREATE UNIQUE INDEX ix_algorithm_result_unique ON algorithm_result USING BTREE (algorithm_id, name) WHERE (deleted_at IS NULL);
+CREATE INDEX ix_algorithm_result_name ON algorithm_result USING BTREE (name);
+CREATE INDEX ix_algorithm_result_version ON algorithm_result USING BTREE (version);
 CREATE INDEX ix_algorithm_result_created_at ON algorithm_result USING BTREE (created_at);
 CREATE INDEX ix_algorithm_result_updated_at ON algorithm_result USING BTREE (updated_at);
 CREATE INDEX ix_algorithm_result_deleted_at ON algorithm_result USING BTREE (deleted_at);
@@ -400,12 +362,13 @@ CREATE INDEX ix_algorithm_result_deleted_at ON algorithm_result USING BTREE (del
 CREATE TABLE dataset_result (
     id bigint NOT NULL,
     ext_id uuid NOT NULL,
+    name CHARACTER VARYING NOT NULL,
+    version CHARACTER VARYING NOT NULL,
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     deleted_at timestamp without time zone,
     data json,
-    dataset_id bigint NOT NULL,
-    result_id bigint NOT NULL
+    dataset_id bigint NOT NULL
 );
 
 ALTER TABLE ONLY dataset_result
@@ -428,11 +391,10 @@ ALTER TABLE ONLY dataset_result ALTER COLUMN id SET DEFAULT nextval('dataset_res
 ALTER TABLE ONLY dataset_result
     ADD CONSTRAINT dataset_result_dataset_id_fkey FOREIGN KEY (dataset_id) REFERENCES dataset(id);
 
-ALTER TABLE ONLY dataset_result
-    ADD CONSTRAINT dataset_result_result_id_fkey FOREIGN KEY (result_id) REFERENCES result(id);
-
 -- a dataset version can only be mapped to a result once
-CREATE UNIQUE INDEX ix_dataset_result_unique ON dataset_result USING BTREE (dataset_id, result_id) WHERE (deleted_at IS NULL);
+CREATE UNIQUE INDEX ix_dataset_result_unique ON dataset_result USING BTREE (dataset_id, name) WHERE (deleted_at IS NULL);
+CREATE INDEX ix_dataset_result_name ON dataset_result USING BTREE (name);
+CREATE INDEX ix_dataset_result_version ON dataset_result USING BTREE (version);
 CREATE INDEX ix_dataset_result_created_at ON dataset_result USING BTREE (created_at);
 CREATE INDEX ix_dataset_result_updated_at ON dataset_result USING BTREE (updated_at);
 CREATE INDEX ix_dataset_result_deleted_at ON dataset_result USING BTREE (deleted_at);
@@ -441,12 +403,13 @@ CREATE INDEX ix_dataset_result_deleted_at ON dataset_result USING BTREE (deleted
 CREATE TABLE model_result (
     id bigint NOT NULL,
     ext_id uuid NOT NULL,
+    name CHARACTER VARYING NOT NULL,
+    version CHARACTER VARYING NOT NULL,
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     deleted_at timestamp without time zone,
     data json,
-    model_id bigint NOT NULL,
-    result_id bigint NOT NULL
+    model_id bigint NOT NULL
 );
 
 ALTER TABLE ONLY model_result
@@ -469,11 +432,10 @@ ALTER TABLE ONLY model_result ALTER COLUMN id SET DEFAULT nextval('model_result_
 ALTER TABLE ONLY model_result
     ADD CONSTRAINT model_result_model_id_fkey FOREIGN KEY (model_id) REFERENCES model(id);
 
-ALTER TABLE ONLY model_result
-    ADD CONSTRAINT model_result_result_id_fkey FOREIGN KEY (result_id) REFERENCES result(id);
-
 -- a result can only be mapped to a model once
-CREATE UNIQUE INDEX ix_model_result_unique ON model_result USING BTREE (model_id, result_id) WHERE (deleted_at IS NULL);
+CREATE UNIQUE INDEX ix_model_result_unique ON model_result USING BTREE (model_id, name) WHERE (deleted_at IS NULL);
+CREATE INDEX ix_model_result_name ON model_result USING BTREE (name);
+CREATE INDEX ix_model_result_version ON model_result USING BTREE (version);
 CREATE INDEX ix_model_result_created_at ON model_result USING BTREE (created_at);
 CREATE INDEX ix_model_result_updated_at ON model_result USING BTREE (updated_at);
 CREATE INDEX ix_model_result_deleted_at ON model_result USING BTREE (deleted_at);
@@ -482,13 +444,14 @@ CREATE INDEX ix_model_result_deleted_at ON model_result USING BTREE (deleted_at)
 CREATE TABLE datapoint_model_result (
     id bigint NOT NULL,
     ext_id uuid NOT NULL,
+    name CHARACTER VARYING NOT NULL,
+    version CHARACTER VARYING NOT NULL,
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     deleted_at timestamp without time zone,
     data json,
     datapoint_id bigint NOT NULL,
-    model_id bigint NOT NULL,
-    result_id bigint NOT NULL
+    model_id bigint NOT NULL
 );
 
 ALTER TABLE ONLY datapoint_model_result
@@ -514,11 +477,10 @@ ALTER TABLE ONLY datapoint_model_result
 ALTER TABLE ONLY datapoint_model_result
     ADD CONSTRAINT datapoint_model_result_datapoint_id_fkey FOREIGN KEY (datapoint_id) REFERENCES datapoint(id);
 
-ALTER TABLE ONLY datapoint_model_result
-    ADD CONSTRAINT datapoint_model_result_result_id_fkey FOREIGN KEY (result_id) REFERENCES result(id);
-
 -- a result can only be mapped to a model once
-CREATE UNIQUE INDEX ix_datapoint_model_result_unique ON datapoint_model_result USING BTREE (datapoint_id, model_id, result_id) WHERE (deleted_at IS NULL);
+CREATE UNIQUE INDEX ix_datapoint_model_result_unique ON datapoint_model_result USING BTREE (datapoint_id, model_id, name) WHERE (deleted_at IS NULL);
+CREATE INDEX ix_datapoint_model_result_name ON datapoint_model_result USING BTREE (name);
+CREATE INDEX ix_datapoint_model_result_version ON datapoint_model_result USING BTREE (version);
 CREATE INDEX ix_datapoint_model_result_created_at ON datapoint_model_result USING BTREE (created_at);
 CREATE INDEX ix_datapoint_model_result_updated_at ON datapoint_model_result USING BTREE (updated_at);
 CREATE INDEX ix_datapoint_model_result_deleted_at ON datapoint_model_result USING BTREE (deleted_at);
@@ -528,13 +490,14 @@ CREATE INDEX ix_datapoint_model_result_deleted_at ON datapoint_model_result USIN
 CREATE TABLE dataset_model_result (
     id bigint NOT NULL,
     ext_id uuid NOT NULL,
+    name CHARACTER VARYING NOT NULL,
+    version CHARACTER VARYING NOT NULL,
     created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     updated_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
     deleted_at timestamp without time zone,
     data json,
     dataset_id bigint NOT NULL,
-    model_id bigint NOT NULL,
-    result_id bigint NOT NULL
+    model_id bigint NOT NULL
 );
 
 ALTER TABLE ONLY dataset_model_result
@@ -560,11 +523,10 @@ ALTER TABLE ONLY dataset_model_result
 ALTER TABLE ONLY dataset_model_result
     ADD CONSTRAINT dataset_model_result_dataset_id_fkey FOREIGN KEY (dataset_id) REFERENCES dataset(id);
 
-ALTER TABLE ONLY dataset_model_result
-    ADD CONSTRAINT dataset_model_result_result_id_fkey FOREIGN KEY (result_id) REFERENCES result(id);
-
 -- a result can only be mapped to a model once
-CREATE UNIQUE INDEX ix_dataset_model_result_unique ON dataset_model_result USING BTREE (dataset_id, model_id, result_id) WHERE (deleted_at IS NULL);
+CREATE UNIQUE INDEX ix_dataset_model_result_unique ON dataset_model_result USING BTREE (dataset_id, model_id, name) WHERE (deleted_at IS NULL);
+CREATE INDEX ix_dataset_model_result_name ON dataset_model_result USING BTREE (name);
+CREATE INDEX ix_dataset_model_result_version ON dataset_model_result USING BTREE (version);
 CREATE INDEX ix_dataset_model_result_created_at ON dataset_model_result USING BTREE (created_at);
 CREATE INDEX ix_dataset_model_result_updated_at ON dataset_model_result USING BTREE (updated_at);
 CREATE INDEX ix_dataset_model_result_deleted_at ON dataset_model_result USING BTREE (deleted_at);

@@ -9,7 +9,6 @@ DROP TABLE dataset_model_result;
 DROP TABLE model_result;
 DROP TABLE dataset_result;
 DROP TABLE algorithm_result;
-DROP TABLE result;
 DROP TABLE model CASCADE;
 DROP TABLE algorithmschema;
 DROP TABLE algorithm;

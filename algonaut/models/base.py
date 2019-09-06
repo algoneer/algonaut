@@ -51,7 +51,7 @@ class Base(DeclarativeBase):  # type: ignore
 
     @classmethod
     def hash_data(cls, data):
-        return {"data": data}
+        raise NotImplementedError
 
     def export_fields(self):
         return {}
@@ -86,5 +86,5 @@ class Base(DeclarativeBase):  # type: ignore
         """
         session.delete(self)
 
-    def get_existing(self, session):
+    def get_existing(self, session: sqlalchemy.orm.session.Session):
         return None

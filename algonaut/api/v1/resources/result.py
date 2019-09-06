@@ -1,5 +1,4 @@
 from algonaut.models import (
-    Result,
     Model,
     ModelResult,
     Datapoint,
@@ -23,25 +22,21 @@ from flask import request
 from typing import Optional
 
 # Returns results for a given dataset version
-DatasetResults = Objects(Result, ResultForm, [Dataset, Project], DatasetResult)
-DatasetResultDetails = ObjectDetails(
-    Result, ResultForm, [Dataset, Project], DatasetResult
-)
+DatasetResults = Objects(DatasetResult, ResultForm, [Dataset, Project])
+DatasetResultDetails = ObjectDetails(DatasetResult, ResultForm, [Dataset, Project])
 
 # Returns results for a given algorithm version
-AlgorithmResults = Objects(Result, ResultForm, [Algorithm, Project], AlgorithmResult)
+AlgorithmResults = Objects(AlgorithmResult, ResultForm, [Algorithm, Project])
 AlgorithmResultDetails = ObjectDetails(
-    Result, ResultForm, [Algorithm, Project], AlgorithmResult
+    AlgorithmResult, ResultForm, [Algorithm, Project]
 )
 
 # Returns results for a given model version
-ModelResults = Objects(Result, ResultForm, [Model, Algorithm, Project], ModelResult)
-ModelResultDetails = ObjectDetails(
-    Result, ResultForm, [Model, Algorithm, Project], ModelResult
-)
+ModelResults = Objects(ModelResult, ResultForm, [Model, Algorithm, Project])
+ModelResultDetails = ObjectDetails(ModelResult, ResultForm, [Model, Algorithm, Project])
 
 DatapointModelResultDetails = ObjectDetails(
-    Result, ResultForm, [Model, Algorithm, Project], DatapointModelResult
+    DatapointModelResult, ResultForm, [Model, Algorithm, Project]
 )
 
 
@@ -67,13 +62,11 @@ class DatapointModelResults(Resource):
         """
         with settings.session() as session:
             filters = [
-                Result.deleted_at == None,
+                DatapointModelResult.deleted_at == None,
                 DatapointModelResult.datapoint == request.datapoint,
                 DatapointModelResult.model == request.model,
             ]
-            objs = (
-                session.query(Result).filter(*filters).join(DatapointModelResult).all()
-            )
+            objs = session.query(DatapointModelResult).filter(*filters).all()
             return {"data": [obj.export() for obj in objs]}, 200
 
     @authorized()
@@ -92,46 +85,35 @@ class DatapointModelResults(Resource):
         if not form.validate():
             return {"message": "invalid data", "errors": form.errors}, 400
         with settings.session() as session:
-            obj = Result(**form.valid_data)
-            existing_obj = (
-                session.query(Result)
-                .filter(Result.hash == obj.hash, Result.deleted_at == None)
-                .one_or_none()
-            )
+            obj = DatapointModelResult(**form.valid_data)
+            obj.datapoint = request.datapoint
+            obj.model = request.model
 
+            session.expunge(obj)
+
+            existing_obj = obj.get_existing(session)
             # if a matching result already exists we do not create a new one
             if existing_obj:
-                obj = existing_obj
-            else:
-                session.add(obj)
+
+                # we update the existing object instead
+                update_form = ResultForm(request.get_json() or {}, is_update=True)
+                if not update_form.validate():
+                    return {"message": "invalid data", "errors": form.errors}, 400
+
+                for k, v in update_form.valid_data.items():
+                    setattr(existing_obj, k, v)
+
                 session.commit()
 
-            # we check if an existing entry already exists
-            existing_obj = (
-                session.query(DatapointModelResult)
-                .filter(
-                    DatapointModelResult.model_id == request.model.id,
-                    DatapointModelResult.datapoint_id == request.datapoint.id,
-                    DatapointModelResult.result_id == obj.id,
-                    DatapointModelResult.deleted_at == None,
-                )
-                .one_or_none()
-            )
+                return existing_obj.export(), 201
 
-            # we return the existing object without adding a M2M entry
-            if existing_obj:
-                return obj.export(), 201
-
-            dpmr = DatapointModelResult(
-                datapoint=request.datapoint, model=request.model, result=obj
-            )
-            session.add(dpmr)
+            session.add(obj)
             session.commit()
             return obj.export(), 201
 
 
 DatasetModelResultDetails = ObjectDetails(
-    Result, ResultForm, [Model, Algorithm, Project], DatasetModelResult
+    DatasetModelResult, ResultForm, [Model, Algorithm, Project], DatasetModelResult
 )
 
 
@@ -156,11 +138,11 @@ class DatasetModelResults(Resource):
         """
         with settings.session() as session:
             filters = [
-                Result.deleted_at == None,
+                DatasetModelResult.deleted_at == None,
                 DatasetModelResult.dataset == request.dataset,
                 DatasetModelResult.model == request.model,
             ]
-            objs = session.query(Result).filter(*filters).join(DatasetModelResult).all()
+            objs = session.query(DatasetModelResult).filter(*filters).all()
             return {"data": [obj.export() for obj in objs]}, 200
 
     @authorized()
@@ -175,39 +157,29 @@ class DatasetModelResults(Resource):
         if not form.validate():
             return {"message": "invalid data", "errors": form.errors}, 400
         with settings.session() as session:
-            obj = Result(**form.valid_data)
-            existing_obj = (
-                session.query(Result)
-                .filter(Result.hash == obj.hash, Result.deleted_at == None)
-                .one_or_none()
-            )
+            obj = DatasetModelResult(**form.valid_data)
 
-            # if a matching result already exists we do not create a new one
+            obj.dataset = request.dataset
+            obj.model = request.model
+
+            session.expunge(obj)
+
+            existing_obj = obj.get_existing(session)
+
             if existing_obj:
-                obj = existing_obj
-            else:
-                session.add(obj)
+
+                # we update the existing object instead
+                update_form = ResultForm(request.get_json() or {}, is_update=True)
+                if not update_form.validate():
+                    return {"message": "invalid data", "errors": form.errors}, 400
+
+                for k, v in update_form.valid_data.items():
+                    setattr(existing_obj, k, v)
+
                 session.commit()
 
-            # we check if an existing entry already exists
-            existing_obj = (
-                session.query(DatasetModelResult)
-                .filter(
-                    DatasetModelResult.model_id == request.model.id,
-                    DatasetModelResult.dataset_id == request.dataset.id,
-                    DatasetModelResult.result_id == obj.id,
-                    DatasetModelResult.deleted_at == None,
-                )
-                .one_or_none()
-            )
-
-            # we return the existing object without adding a M2M entry
-            if existing_obj:
                 return obj.export(), 201
 
-            dpmr = DatasetModelResult(
-                dataset=request.dataset, model=request.model, result=obj
-            )
-            session.add(dpmr)
+            session.add(obj)
             session.commit()
             return obj.export(), 201

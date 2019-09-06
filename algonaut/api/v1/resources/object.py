@@ -158,21 +158,19 @@ def Objects(
                 existing_obj = obj.get_existing(session)
 
                 if existing_obj:
-                    return existing_obj.export(), 201
 
-                if isinstance(obj, Hashable):
-                    extra_args = []
-                    if dependent_obj and not JoinBy:
-                        extra_args = [getattr(Type, dependent_type) == dependent_obj]
-                    existing_obj = (
-                        session.query(Type)
-                        .filter(
-                            Type.hash == obj.hash, Type.deleted_at == None, *extra_args
-                        )
-                        .one_or_none()
-                    )
-                    if existing_obj:
-                        return existing_obj.export(), 201
+                    # we update the existing object instead
+
+                    update_form = Form(request.get_json() or {}, is_update=True)
+                    if not update_form.validate():
+                        return {"message": "invalid data", "errors": form.errors}, 400
+
+                    for k, v in update_form.valid_data.items():
+                        setattr(existing_obj, k, v)
+
+                    session.commit()
+
+                    return existing_obj.export(), 201
 
                 if join_by:
                     session.add(join_by)

@@ -1,5 +1,4 @@
 from algonaut.models import (
-    Result,
     ModelResult,
     DatasetModelResult,
     DatapointModelResult,
@@ -12,26 +11,20 @@ from typing import Any, Dict, Type
 import unittest
 
 
-def result(test: Type[unittest.TestCase], fixtures: Dict[str, Any], name: str) -> Any:
-    assert issubclass(test, DatabaseTest)
-    result = Result(name=name, data={})
-    test.session.add(result)
-    test.session.commit()
-    return result
-
-
 def datapoint_model_result(
     test: Type[unittest.TestCase],
     fixtures: Dict[str, Any],
     model: str = "model",
     datapoint: str = "datapoint",
-    result: str = "result",
+    name: str = "result",
+    data: Dict[str, Any] = {},
 ) -> Any:
     assert issubclass(test, DatabaseTest)
     md = fixtures[model]
-    rs = fixtures[result]
     dp = fixtures[datapoint]
-    datapoint_model_result = DatapointModelResult(datapoint=dp, model=md, result=rs)
+    datapoint_model_result = DatapointModelResult(
+        datapoint=dp, model=md, name=name, data=data
+    )
     test.session.add(datapoint_model_result)
     test.session.commit()
     return datapoint_model_result
@@ -42,13 +35,15 @@ def dataset_model_result(
     fixtures: Dict[str, Any],
     model: str = "model",
     dataset: str = "dataset",
-    result: str = "result",
+    name: str = "result",
+    data: Dict[str, Any] = {},
 ) -> Any:
     assert issubclass(test, DatabaseTest)
     md = fixtures[model]
-    rs = fixtures[result]
     ds = fixtures[dataset]
-    dataset_model_result = DatasetModelResult(dataset=ds, model=md, result=rs)
+    dataset_model_result = DatasetModelResult(
+        dataset=ds, model=md, name=name, data=data
+    )
     test.session.add(dataset_model_result)
     test.session.commit()
     return dataset_model_result
@@ -58,12 +53,12 @@ def model_result(
     test: Type[unittest.TestCase],
     fixtures: Dict[str, Any],
     model: str = "model",
-    result: str = "result",
+    name: str = "result",
+    data: Dict[str, Any] = {},
 ) -> Any:
     assert issubclass(test, DatabaseTest)
     md = fixtures[model]
-    rs = fixtures[result]
-    model_result = ModelResult(model=md, result=rs)
+    model_result = ModelResult(model=md, name=name, data=data)
     test.session.add(model_result)
     test.session.commit()
     return model_result
@@ -73,12 +68,12 @@ def dataset_result(
     test: Type[unittest.TestCase],
     fixtures: Dict[str, Any],
     dataset: str = "dataset",
-    result: str = "result",
+    name: str = "result",
+    data: Dict[str, Any] = {},
 ) -> Any:
     assert issubclass(test, DatabaseTest)
     ds = fixtures[dataset]
-    rs = fixtures[result]
-    dataset_result = DatasetResult(dataset=ds, result=rs)
+    dataset_result = DatasetResult(dataset=ds, name=name, data=data)
     test.session.add(dataset_result)
     test.session.commit()
     return dataset_result
@@ -88,12 +83,12 @@ def algorithm_result(
     test: Type[unittest.TestCase],
     fixtures: Dict[str, Any],
     algorithm: str = "algorithm",
-    result: str = "result",
+    name: str = "result",
+    data: Dict[str, Any] = {},
 ) -> Any:
     assert issubclass(test, DatabaseTest)
     algo = fixtures[algorithm]
-    rs = fixtures[result]
-    algorithm_result = AlgorithmResult(algorithm=algo, result=rs)
+    algorithm_result = AlgorithmResult(algorithm=algo, name=name, data=data)
     test.session.add(algorithm_result)
     test.session.commit()
     return algorithm_result

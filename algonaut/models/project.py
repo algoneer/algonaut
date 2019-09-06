@@ -24,11 +24,15 @@ class Project(Base):
     )
 
     def get_existing(self, session):
-        return session.query(Project).filter(
-            Project.organization == self.organization,
-            Project.path == self.path,
-            Project.deleted_at == None,
-        ).one_or_none()
+        return (
+            session.query(Project)
+            .filter(
+                Project.organization == self.organization,
+                Project.path == self.path,
+                Project.deleted_at == None,
+            )
+            .one_or_none()
+        )
 
     def export_fields(self):
         return {

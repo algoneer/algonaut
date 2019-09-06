@@ -5,14 +5,14 @@ import datetime
 from algonaut_tests.fixtures.algorithm import project, algorithm
 from algonaut_tests.fixtures.model import model
 from algonaut_tests.fixtures.dataset import dataset, datapoint, dataset_datapoint
-from algonaut_tests.fixtures.result import result, datapoint_model_result
+from algonaut_tests.fixtures.result import datapoint_model_result
 
 from .helpers import ObjectTest
 
 
 class TestDatapointResults(MockApiTest, ObjectTest):
 
-    obj_key = "result"
+    obj_key = "datapoint_model_result"
     obj_create_data = {"data": {"foo": "bar"}, "name": "test"}
     obj_update_data = {"data": {"bar": "bam"}, "name": "bar"}
 
@@ -26,7 +26,6 @@ class TestDatapointResults(MockApiTest, ObjectTest):
         {"datapoint": datapoint},
         {"dataset_datapoint": dataset_datapoint},
         {"model": model},
-        {"result": lambda t, f: result(t, f, name="test")},
         {"datapoint_model_result": datapoint_model_result},
         {
             "object_role": lambda test, fixtures: object_role(

@@ -16,7 +16,6 @@ from .datapoint_model_result import DatapointModelResult  # noqa
 from .dataset_model_result import DatasetModelResult  # noqa
 from .model_result import ModelResult  # noqa
 from .model import Model  # noqa
-from .result import Result  # noqa
 from .object_role import ObjectRole  # noqa
 from .organization import Organization  # noqa
 from .base import Base  # noqa
@@ -40,7 +39,6 @@ def clean_db(session):
         DataSchema,
         Datapoint,
         Dataset,
-        Result,
         ObjectRole,
         Project,
         Organization,

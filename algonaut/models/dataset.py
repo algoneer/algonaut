@@ -5,6 +5,8 @@ from sqlalchemy.orm import relationship, backref
 from sqlalchemy.dialects.postgresql import BYTEA
 from sqlalchemy.dialects.postgresql import ARRAY
 
+import sqlalchemy
+
 
 class Dataset(Hashable, Base):
 
@@ -31,3 +33,18 @@ class Dataset(Hashable, Base):
             "tags": [tag for tag in self.tags] if self.tags else None,
             "project": self.project.export(),
         }
+
+    def get_existing(self, session: sqlalchemy.orm.session.Session):
+        return (
+            session.query(Dataset)
+            .filter(
+                Dataset.hash == self.hash,
+                Dataset.project == self.project,
+                Dataset.deleted_at == None,
+            )
+            .one_or_none()
+        )
+
+    @classmethod
+    def hash_data(cls, data):
+        return {"data": data.get("data")}

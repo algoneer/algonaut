@@ -5,7 +5,7 @@ import datetime
 from algonaut_tests.fixtures.algorithm import project, algorithm
 from algonaut_tests.fixtures.model import model
 from algonaut_tests.fixtures.dataset import dataset
-from algonaut_tests.fixtures.result import result, algorithm_result
+from algonaut_tests.fixtures.result import algorithm_result
 
 from .helpers import ObjectTest
 
@@ -13,7 +13,7 @@ from .helpers import ObjectTest
 class TestAlgorithmResults(MockApiTest, ObjectTest):
 
     base_url = "/v1/algorithms/{algorithm.ext_id}/results"
-    obj_key = "result"
+    obj_key = "algorithm_result"
     obj_create_data = {"data": {"foo": "bars"}, "name": "another test"}
     obj_update_data = {"data": {"bar": "bam"}, "name": "bar"}
 
@@ -25,7 +25,6 @@ class TestAlgorithmResults(MockApiTest, ObjectTest):
         {"algorithm": lambda test, fixtures: algorithm(test, fixtures, "project")},
         {"dataset": lambda test, fixtures: dataset(test, fixtures, name="foo/bar")},
         {"model": model},
-        {"result": lambda t, f: result(t, f, name="test")},
         {"algorithm_result": algorithm_result},
         {
             "object_role": lambda test, fixtures: object_role(
