@@ -156,7 +156,7 @@ ALTER TABLE ONLY dataset ALTER COLUMN id SET DEFAULT nextval('dataset_id_seq'::r
 ALTER TABLE ONLY dataset
     ADD CONSTRAINT dataset_project_id_fkey FOREIGN KEY (project_id) REFERENCES project(id);
 
-CREATE UNIQUE INDEX ix_dataset_unique_hash ON dataset USING BTREE (hash, project_id) WHERE (deleted_at IS NULL);
+CREATE UNIQUE INDEX ix_dataset_unique_hash ON dataset USING BTREE (hash, name, project_id) WHERE (deleted_at IS NULL);
 CREATE INDEX ix_dataset_tags ON dataset USING GIN (tags);
 CREATE INDEX ix_dataset_name ON dataset USING BTREE (name);
 CREATE INDEX ix_dataset_created_at ON dataset USING BTREE (created_at);
@@ -230,7 +230,7 @@ ALTER SEQUENCE algorithm_id_seq OWNED BY algorithm.id;
 
 ALTER TABLE ONLY algorithm ALTER COLUMN id SET DEFAULT nextval('algorithm_id_seq'::regclass);
 
-CREATE UNIQUE INDEX ix_algorithm_unique_hash ON algorithm USING BTREE (hash, project_id) WHERE (deleted_at IS NULL);
+CREATE UNIQUE INDEX ix_algorithm_unique_hash ON algorithm USING BTREE (hash, name, project_id) WHERE (deleted_at IS NULL);
 CREATE INDEX ix_algorithm_created_at ON algorithm USING BTREE (created_at);
 CREATE INDEX ix_algorithm_updated_at ON algorithm USING BTREE (updated_at);
 CREATE INDEX ix_algorithm_deleted_at ON algorithm USING BTREE (deleted_at);

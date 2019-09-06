@@ -40,6 +40,7 @@ class Algorithm(Hashable, Base):
             session.query(Algorithm)
             .filter(
                 Algorithm.hash == self.hash,
+                Algorithm.name == self.name,
                 Algorithm.project == self.project,
                 Algorithm.deleted_at == None,
             )

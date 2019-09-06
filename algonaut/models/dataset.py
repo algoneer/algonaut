@@ -39,6 +39,7 @@ class Dataset(Hashable, Base):
             session.query(Dataset)
             .filter(
                 Dataset.hash == self.hash,
+                Dataset.name == self.name,
                 Dataset.project == self.project,
                 Dataset.deleted_at == None,
             )
